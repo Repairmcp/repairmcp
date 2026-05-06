@@ -1,0 +1,17 @@
+{
+  "name": "@repairmcp/deg-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cloudflare Worker hosting the DEG MCP server (HTTP + STDIO entry).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo \"(no tests yet)\" && exit 0",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/deg": "workspace:*"
+  }
+}

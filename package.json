@@ -1,0 +1,32 @@
+{
+  "name": "repairmcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MCP servers for the collision repair industry.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Repairmcp/repairmcp.git"
+  },
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "ingestion/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.32.0"
+}
