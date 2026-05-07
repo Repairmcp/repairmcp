@@ -13,17 +13,25 @@ export interface CitationInput {
   resolvedAt?: Date;
 }
 
+/**
+ * Format a date as M/D/YYYY in UTC. Locked to UTC so a citation built locally
+ * (any TZ) and one built on Cloudflare Workers (UTC) render identically.
+ * Without this, a 2026-01-01T00:00:00Z published date renders as "12/31/2025"
+ * in PT and "1/1/2026" in UTC — same DEG entry, different citation strings.
+ */
+function fmtDateUtc(d: Date): string {
+  return d.toLocaleDateString('en-US', { timeZone: 'UTC' });
+}
+
 export function buildCitation(input: CitationInput): Citation {
   const noun = input.itemNoun ?? 'entry';
   const dateForShort = input.resolvedAt ?? input.publishedAt;
-  const dateStr = dateForShort
-    ? dateForShort.toLocaleDateString('en-US')
-    : 'date unknown';
+  const dateStr = dateForShort ? fmtDateUtc(dateForShort) : 'date unknown';
 
   const shortForm = `${input.sourceShortName} #${input.itemId} (${dateStr})`;
 
   const longForm = input.resolvedAt
-    ? `${input.sourceName} ${noun} #${input.itemId}, resolved ${input.resolvedAt.toLocaleDateString('en-US')}, ${input.url}`
+    ? `${input.sourceName} ${noun} #${input.itemId}, resolved ${fmtDateUtc(input.resolvedAt)}, ${input.url}`
     : `${input.sourceName} ${noun} #${input.itemId}, ${input.url}`;
 
   return {
