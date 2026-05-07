@@ -11,6 +11,7 @@
     "lint": "echo \"(no lint yet)\" && exit 0"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@repairmcp/core": "workspace:*",
     "@repairmcp/deg": "workspace:*"
   }
