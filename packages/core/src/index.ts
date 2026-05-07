@@ -21,7 +21,7 @@ export type {
   StandardToolName,
 } from './server/mcp-server.js';
 export { RepairMCPServer } from './server/mcp-server.js';
-export type { ToolRegistrar } from './server/tool-builder.js';
+export type { ToolRegistrar, BuildToolOpts } from './server/tool-builder.js';
 export {
   buildFindSupportingTool,
   buildGetByIdTool,

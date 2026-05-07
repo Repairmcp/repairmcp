@@ -15,6 +15,19 @@ import type {
  */
 export type ToolRegistrar = (server: McpServer) => void;
 
+/**
+ * Optional overrides for the standard tool builders. Verticals (e.g. DEG) use
+ * these to ship domain-specific tool descriptions while keeping the core's
+ * input schema and handler logic. Tool descriptions are the AI's primary signal
+ * for routing — see ARCHITECTURE.md §7.3.
+ */
+export interface BuildToolOpts {
+  /** Override the default tool description. Plain text; no markdown headers. */
+  description?: string;
+  /** Override the default human-readable title. */
+  title?: string;
+}
+
 interface SerializedSearchHit {
   id: string;
   title: string;
@@ -45,9 +58,10 @@ function jsonContent(obj: unknown): { type: 'text'; text: string } {
 
 export function buildSearchTool<T extends BaseItem>(
   adapter: SourceAdapter<T>,
+  opts: BuildToolOpts = {},
 ): ToolRegistrar {
   const name = `${adapter.sourceId}_search_${adapter.itemNounPlural}`;
-  const description = `Free-text search across ${adapter.sourceName} ${adapter.itemNounPlural}.
+  const defaultDescription = `Free-text search across ${adapter.sourceName} ${adapter.itemNounPlural}.
 
 USE THIS WHEN:
 - The user asks about a topic, operation, or part and you need related ${adapter.itemNounPlural} as evidence.
@@ -61,8 +75,8 @@ OUTPUT: Ranked array of ${adapter.itemNounPlural} with relevance \`score\` (0–
     server.registerTool(
       name,
       {
-        title: `Search ${adapter.sourceName}`,
-        description,
+        title: opts.title ?? `Search ${adapter.sourceName}`,
+        description: opts.description ?? defaultDescription,
         inputSchema: {
           text: z.string().min(1).describe('Free-text query.').optional(),
           limit: z
@@ -105,9 +119,10 @@ OUTPUT: Ranked array of ${adapter.itemNounPlural} with relevance \`score\` (0–
 
 export function buildGetByIdTool<T extends BaseItem>(
   adapter: SourceAdapter<T>,
+  opts: BuildToolOpts = {},
 ): ToolRegistrar {
   const name = `${adapter.sourceId}_get_${adapter.itemNoun}`;
-  const description = `Fetch a single ${adapter.sourceName} ${adapter.itemNoun} by its ID, with full content and a citation.
+  const defaultDescription = `Fetch a single ${adapter.sourceName} ${adapter.itemNoun} by its ID, with full content and a citation.
 
 USE THIS WHEN:
 - A search result looks promising and you need the complete ${adapter.itemNoun} text to cite or quote.
@@ -121,8 +136,8 @@ OUTPUT: The complete ${adapter.itemNoun} record plus a \`citation\` object. If n
     server.registerTool(
       name,
       {
-        title: `Get ${adapter.sourceName} ${adapter.itemNoun}`,
-        description,
+        title: opts.title ?? `Get ${adapter.sourceName} ${adapter.itemNoun}`,
+        description: opts.description ?? defaultDescription,
         inputSchema: {
           id: z.string().min(1).describe(`The ${adapter.itemNoun} ID.`),
         },
@@ -154,9 +169,10 @@ OUTPUT: The complete ${adapter.itemNoun} record plus a \`citation\` object. If n
 
 export function buildListRecentTool<T extends BaseItem>(
   adapter: SourceAdapter<T>,
+  opts: BuildToolOpts = {},
 ): ToolRegistrar {
   const name = `${adapter.sourceId}_list_recent`;
-  const description = `List the most recent ${adapter.sourceName} ${adapter.itemNounPlural} (newest first).
+  const defaultDescription = `List the most recent ${adapter.sourceName} ${adapter.itemNounPlural} (newest first).
 
 USE THIS WHEN:
 - The user asks "what's new in ${adapter.sourceShortName}" or wants a recency-driven view.
@@ -170,8 +186,8 @@ OUTPUT: Array of ${adapter.itemNounPlural} sorted newest first, each with its ci
     server.registerTool(
       name,
       {
-        title: `Recent ${adapter.sourceName} ${adapter.itemNounPlural}`,
-        description,
+        title: opts.title ?? `Recent ${adapter.sourceName} ${adapter.itemNounPlural}`,
+        description: opts.description ?? defaultDescription,
         inputSchema: {
           since: z
             .string()
@@ -221,9 +237,10 @@ OUTPUT: Array of ${adapter.itemNounPlural} sorted newest first, each with its ci
  */
 export function buildFindSupportingTool<T extends BaseItem>(
   adapter: SourceAdapter<T>,
+  opts: BuildToolOpts = {},
 ): ToolRegistrar {
   const name = `${adapter.sourceId}_find_supporting`;
-  const description = `Find ${adapter.sourceName} ${adapter.itemNounPlural} that support charging or denying a specific labor / line-item operation.
+  const defaultDescription = `Find ${adapter.sourceName} ${adapter.itemNounPlural} that support charging or denying a specific labor / line-item operation.
 
 USE THIS WHEN:
 - Writing a supplement and you need ${adapter.sourceShortName} citations to justify a line item.
@@ -238,8 +255,8 @@ OUTPUT: Ranked list of supporting ${adapter.itemNounPlural} with \`confidence\` 
     server.registerTool(
       name,
       {
-        title: `Find supporting ${adapter.sourceName} ${adapter.itemNounPlural}`,
-        description,
+        title: opts.title ?? `Find supporting ${adapter.sourceName} ${adapter.itemNounPlural}`,
+        description: opts.description ?? defaultDescription,
         inputSchema: {
           lineItemText: z
             .string()

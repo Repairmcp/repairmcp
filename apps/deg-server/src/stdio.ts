@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { RepairMCPServer } from '@repairmcp/core';
-import { DEGAdapter, buildDegFindSupportingTool } from '@repairmcp/deg';
+import { DEGAdapter, registerDegTools } from '@repairmcp/deg';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // When built: this file lives at apps/deg-server/dist/stdio.js, so data/ is at ../data/.
@@ -28,10 +28,10 @@ async function main(): Promise<void> {
     name: 'repairmcp-deg',
     version: '0.1.0',
   });
-  // Skip the baseline find_supporting; register the DEG-specific scoring tool
-  // (bigram + unigram + IP/vehicle/operation/recency) under the same name.
-  server.registerStandardTools({ skip: ['find_supporting'] });
-  server.registerCustomTool(buildDegFindSupportingTool(adapter));
+  // Register all four DEG tools with shop-floor descriptions. search/get/list_recent
+  // delegate to core builders with description overrides; find_supporting carries
+  // its own scoring (bigram + unigram + IP/vehicle/operation/recency).
+  registerDegTools(server, adapter);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
