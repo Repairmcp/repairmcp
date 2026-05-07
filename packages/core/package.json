@@ -19,5 +19,9 @@
     "build": "tsc -p tsconfig.json",
     "test": "echo \"(no tests yet)\" && exit 0",
     "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
   }
 }
