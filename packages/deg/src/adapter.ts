@@ -10,6 +10,12 @@ import {
   type SourceAdapter,
 } from '@repairmcp/core';
 import { DEGInquirySchema, type DEGInquiry, type InformationProvider } from './schema.js';
+import {
+  scoreInquiry,
+  snippetForQuery,
+  type ScoreInquiryOpts,
+  type ScoringBreakdown,
+} from './scoring.js';
 
 const DEGInquiryArraySchema = z.array(DEGInquirySchema);
 
@@ -210,5 +216,52 @@ export class DEGAdapter implements SourceAdapter<DEGInquiry> {
   /** In-memory adapter does not refresh from a live source. Returns zero counts. */
   async refresh(_opts?: { since?: Date }): Promise<RefreshResult> {
     return { scanned: 0, added: 0, updated: 0, errors: 0, durationMs: 0 };
+  }
+
+  /**
+   * DEG-specific killer scoring for `deg_find_supporting`. Iterates the corpus,
+   * scores each inquiry against the natural-language line item description,
+   * and returns the top-`limit` results ranked by score descending.
+   */
+  findSupporting(opts: {
+    lineItemText: string;
+    vehicleYear?: number;
+    vehicleMake?: string;
+    vehicleModel?: string;
+    limit?: number;
+    /** Reference time for recency boost. Defaults to `new Date()`. */
+    now?: Date;
+  }): Array<{
+    inquiry: DEGInquiry;
+    score: number;
+    breakdown: ScoringBreakdown;
+    snippet: string | undefined;
+  }> {
+    const limit = opts.limit ?? 5;
+    const scoreOpts: ScoreInquiryOpts = {};
+    if (opts.vehicleYear !== undefined) scoreOpts.vehicleYear = opts.vehicleYear;
+    if (opts.vehicleMake) scoreOpts.vehicleMake = opts.vehicleMake;
+    if (opts.vehicleModel) scoreOpts.vehicleModel = opts.vehicleModel;
+    if (opts.now) scoreOpts.now = opts.now;
+
+    const scored = this.inquiries.map((inq) => {
+      const { score, breakdown } = scoreInquiry(opts.lineItemText, inq, scoreOpts);
+      return {
+        inquiry: inq,
+        score,
+        breakdown,
+        snippet: snippetForQuery(opts.lineItemText, inq),
+      };
+    });
+
+    scored.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      // Tie-break: more recent first.
+      const at = (a.inquiry.resolvedAt ?? a.inquiry.submittedAt).getTime();
+      const bt = (b.inquiry.resolvedAt ?? b.inquiry.submittedAt).getTime();
+      return bt - at;
+    });
+
+    return scored.slice(0, limit);
   }
 }

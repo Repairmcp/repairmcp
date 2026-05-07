@@ -15,7 +15,11 @@ export type { CitationInput } from './citation/formatter.js';
 export { buildCitation } from './citation/formatter.js';
 
 // Server + tool builders
-export type { RepairMCPServerOpts } from './server/mcp-server.js';
+export type {
+  RepairMCPServerOpts,
+  RegisterStandardToolsOpts,
+  StandardToolName,
+} from './server/mcp-server.js';
 export { RepairMCPServer } from './server/mcp-server.js';
 export type { ToolRegistrar } from './server/tool-builder.js';
 export {
