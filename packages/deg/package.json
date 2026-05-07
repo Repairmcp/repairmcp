@@ -21,6 +21,8 @@
     "lint": "echo \"(no lint yet)\" && exit 0"
   },
   "dependencies": {
-    "@repairmcp/core": "workspace:*"
+    "@repairmcp/core": "workspace:*",
+    "cheerio": "^1.2.0",
+    "zod": "^4.4.3"
   }
 }
