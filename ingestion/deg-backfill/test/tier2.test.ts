@@ -1,9 +1,9 @@
 import { describe, test, expect } from 'bun:test';
 import { Database } from 'bun:sqlite';
-import { createSchema, upsertMetadata, getPendingIds } from '../src/db.js';
+import { createSchema, upsertMetadata } from '../src/db.js';
 import type { MetadataRow } from '../src/db.js';
-import { fetchDetail } from '../src/tier2.js';
-import type { FetchDetailResult } from '../src/tier2.js';
+import { fetchDetail, runBackfill } from '../src/tier2.js';
+import type { ProgressTracker } from '../src/progress.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -143,5 +143,73 @@ describe('fetchDetail', () => {
 
     await fetchDetail(41477, { fetchImpl: mockFetch, initialBackoffMs: 1 });
     expect(capturedUA).toBe('RepairMCP-Bot/1.0 (+https://repairmcp.org)');
+  });
+});
+
+// Silent tracker — avoids stdout/stderr noise in tests
+const silentTracker: ProgressTracker = {
+  record: () => {},
+  print: () => {},
+} as unknown as ProgressTracker;
+
+function makeDb(): Database {
+  const db = new Database(':memory:');
+  createSchema(db);
+  upsertMetadata(db, [BASE_ROW]);
+  return db;
+}
+
+function getBodyFetchedAt(db: Database, dbId: number): string | null {
+  const row = db
+    .query<{ body_fetched_at: string | null }, [number]>(
+      'SELECT body_fetched_at FROM inquiry WHERE db_id = ?',
+    )
+    .get(dbId);
+  return row?.body_fetched_at ?? null;
+}
+
+describe('runBackfill — markBodyFetched gating', () => {
+  test('status=0 (network error) leaves body_fetched_at NULL', async () => {
+    const db = makeDb();
+    const mockFetch: typeof fetch = async () => { throw new Error('ECONNREFUSED'); };
+    await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
+    expect(getBodyFetchedAt(db, 41477)).toBeNull();
+  });
+
+  test('status=429 (rate limited) leaves body_fetched_at NULL', async () => {
+    const db = makeDb();
+    const mockFetch: typeof fetch = async () =>
+      ({ ok: false, status: 429, url: 'https://degweb.org/inquiries/41477/' }) as unknown as Response;
+    await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
+    expect(getBodyFetchedAt(db, 41477)).toBeNull();
+  });
+
+  test('status=503 (server error) leaves body_fetched_at NULL', async () => {
+    const db = makeDb();
+    const mockFetch: typeof fetch = async () =>
+      ({ ok: false, status: 503, url: 'https://degweb.org/inquiries/41477/' }) as unknown as Response;
+    await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
+    expect(getBodyFetchedAt(db, 41477)).toBeNull();
+  });
+
+  test('status=404 stamps body_fetched_at (definitive not-found)', async () => {
+    const db = makeDb();
+    const mockFetch: typeof fetch = async () =>
+      ({ ok: false, status: 404 }) as unknown as Response;
+    await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1 });
+    expect(getBodyFetchedAt(db, 41477)).not.toBeNull();
+  });
+
+  test('successful parse stamps body_fetched_at', async () => {
+    const db = makeDb();
+    const mockFetch: typeof fetch = async () =>
+      ({
+        ok: true,
+        status: 200,
+        url: 'https://degweb.org/inquiries/41477/',
+        text: async () => RESOLVED_HTML,
+      }) as unknown as Response;
+    await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1 });
+    expect(getBodyFetchedAt(db, 41477)).not.toBeNull();
   });
 });

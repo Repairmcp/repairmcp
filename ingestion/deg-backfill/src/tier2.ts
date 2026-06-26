@@ -104,10 +104,15 @@ export async function fetchDetail(
   return { ok: false, status: 0, reason: 'unreachable retry loop' };
 }
 
+function isTransient(status: number): boolean {
+  return status === 0 || status === 429 || status >= 500;
+}
+
 export async function runBackfill(
   db: Database,
   ids: number[],
   tracker: ProgressTracker,
+  fetchOpts?: FetchDetailOpts,
 ): Promise<void> {
   for (let i = 0; i < ids.length; i++) {
     const dbId = ids.at(i);
@@ -117,12 +122,16 @@ export async function runBackfill(
       await sleep(RATE_DELAY_MS);
     }
 
-    const result = await fetchDetail(dbId);
+    const result = await fetchDetail(dbId, fetchOpts);
 
     if (result.ok && result.parsed) {
       markBodyFetched(db, dbId, result.parsed);
       tracker.record('ok');
+    } else if (isTransient(result.status)) {
+      // Network error, rate limit, or server error — leave body_fetched_at NULL so next run retries
+      tracker.record('error', `id=${dbId} status=${result.status} ${result.reason ?? ''} [transient, will retry]`);
     } else {
+      // Definitive answer (404, soft-404, parse error) — mark done so we don't retry
       markBodyFetched(db, dbId, null);
       tracker.record('error', `id=${dbId} status=${result.status} ${result.reason ?? ''}`);
     }
