@@ -1,10 +1,9 @@
-import { join } from 'node:path';
 import { openDb, createSchema, countByResolutionStatus, getPendingIds, getRow } from './db.js';
 import { syncIndex } from './tier1.js';
 import { runBackfill } from './tier2.js';
 import { ProgressTracker } from './progress.js';
 
-const DB_PATH = process.env['DEG_DB_PATH'] ?? join(process.cwd(), 'deg.sqlite');
+const DB_PATH = process.env['DEG_DB_PATH'] ?? 'C:\\degdata\\deg.sqlite';
 
 function parseArgs(argv: string[]): { limit?: number; inspectId?: number } {
   const limitIdx = argv.indexOf('--limit');
