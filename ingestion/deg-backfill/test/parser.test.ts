@@ -12,7 +12,6 @@ function fixture(name: string): string {
 describe('parseDetailHtml - resolved inquiry', () => {
   test('extracts all body fields', () => {
     const result = parseDetailHtml(41477, fixture('inquiry-resolved.html'));
-    expect(result.trackingId).toBe('41477');
     expect(result.inquiryType).toBe('Refinish Operations');
     expect(result.areaOfVehicle).toBe('Hood');
     expect(result.oemPartNumber).toBe('90189A0002 and 7539535070');

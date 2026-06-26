@@ -16,7 +16,6 @@ export interface MetadataRow {
 }
 
 export interface ParsedBody {
-  trackingId: string | null;
   inquiryType: string | null;
   areaOfVehicle: string | null;
   oemPartNumber: string | null;
@@ -57,6 +56,7 @@ export function createSchema(db: Database): void {
       resolution        TEXT,
       submission_date   TEXT,
       resolution_date   TEXT,
+      submitted_datetime TEXT,
       source_url        TEXT,
       body_fetched_at   TEXT,
       last_seen_at      TEXT
@@ -139,7 +139,8 @@ export function markBodyFetched(
       year  = COALESCE(year,  ?),
       make  = COALESCE(make,  ?),
       model = COALESCE(model, ?),
-      body  = COALESCE(body,  ?)
+      body  = COALESCE(body,  ?),
+      submitted_datetime = ?
     WHERE db_id = ?`,
     [
       now,
@@ -154,6 +155,7 @@ export function markBodyFetched(
       body.make,
       body.model,
       body.vehicleBody,
+      body.submittedDatetime,
       dbId,
     ],
   );

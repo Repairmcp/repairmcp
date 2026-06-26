@@ -43,7 +43,7 @@ describe('fetchDetail', () => {
 
     expect(result.ok).toBe(true);
     expect(result.status).toBe(200);
-    expect(result.parsed?.trackingId).toBe('41477');
+    expect(result.parsed?.inquiryType).toBe('Refinish Operations');
     expect(result.parsed?.resolution).toContain('CCC confirmed');
   });
 

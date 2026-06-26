@@ -94,7 +94,6 @@ export function parseDetailHtml(dbId: number, html: string): ParsedBody {
   const resolutionStatus: 'pending' | 'resolved' = rawResolution ? 'resolved' : 'pending';
 
   return {
-    trackingId: labels['Tracking #'] ?? null,
     inquiryType: labels['Inquiry type'] ?? null,
     areaOfVehicle,
     oemPartNumber: labels['OEM Part Number'] ?? null,
