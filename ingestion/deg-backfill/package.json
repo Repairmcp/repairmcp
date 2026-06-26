@@ -1,0 +1,17 @@
+{
+  "name": "@repairmcp/deg-backfill",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DEG ingestion pipeline - metadata sync and body backfill.",
+  "type": "module",
+  "scripts": {
+    "backfill": "bun run src/cli.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.13"
+  }
+}
