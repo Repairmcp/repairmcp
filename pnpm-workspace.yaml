@@ -2,3 +2,5 @@ packages:
   - "packages/*"
   - "apps/*"
   - "ingestion/*"
+allowBuilds:
+  better-sqlite3: true

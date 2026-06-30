@@ -150,3 +150,12 @@ vite.config.ts.timestamp-*
 
 # Local recon / scratch
 .recon/
+
+# DEG corpus data files (large, not for Git)
+app/deg-server/data/deg-inquiries-full.json
+apps/deg-server/data/deg-inquiries-full.json
+ingestion/deg-backfill/deg.sqlite
+# Worktrees
+.worktrees/
+# Docs scratch
+docs/superpowers/

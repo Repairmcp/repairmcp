@@ -16,7 +16,7 @@ import { DEGAdapter, registerDegTools } from '@repairmcp/deg';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // When built: this file lives at apps/deg-server/dist/stdio.js, so data/ is at ../data/.
 // When run from src via bun: src/stdio.ts, data/ is also at ../data/. Either way works.
-const dataPath = join(__dirname, '..', 'data', 'sample-inquiries.json');
+const dataPath = join(__dirname, '..', 'data', 'deg-inquiries-full.json');
 
 async function main(): Promise<void> {
   const adapter = DEGAdapter.fromJsonFile(dataPath);

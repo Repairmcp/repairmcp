@@ -43,7 +43,7 @@ export const DEGInquirySchema = z.object({
 
   laborType: LaborTypeSchema.optional(),
 
-  issueSummary: z.string(),
+  issueSummary: z.string().optional(),
   suggestedAction: z.string().optional(),
   resolution: z.string().optional(),
 
