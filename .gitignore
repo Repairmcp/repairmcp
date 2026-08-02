@@ -155,6 +155,10 @@ vite.config.ts.timestamp-*
 app/deg-server/data/deg-inquiries-full.json
 apps/deg-server/data/deg-inquiries-full.json
 ingestion/deg-backfill/deg.sqlite
+
+# SQLite WAL sidecars (transient, recreated on every open)
+*.sqlite-shm
+*.sqlite-wal
 # Worktrees
 .worktrees/
 # Docs scratch
