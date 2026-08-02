@@ -59,7 +59,9 @@ export function createSchema(db: Database): void {
       submitted_datetime TEXT,
       source_url        TEXT,
       body_fetched_at   TEXT,
-      last_seen_at      TEXT
+      last_seen_at      TEXT,
+      content_hash      TEXT,
+      delisted_at       TEXT
     )
   `);
   db.run(`CREATE INDEX IF NOT EXISTS idx_inquiry_body_pending ON inquiry(body_fetched_at)`);
@@ -179,6 +181,200 @@ export function getRow(db: Database, dbId: number): Record<string, unknown> | nu
       .prepare('SELECT * FROM inquiry WHERE db_id = ?')
       .get<Record<string, unknown>>(dbId) ?? null
   );
+}
+
+/**
+ * Refresh-mode write: straight overwrite, no COALESCE.
+ *
+ * markBodyFetched() coalesces because during backfill the index-derived
+ * year/make/model were often better than the page. On a refresh that is
+ * backwards — it would silently discard an upstream correction.
+ *
+ * The null-preservation that COALESCE used to provide now happens one level up,
+ * in mergeParsedBody() (sync.ts), so that the value hashed is exactly the value
+ * stored. Callers must pass an already-merged ParsedBody and must have rejected
+ * degenerate parses via isSuspectParse().
+ */
+export function writeRefreshedBody(
+  db: Database,
+  dbId: number,
+  body: ParsedBody,
+  contentHash: string,
+): void {
+  db.run(
+    `UPDATE inquiry SET
+      body_fetched_at   = ?,
+      inquiry_type      = ?,
+      area_of_vehicle   = ?,
+      oem_part_number   = ?,
+      issue_summary     = ?,
+      suggested_action  = ?,
+      resolution        = ?,
+      resolution_status = ?,
+      year              = ?,
+      make              = ?,
+      model             = ?,
+      body              = ?,
+      submitted_datetime = ?,
+      content_hash      = ?
+    WHERE db_id = ?`,
+    [
+      new Date().toISOString(),
+      body.inquiryType,
+      body.areaOfVehicle,
+      body.oemPartNumber,
+      body.issueSummary,
+      body.suggestedAction,
+      body.resolution,
+      body.resolutionStatus,
+      body.year,
+      body.make,
+      body.model,
+      body.vehicleBody,
+      body.submittedDatetime,
+      contentHash,
+      dbId,
+    ],
+  );
+}
+
+/**
+ * Content matched — record the hash so the next run can short-circuit, without
+ * touching any content field.
+ */
+export function setContentHash(db: Database, dbId: number, contentHash: string): void {
+  db.run('UPDATE inquiry SET content_hash = ? WHERE db_id = ?', [contentHash, dbId]);
+}
+
+export interface IndexComparable {
+  status: string | null;
+  resolutionDate: string | null;
+}
+
+/** Every held row's index-visible state, for diffing against the live index. */
+export function getIndexComparableRows(db: Database): Map<number, IndexComparable> {
+  const rows =
+    db
+      .prepare('SELECT db_id, status, resolution_date FROM inquiry')
+      .all<{ db_id: number; status: string | null; resolution_date: string | null }>() ?? [];
+  const out = new Map<number, IndexComparable>();
+  for (const row of rows) {
+    out.set(row.db_id, { status: row.status, resolutionDate: row.resolution_date });
+  }
+  return out;
+}
+
+/**
+ * Inquiries we hold as unresolved. Highest-yield refresh cohort: a pending
+ * inquiry that has since resolved is exactly the update a shop needs.
+ */
+export function getUnresolvedIds(db: Database): number[] {
+  const rows =
+    db
+      .prepare(
+        `SELECT db_id FROM inquiry
+         WHERE delisted_at IS NULL
+           AND (resolution_status = 'pending' OR status = 'Submitted to IP')
+         ORDER BY db_id ASC`,
+      )
+      .all<{ db_id: number }>() ?? [];
+  return rows.map((r) => r.db_id);
+}
+
+/** How far back a blank resolution is still considered worth re-checking. */
+export const RESOLVED_BLANK_WINDOW_DAYS = 365;
+
+function defaultResolvedBlankCutoff(): string {
+  const cutoff = new Date();
+  cutoff.setUTCDate(cutoff.getUTCDate() - RESOLVED_BLANK_WINDOW_DAYS);
+  return cutoff.toISOString().slice(0, 10);
+}
+
+/**
+ * Inquiries DEG's index calls Resolved but whose detail page carries no
+ * resolution text — the parser stores the 'Awaiting resolution' placeholder.
+ *
+ * Serving these would assert a resolved inquiry with nothing to show for it, so
+ * they stay on the refresh list until real text lands, and drop out the moment
+ * it does.
+ *
+ * Measured on the wire 2026-08-02: 83 corpus-wide (47 "Resolved (DEG Response)",
+ * 22 "IP Change", 14 "No IP Change") — sporadic data entry, not a workflow rule,
+ * since only 1.7% of DEG Response inquiries are blank. But 31 of the 83 were
+ * resolved before 2024 and are never going to gain text, so the cohort is
+ * bounded by recency; without that it would re-fetch settled 2008 records on
+ * every run forever and never drain.
+ *
+ * Rows with no resolution_date at all are kept regardless of the window —
+ * resolved with neither a date nor resolution text is the case most worth
+ * re-checking, and there is exactly one (36927).
+ */
+export function getResolvedWithoutResolutionIds(db: Database, cutoffDate?: string): number[] {
+  const cutoff = cutoffDate ?? defaultResolvedBlankCutoff();
+  const rows =
+    db
+      .prepare(
+        `SELECT db_id FROM inquiry
+         WHERE delisted_at IS NULL
+           AND status LIKE 'Resolved%'
+           AND (resolution IS NULL OR resolution = '' OR resolution = 'Awaiting resolution')
+           AND (resolution_date IS NULL OR resolution_date = '' OR resolution_date >= ?)
+         ORDER BY db_id ASC`,
+      )
+      .all<{ db_id: number }>(cutoff) ?? [];
+  return rows.map((r) => r.db_id);
+}
+
+/** The trailing re-verify window: the newest `n` held db_ids. */
+export function getTrailingIds(db: Database, n: number): number[] {
+  if (n <= 0) return [];
+  const rows =
+    db
+      .prepare(
+        `SELECT db_id FROM inquiry
+         WHERE delisted_at IS NULL
+         ORDER BY db_id DESC LIMIT ?`,
+      )
+      .all<{ db_id: number }>(n) ?? [];
+  return rows.map((r) => r.db_id).sort((a, b) => a - b);
+}
+
+export function getAllDbIds(db: Database): Set<number> {
+  const rows = db.prepare('SELECT db_id FROM inquiry').all<{ db_id: number }>() ?? [];
+  return new Set(rows.map((r) => r.db_id));
+}
+
+/**
+ * Stamp rows that have disappeared from the live index. The row is kept for
+ * audit; scripts/transform-deg-sqlite.ts filters it out of the served JSON.
+ */
+export function markDelisted(db: Database, dbIds: number[], at: string): void {
+  if (dbIds.length === 0) return;
+  const stmt = db.prepare(
+    'UPDATE inquiry SET delisted_at = ? WHERE db_id = ? AND delisted_at IS NULL',
+  );
+  const run = db.transaction(() => {
+    for (const dbId of dbIds) stmt.run(at, dbId);
+  });
+  run();
+}
+
+/** A previously delisted inquiry reappeared upstream — un-stamp it. */
+export function clearDelisted(db: Database, dbIds: number[]): void {
+  if (dbIds.length === 0) return;
+  const stmt = db.prepare('UPDATE inquiry SET delisted_at = NULL WHERE db_id = ?');
+  const run = db.transaction(() => {
+    for (const dbId of dbIds) stmt.run(dbId);
+  });
+  run();
+}
+
+export function getDelistedIds(db: Database): number[] {
+  const rows =
+    db
+      .prepare('SELECT db_id FROM inquiry WHERE delisted_at IS NOT NULL ORDER BY db_id ASC')
+      .all<{ db_id: number }>() ?? [];
+  return rows.map((r) => r.db_id);
 }
 
 export function countByResolutionStatus(db: Database): {

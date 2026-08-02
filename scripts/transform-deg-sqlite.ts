@@ -48,6 +48,7 @@ interface RawRow {
   source_url: string | null;
   body_fetched_at: string | null;
   last_seen_at: string | null;
+  delisted_at: string | null;
 }
 
 function mapStatus(raw: string | null): 'pending' | 'resolved' | 'closed' {
@@ -76,13 +77,41 @@ function deriveTitle(row: RawRow): string {
   return `DEG Inquiry ${row.db_id}`;
 }
 
+/** The parser's stand-in for an empty Resolution cell — never real content. */
+const RESOLUTION_PLACEHOLDER = 'Awaiting resolution';
+
+function hasRealResolution(row: RawRow): boolean {
+  return Boolean(row.resolution) && row.resolution !== RESOLUTION_PLACEHOLDER;
+}
+
+/**
+ * DEG sometimes marks an inquiry Resolved while its detail page carries no
+ * resolution text — 83 records corpus-wide as of 2026-08-02, going back to 2008.
+ * Emitting the placeholder there would produce a citation that says resolved and
+ * then shows "Awaiting resolution", which reads as a contradiction to a shop.
+ * Drop the field instead.
+ *
+ * Suppression applies to all 83. The delta sync separately keeps the *recent*
+ * ones on its refresh list until real text arrives, bounded to a year
+ * (getResolvedWithoutResolutionIds in ingestion/deg-backfill/src/db.ts) — a
+ * 2009 inquiry that has been blank for 17 years is settled, not pending.
+ *
+ * On a genuinely pending inquiry the placeholder is honest, so it survives.
+ */
+function deriveResolution(row: RawRow, status: 'pending' | 'resolved' | 'closed'): string | undefined {
+  if (!row.resolution) return undefined;
+  if (status === 'resolved' && row.resolution === RESOLUTION_PLACEHOLDER) return undefined;
+  return row.resolution;
+}
+
 function deriveIssueSummary(row: RawRow): string | undefined {
   if (row.issue_summary) return row.issue_summary;
   if (row.suggested_action) {
     const truncated = row.suggested_action.slice(0, 200);
     return truncated.length < row.suggested_action.length ? `${truncated}...` : truncated;
   }
-  if (row.resolution) {
+  // Never fall back to the placeholder — it would surface as the summary.
+  if (hasRealResolution(row) && row.resolution) {
     const truncated = row.resolution.slice(0, 200);
     return truncated.length < row.resolution.length ? `${truncated}...` : truncated;
   }
@@ -95,21 +124,35 @@ function parseDate(raw: string | null): Date | undefined {
   return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
+/**
+ * When DEG last changed this inquiry — NOT when we last crawled it.
+ *
+ * This used to read last_seen_at, which tier-1 stamps on every row on every
+ * index sync. The result was that all 22,425 served records carried a single
+ * identical lastUpdated (2026-06-29), so a 2007 inquiry claimed to have been
+ * updated last week. Citations are the product here; a date that moves because
+ * our crawler ran is worse than no date at all.
+ *
+ * body_fetched_at is excluded for the same reason — also a crawl artifact.
+ * Resolution is the last real content event on a DEG inquiry; before that,
+ * submission is. Inquiries still awaiting an IP response correctly report their
+ * submission date.
+ */
+function deriveLastUpdated(row: RawRow, submittedAt: Date): Date {
+  return parseDate(row.resolution_date) ?? submittedAt;
+}
+
 function transformRow(row: RawRow): DEGInquiry | null {
   if (EXCLUDED_IDS.has(row.db_id)) return null;
 
   const submittedAt = parseDate(row.submission_date) ?? parseDate(row.submitted_datetime);
-  const lastUpdated =
-    parseDate(row.last_seen_at) ?? parseDate(row.body_fetched_at) ?? submittedAt;
 
   if (!submittedAt) {
     console.warn(`  SKIP: db_id=${row.db_id} has no parseable submission date`);
     return null;
   }
-  if (!lastUpdated) {
-    console.warn(`  SKIP: db_id=${row.db_id} has no parseable lastUpdated date`);
-    return null;
-  }
+
+  const lastUpdated = deriveLastUpdated(row, submittedAt);
   if (!row.source_url) {
     console.warn(`  SKIP: db_id=${row.db_id} has no source_url`);
     return null;
@@ -119,9 +162,15 @@ function transformRow(row: RawRow): DEGInquiry | null {
   if (!row.issue_summary && issueSummary) {
     console.warn(`  NOTE: db_id=${row.db_id} has no native issue_summary, derived from fallback`);
   }
-  if (!issueSummary && !row.resolution && !row.suggested_action) {
+  if (!issueSummary && !hasRealResolution(row) && !row.suggested_action) {
     console.warn(`  SKIP: db_id=${row.db_id} has no issue_summary, resolution, or suggested_action, nothing to surface`);
     return null;
+  }
+
+  const status = mapStatus(row.status ?? row.resolution_status);
+  const resolution = deriveResolution(row, status);
+  if (status === 'resolved' && resolution === undefined) {
+    console.warn(`  NOTE: db_id=${row.db_id} marked Resolved upstream but has no resolution text; field omitted`);
   }
 
   const candidate: DEGInquiry = {
@@ -145,8 +194,8 @@ function transformRow(row: RawRow): DEGInquiry | null {
     body: row.body ?? undefined,
     issueSummary,
     suggestedAction: row.suggested_action ?? undefined,
-    resolution: row.resolution ?? undefined,
-    status: mapStatus(row.status ?? row.resolution_status),
+    resolution,
+    status,
     submittedAt,
     resolvedAt: parseDate(row.resolution_date),
   };
@@ -165,12 +214,22 @@ function main(): void {
   const results: DEGInquiry[] = [];
   const errors: Array<{ id: number; issue: string }> = [];
   let excluded = 0;
+  let delisted = 0;
   let skipped = 0;
   let derived = 0;
 
   for (const row of rows) {
     if (EXCLUDED_IDS.has(row.db_id)) {
       excluded++;
+      continue;
+    }
+
+    // Retracted upstream: the row is kept in SQLite for audit, but serving it
+    // would cite a degweb.org page that no longer exists. Stamped by the
+    // delta sync (ingestion/deg-backfill/src/sync.ts).
+    if (row.delisted_at) {
+      console.warn(`  DELISTED: db_id=${row.db_id} removed upstream ${row.delisted_at}`);
+      delisted++;
       continue;
     }
 
@@ -194,6 +253,7 @@ function main(): void {
   console.log(`\n=== Transform Summary ===`);
   console.log(`Total raw rows:           ${rows.length}`);
   console.log(`Excluded (manual):        ${excluded}`);
+  console.log(`Delisted upstream:        ${delisted}`);
   console.log(`Skipped (no usable text): ${skipped}`);
   console.log(`Derived issueSummary:     ${derived}`);
   console.log(`Schema validation errors: ${errors.length}`);

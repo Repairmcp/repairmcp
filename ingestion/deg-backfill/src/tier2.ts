@@ -5,7 +5,13 @@ import { parseDetailHtml } from './parser.js';
 import type { ProgressTracker } from './progress.js';
 
 const USER_AGENT = 'RepairMCP-Bot/1.0 (+https://repairmcp.org)';
-const RATE_DELAY_MS = 2000;
+
+/** Politeness floor: 1 request / 2 s. Shared with the delta sync. */
+export const RATE_DELAY_MS = 2000;
+
+export function isTransientStatus(status: number): boolean {
+  return status === 0 || status === 429 || status >= 500;
+}
 
 export interface FetchDetailOpts {
   maxRetries?: number;
@@ -104,9 +110,7 @@ export async function fetchDetail(
   return { ok: false, status: 0, reason: 'unreachable retry loop' };
 }
 
-function isTransient(status: number): boolean {
-  return status === 0 || status === 429 || status >= 500;
-}
+const isTransient = isTransientStatus;
 
 export async function runBackfill(
   db: Database,

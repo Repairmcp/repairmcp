@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "backfill": "bun run src/cli.ts",
+    "sync": "bun run src/sync-cli.ts",
     "test": "bun test"
   },
   "dependencies": {

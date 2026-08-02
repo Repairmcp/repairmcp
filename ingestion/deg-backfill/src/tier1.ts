@@ -68,10 +68,19 @@ function entryToRow(entry: IndexEntry, now: string): MetadataRow {
   };
 }
 
-export async function syncIndex(
-  db: Database,
-  fetchImpl: typeof fetch = fetch,
-): Promise<SyncResult> {
+/**
+ * Fetch the index and return it deduped, without touching the database.
+ *
+ * The separation matters: upsertMetadata has a side effect — it resets
+ * body_fetched_at to NULL when status or resolution_date moved — which would
+ * destroy the very before/after difference the delta sync needs to compute.
+ * The sync planner calls this; syncIndex() composes it with the upsert.
+ *
+ * Dedupe is real, not defensive: the live index carries 13 db_ids twice
+ * (21493-21495, 21529-21531, 23145-23151), each under two WordPress post_ids
+ * with identical payloads. Last occurrence wins.
+ */
+export async function fetchIndex(fetchImpl: typeof fetch = fetch): Promise<IndexEntry[]> {
   const res = await fetchImpl(INDEX_URL, {
     headers: {
       'User-Agent': USER_AGENT,
@@ -84,7 +93,32 @@ export async function syncIndex(
   }
 
   const json = (await res.json()) as IndexResponse;
-  const entries = json.data;
+
+  const byDbId = new Map<number, IndexEntry>();
+  for (const entry of json.data) {
+    const dbId = parseInt(entry.db_id, 10);
+    if (isNaN(dbId)) continue;
+    byDbId.set(dbId, entry);
+  }
+  return [...byDbId.values()];
+}
+
+export function indexMaxDbId(entries: IndexEntry[]): number {
+  return entries.reduce((max, e) => {
+    const dbId = parseInt(e.db_id, 10);
+    return isNaN(dbId) ? max : Math.max(max, dbId);
+  }, 0);
+}
+
+export async function syncIndex(
+  db: Database,
+  fetchImpl: typeof fetch = fetch,
+): Promise<SyncResult> {
+  const entries = await fetchIndex(fetchImpl);
+  return upsertIndexEntries(db, entries);
+}
+
+export function upsertIndexEntries(db: Database, entries: IndexEntry[]): SyncResult {
   const now = new Date().toISOString();
 
   const BATCH = 500;
