@@ -11,6 +11,15 @@ import { createHash } from 'node:crypto';
  * Order is significant — it is part of the hash preimage. Appending a field
  * invalidates every stored hash, which is correct: the first run after such a
  * change re-classifies via diffFields() rather than trusting a stale digest.
+ *
+ * resolution_status is deliberately absent. It is derived, not source data, and
+ * it had two disagreeing producers: tier-1 derives it from the index status
+ * ("Resolved (…)" -> resolved) while tier-2 derived it from the detail page's
+ * Resolution cell (blank -> pending). On the 83 inquiries DEG marks Resolved
+ * with a blank Resolution, every run flipped it twice and recorded a phantom
+ * change — measured 2026-08-02, 78 such writes in one batch, 0 of which
+ * differed from the pre-run value. The authoritative pair is status (index)
+ * plus resolution (page), and both are hashed.
  */
 export const HASHED_FIELDS = [
   'status',
@@ -21,7 +30,6 @@ export const HASHED_FIELDS = [
   'issue_summary',
   'suggested_action',
   'resolution',
-  'resolution_status',
   'year',
   'make',
   'model',

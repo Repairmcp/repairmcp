@@ -17,7 +17,6 @@ const BASE: ContentFields = {
   issue_summary: 'Is blend time included for two-tone refinish?',
   suggested_action: 'Include blend time per P-pages.',
   resolution: 'CCC confirmed blend time is included per P-pages.',
-  resolution_status: 'resolved',
   year: 2022,
   make: 'Toyota',
   model: 'Camry',
@@ -79,6 +78,16 @@ describe('contentHash', () => {
     expect(contentHash({ ...BASE, make: 'TOYOTA' })).not.toBe(contentHash(BASE));
   });
 
+  test('resolution_status is NOT hashed — it oscillates between tier-1 and tier-2', () => {
+    expect(HASHED_FIELDS as readonly string[]).not.toContain('resolution_status');
+    // The 83 resolved-blank rows differ only in this derived column between
+    // the index upsert and the detail refresh; hashing it made every one of
+    // them report a phantom change on every run.
+    const withStatus = { ...BASE, resolution_status: 'resolved' } as ContentFields;
+    const withoutStatus = { ...BASE, resolution_status: 'pending' } as ContentFields;
+    expect(contentHash(withStatus)).toBe(contentHash(withoutStatus));
+  });
+
   test('a value moving between fields is not hash-equivalent', () => {
     const a: ContentFields = { ...BASE, issue_summary: 'x', suggested_action: null };
     const b: ContentFields = { ...BASE, issue_summary: null, suggested_action: 'x' };
@@ -125,7 +134,7 @@ describe('contentFieldsFromRow', () => {
       issue_summary: 'Is blend time included for two-tone refinish?',
       suggested_action: 'Include blend time per P-pages.',
       resolution: 'CCC confirmed blend time is included per P-pages.',
-      resolution_status: 'resolved',
+      resolution_status: 'resolved', // present on the row, absent from the hash
       year: 2022,
       make: 'Toyota',
       model: 'Camry',

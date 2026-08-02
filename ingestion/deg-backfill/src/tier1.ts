@@ -29,6 +29,25 @@ export interface SyncResult {
   total: number;
 }
 
+/**
+ * Makes whose name contains a space, written without a hyphen by DEG.
+ *
+ * The index ships vehicles as one string ("2022 Land Rover Range Rover Sport"),
+ * so a naive split on whitespace takes only the first token as the make and
+ * leaves the rest in the model — 296 rows corpus-wide had make='Land',
+ * model='Rover Range Rover Sport' or make='Mercedes', model='Benz C300'.
+ * Detail pages carry Make and Model in separate cells and are correct; this
+ * list keeps the index path in agreement with them.
+ */
+export const MULTI_WORD_MAKES = [
+  'Land Rover',
+  'Mercedes Benz',
+  'Alfa Romeo',
+  'Aston Martin',
+  'Rolls Royce',
+  'Great Wall',
+] as const;
+
 export function parseVehicleData(vehicleData: string): {
   year: number | null;
   make: string | null;
@@ -40,7 +59,23 @@ export function parseVehicleData(vehicleData: string): {
   const yearStr = parts[0] ?? '';
   if (!/^\d{4}$/.test(yearStr)) return { year: null, make: null, model: null };
   const year = parseInt(yearStr, 10);
-  const make = parts[1] ?? null;
+
+  const first = parts[1] ?? null;
+  const second = parts[2] ?? null;
+  if (first !== null && second !== null) {
+    const pair = `${first} ${second}`;
+    const known = MULTI_WORD_MAKES.find((m) => m.toLowerCase() === pair.toLowerCase());
+    if (known !== undefined) {
+      // Preserve the source's casing, per the corpus-wide fidelity convention.
+      return {
+        year,
+        make: pair,
+        model: parts.length > 3 ? parts.slice(3).join(' ') : null,
+      };
+    }
+  }
+
+  const make = first;
   const model = parts.length > 2 ? parts.slice(2).join(' ') : null;
   return { year, make, model };
 }

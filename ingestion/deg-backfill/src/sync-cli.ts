@@ -1,5 +1,11 @@
-import { openDb, createSchema, markDelisted, clearDelisted } from './db.js';
-import { fetchIndex, upsertIndexEntries } from './tier1.js';
+import {
+  openDb,
+  createSchema,
+  markDelisted,
+  clearDelisted,
+  repairTruncatedMakes,
+} from './db.js';
+import { fetchIndex, upsertIndexEntries, MULTI_WORD_MAKES } from './tier1.js';
 import { planSync, materializePlan, runBatch } from './sync.js';
 import type { SyncPlan } from './sync.js';
 import {
@@ -16,7 +22,9 @@ import {
   getHighWater,
   setHighWater,
   setState,
+  getState,
   STATE_LAST_INDEX_SYNC,
+  STATE_MAKES_REPAIRED,
 } from './state.js';
 import type { SyncMode } from './state.js';
 
@@ -186,6 +194,18 @@ async function main(): Promise<void> {
   createSchema(db);
   migrateSyncSchema(db);
   out(`Database: ${args.dbPath}\n`);
+
+  // One-time data repair, guarded by sync_state so it runs on the next
+  // invocation of any kind and never again. Fixing parseVehicleData only helps
+  // rows ingested from here on; the existing corpus needs this pass.
+  if (getState(db, STATE_MAKES_REPAIRED) === null) {
+    const repair = repairTruncatedMakes(db, MULTI_WORD_MAKES);
+    setState(db, STATE_MAKES_REPAIRED, new Date().toISOString());
+    if (repair.repaired > 0) {
+      out(`\nOne-time repair: un-split ${repair.repaired} truncated vehicle makes\n`);
+      for (const [make, count] of repair.byMake) out(`  ${make.padEnd(16)} ${count}\n`);
+    }
+  }
 
   const open = getResumableRun(db);
   let runId: number;

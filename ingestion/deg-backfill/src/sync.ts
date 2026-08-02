@@ -131,6 +131,32 @@ export function materializePlan(db: Database, runId: number, plan: SyncPlan): vo
   enqueueItems(db, runId, plan.queue);
 }
 
+/** Values DEG's Make cell uses to mean "not recorded". */
+const MAKE_PLACEHOLDERS = new Set(['', 'na', 'n/a', 'none', 'unknown', 'other', 'tbd']);
+
+/** Longest genuine multi-word make we carry is 'Mercedes Benz' (13 chars). */
+const MAX_PLAUSIBLE_MAKE_LENGTH = 20;
+
+/**
+ * Whether a page-supplied make is too unreliable to overwrite what we hold.
+ *
+ * DEG's Make cell is free text and, on inquiries the index classifies as
+ * "Other", it is frequently junk. Measured against run 1: db_id 37429's page
+ * gave make='2020 Rang Rover Ecoque P250' — the entire vehicle string with two
+ * typos — and 36435's gave 'NA', both overwriting a cleaner stored value.
+ *
+ * A 4-digit token means the whole vehicle string leaked into the field; an
+ * over-long value means the same thing less obviously.
+ */
+export function isImplausibleMake(make: string | null): boolean {
+  if (make === null) return true;
+  const trimmed = make.trim();
+  if (MAKE_PLACEHOLDERS.has(trimmed.toLowerCase())) return true;
+  if (/\b\d{4}\b/.test(trimmed)) return true;
+  if (trimmed.length > MAX_PLAUSIBLE_MAKE_LENGTH) return true;
+  return false;
+}
+
 /**
  * Fill nulls in a fresh parse from what we already hold.
  *
@@ -163,7 +189,9 @@ export function mergeParsedBody(
     resolution: parsed.resolution,
     resolutionStatus: parsed.resolutionStatus,
     year: parsed.year ?? num('year'),
-    make: parsed.make ?? str('make'),
+    // Unlike the other fields, a non-null page value does not automatically
+    // win here — see isImplausibleMake.
+    make: isImplausibleMake(parsed.make) ? str('make') : parsed.make,
     model: parsed.model ?? str('model'),
     vehicleBody: parsed.vehicleBody ?? str('body'),
     submittedDatetime: parsed.submittedDatetime ?? str('submitted_datetime'),
@@ -218,7 +246,6 @@ function fieldsAfterMerge(
     issue_summary: merged.issueSummary,
     suggested_action: merged.suggestedAction,
     resolution: merged.resolution,
-    resolution_status: merged.resolutionStatus,
     year: merged.year,
     make: merged.make,
     model: merged.model,

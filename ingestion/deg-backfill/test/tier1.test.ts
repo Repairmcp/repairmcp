@@ -1,4 +1,111 @@
 import { describe, test, expect } from 'bun:test';
+import { Database as MakeRepairDb } from 'bun:sqlite';
+import { createSchema as createSchemaForRepair, repairTruncatedMakes } from '../src/db.js';
+import { MULTI_WORD_MAKES } from '../src/tier1.js';
+
+describe('parseVehicleData — multi-word makes', () => {
+  test('keeps a two-word make intact instead of splitting it into the model', async () => {
+    const { parseVehicleData } = await import('../src/tier1.js');
+    expect(parseVehicleData('2022 Land Rover Range Rover Sport')).toEqual({
+      year: 2022,
+      make: 'Land Rover',
+      model: 'Range Rover Sport',
+    });
+  });
+
+  test('still splits ordinary single-word makes at the first token', async () => {
+    const { parseVehicleData } = await import('../src/tier1.js');
+    expect(parseVehicleData('2022 Toyota Camry SE')).toEqual({
+      year: 2022,
+      make: 'Toyota',
+      model: 'Camry SE',
+    });
+  });
+
+  test('matches a multi-word make case-insensitively', async () => {
+    const { parseVehicleData } = await import('../src/tier1.js');
+    expect(parseVehicleData('2020 MERCEDES BENZ C300')).toEqual({
+      year: 2020,
+      make: 'MERCEDES BENZ',
+      model: 'C300',
+    });
+  });
+
+  test('handles a two-word make with no model left over', async () => {
+    const { parseVehicleData } = await import('../src/tier1.js');
+    expect(parseVehicleData('2021 Alfa Romeo')).toEqual({
+      year: 2021,
+      make: 'Alfa Romeo',
+      model: null,
+    });
+  });
+});
+
+describe('repairTruncatedMakes', () => {
+  function seed(rows: Array<[number, string, string | null]>): MakeRepairDb {
+    const db = new MakeRepairDb(':memory:');
+    createSchemaForRepair(db);
+    for (const [id, make, model] of rows) {
+      db.run('INSERT INTO inquiry (db_id, make, model) VALUES (?, ?, ?)', [id, make, model]);
+    }
+    return db;
+  }
+
+  test('moves the stranded token back onto the make', () => {
+    const db = seed([[1, 'Land', 'Rover Range Rover Sport']]);
+    const result = repairTruncatedMakes(db, MULTI_WORD_MAKES);
+    expect(result.repaired).toBe(1);
+    const row = db.query('SELECT make, model FROM inquiry WHERE db_id = 1').get() as {
+      make: string;
+      model: string;
+    };
+    expect(row.make).toBe('Land Rover');
+    expect(row.model).toBe('Range Rover Sport');
+  });
+
+  test('preserves stored casing rather than normalizing to the canonical form', () => {
+    const db = seed([[1, 'LAND', 'Rover Defender']]);
+    repairTruncatedMakes(db, MULTI_WORD_MAKES);
+    const row = db.query('SELECT make FROM inquiry WHERE db_id = 1').get() as { make: string };
+    expect(row.make).toBe('LAND Rover');
+  });
+
+  test('leaves the model null when nothing remains after the make', () => {
+    const db = seed([[1, 'Alfa', 'Romeo']]);
+    repairTruncatedMakes(db, MULTI_WORD_MAKES);
+    const row = db.query('SELECT make, model FROM inquiry WHERE db_id = 1').get() as {
+      make: string;
+      model: string | null;
+    };
+    expect(row.make).toBe('Alfa Romeo');
+    expect(row.model).toBeNull();
+  });
+
+  test('does not touch an unrelated make that merely shares a prefix word', () => {
+    const db = seed([[1, 'Land', 'Cruiser'], [2, 'Toyota', 'Camry']]);
+    const result = repairTruncatedMakes(db, MULTI_WORD_MAKES);
+    expect(result.repaired).toBe(0);
+    const row = db.query('SELECT make, model FROM inquiry WHERE db_id = 1').get() as {
+      make: string;
+      model: string;
+    };
+    expect(row.make).toBe('Land');
+    expect(row.model).toBe('Cruiser');
+  });
+
+  test('is idempotent — a second pass changes nothing', () => {
+    const db = seed([[1, 'Land', 'Rover Defender']]);
+    expect(repairTruncatedMakes(db, MULTI_WORD_MAKES).repaired).toBe(1);
+    expect(repairTruncatedMakes(db, MULTI_WORD_MAKES).repaired).toBe(0);
+    const row = db.query('SELECT make, model FROM inquiry WHERE db_id = 1').get() as {
+      make: string;
+      model: string;
+    };
+    expect(row.make).toBe('Land Rover');
+    expect(row.model).toBe('Defender');
+  });
+});
+
 import { Database } from 'bun:sqlite';
 import { createSchema, countByResolutionStatus } from '../src/db.js';
 import { parseVehicleData, deriveResolutionStatus, syncIndex } from '../src/tier1.js';

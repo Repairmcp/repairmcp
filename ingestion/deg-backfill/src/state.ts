@@ -33,6 +33,7 @@ export interface RunSummary {
 export const STATE_HIGH_WATER = 'high_water_db_id';
 export const STATE_LAST_INDEX_SYNC = 'last_index_sync_at';
 export const STATE_LAST_COMPLETED_RUN = 'last_completed_run_id';
+export const STATE_MAKES_REPAIRED = 'makes_repaired_at';
 
 /**
  * Idempotent. Safe to call on the existing 22k-row production DB — the ALTERs

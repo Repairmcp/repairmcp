@@ -194,6 +194,10 @@ export function getRow(db: Database, dbId: number): Record<string, unknown> | nu
  * in mergeParsedBody() (sync.ts), so that the value hashed is exactly the value
  * stored. Callers must pass an already-merged ParsedBody and must have rejected
  * degenerate parses via isSuspectParse().
+ *
+ * resolution_status is NOT written here. It belongs to tier-1, derived from the
+ * index status; writing a page-derived value too made the column oscillate on
+ * every run (see HASHED_FIELDS in hash.ts).
  */
 export function writeRefreshedBody(
   db: Database,
@@ -210,7 +214,6 @@ export function writeRefreshedBody(
       issue_summary     = ?,
       suggested_action  = ?,
       resolution        = ?,
-      resolution_status = ?,
       year              = ?,
       make              = ?,
       model             = ?,
@@ -226,7 +229,6 @@ export function writeRefreshedBody(
       body.issueSummary,
       body.suggestedAction,
       body.resolution,
-      body.resolutionStatus,
       body.year,
       body.make,
       body.model,
@@ -367,6 +369,61 @@ export function clearDelisted(db: Database, dbIds: number[]): void {
     for (const dbId of dbIds) stmt.run(dbId);
   });
   run();
+}
+
+export interface MakeRepairResult {
+  repaired: number;
+  byMake: Array<[string, number]>;
+}
+
+/**
+ * Un-split makes that the index's whitespace parse truncated.
+ *
+ * Pure reversal of a known parse bug: it only moves the first token of `model`
+ * back onto `make` when the two together spell a known multi-word make, so it
+ * introduces no information that was not already in the row. Stored casing is
+ * preserved ('LAND' + 'Rover' -> 'LAND Rover') rather than normalized to the
+ * canonical form — the corpus already carries Ford/FORD/ford and normalization
+ * belongs at query time, not here.
+ *
+ * Idempotent: once a row reads 'Land Rover' its model no longer starts with
+ * 'Rover', so it stops matching.
+ */
+export function repairTruncatedMakes(db: Database, makes: readonly string[]): MakeRepairResult {
+  const byMake: Array<[string, number]> = [];
+  let repaired = 0;
+
+  const run = db.transaction(() => {
+    for (const full of makes) {
+      const space = full.indexOf(' ');
+      if (space === -1) continue;
+      const first = full.slice(0, space);
+      const rest = full.slice(space + 1);
+
+      const rows =
+        db
+          .prepare(
+            `SELECT db_id, make, model FROM inquiry
+             WHERE LOWER(make) = LOWER(?)
+               AND (LOWER(model) = LOWER(?) OR LOWER(model) LIKE LOWER(?) || ' %')`,
+          )
+          .all<{ db_id: number; make: string; model: string }>(first, rest, rest) ?? [];
+
+      if (rows.length === 0) continue;
+
+      const stmt = db.prepare('UPDATE inquiry SET make = ?, model = ? WHERE db_id = ?');
+      for (const row of rows) {
+        const modelHead = row.model.slice(0, rest.length);
+        const remainder = row.model.slice(rest.length).trim();
+        stmt.run(`${row.make} ${modelHead}`, remainder === '' ? null : remainder, row.db_id);
+      }
+      byMake.push([full, rows.length]);
+      repaired += rows.length;
+    }
+  });
+  run();
+
+  return { repaired, byMake };
 }
 
 export function getDelistedIds(db: Database): number[] {

@@ -15,7 +15,14 @@ import {
   getHighWater,
   setHighWater,
 } from '../src/state.js';
-import { planSync, materializePlan, runBatch, mergeParsedBody, isSuspectParse } from '../src/sync.js';
+import {
+  planSync,
+  materializePlan,
+  runBatch,
+  mergeParsedBody,
+  isSuspectParse,
+  isImplausibleMake,
+} from '../src/sync.js';
 import type { IndexEntry } from '../src/tier1.js';
 
 const FIXTURES = join(import.meta.dir, 'fixtures');
@@ -343,6 +350,66 @@ describe('mergeParsedBody', () => {
   });
 });
 
+describe('isImplausibleMake', () => {
+  test('rejects the whole vehicle string leaking into the Make cell', () => {
+    // db_id 37429 on the wire, typos and all.
+    expect(isImplausibleMake('2020 Rang Rover Ecoque P250')).toBe(true);
+  });
+
+  test('rejects placeholder tokens', () => {
+    for (const v of ['NA', 'n/a', 'Other', 'other', 'Unknown', 'none', '', '   ']) {
+      expect(isImplausibleMake(v)).toBe(true);
+    }
+  });
+
+  test('rejects an over-long value', () => {
+    expect(isImplausibleMake('A'.repeat(21))).toBe(true);
+  });
+
+  test('accepts genuine makes, including the long multi-word ones', () => {
+    for (const v of ['Toyota', 'FORD', 'Land Rover', 'Mercedes Benz', 'Aston Martin']) {
+      expect(isImplausibleMake(v)).toBe(false);
+    }
+  });
+});
+
+describe('mergeParsedBody — make guard', () => {
+  const base: ParsedBody = {
+    inquiryType: null,
+    areaOfVehicle: null,
+    oemPartNumber: null,
+    issueSummary: null,
+    suggestedAction: null,
+    resolution: 'x',
+    resolutionStatus: 'resolved',
+    year: null,
+    make: null,
+    model: null,
+    vehicleBody: null,
+    submittedDatetime: null,
+  };
+
+  test('keeps the stored make when the page value is junk', () => {
+    const merged = mergeParsedBody(
+      { make: 'Other' },
+      { ...base, make: '2020 Rang Rover Ecoque P250' },
+    );
+    expect(merged.make).toBe('Other');
+  });
+
+  test('keeps the stored make rather than downgrading to a placeholder', () => {
+    expect(mergeParsedBody({ make: 'Other' }, { ...base, make: 'NA' }).make).toBe('Other');
+    expect(mergeParsedBody({ make: 'Other' }, { ...base, make: 'other' }).make).toBe('Other');
+  });
+
+  test('still adopts a legitimate page correction', () => {
+    // The 33 Land Rover rows the live refresh fixed must keep working.
+    expect(mergeParsedBody({ make: 'Land' }, { ...base, make: 'Land Rover' }).make).toBe(
+      'Land Rover',
+    );
+  });
+});
+
 describe('isSuspectParse', () => {
   const empty: ParsedBody = {
     inquiryType: null,
@@ -418,12 +485,52 @@ describe('runBatch', () => {
     expect(result.written).toBe(1);
     const row = getRow(db, 41477);
     expect(row?.['resolution']).toBe('CCC confirmed blend time is included per P-pages.');
-    expect(row?.['resolution_status']).toBe('resolved');
 
     const histogram = getChangedFieldHistogram(db, runId);
     const fields = histogram.map(([f]) => f);
     expect(fields).toContain('resolution');
-    expect(fields).toContain('resolution_status');
+    // The refresh must NOT touch resolution_status — tier-1 owns it, derived
+    // from the index status. Writing a page-derived value here is what made
+    // the column oscillate on every run.
+    expect(fields).not.toContain('resolution_status');
+    expect(row?.['resolution_status']).toBe('pending');
+  });
+
+  test('a blank Resolution page no longer reports a phantom resolution_status change', async () => {
+    const db = makeDb();
+    // The 83-row shape: index says Resolved, page Resolution cell is empty,
+    // tier-1 has already set resolution_status='resolved'.
+    insertRow(db, 41487, {
+      status: 'Resolved (DEG Response)',
+      resolution: 'Awaiting resolution',
+      resolution_status: 'resolved',
+      inquiry_type: null,
+      area_of_vehicle: null,
+      oem_part_number: null,
+      issue_summary: null,
+      suggested_action: null,
+      year: null,
+      make: null,
+      model: null,
+      body: null,
+      submitted_datetime: null,
+    });
+    const runId = seedRun(db, [{ dbId: 41487, pass: 'refresh' }]);
+
+    const blankPage = RESOLVED_HTML.replace(
+      '<tr><td>Resolution</td><td>CCC confirmed blend time is included per P-pages.</td></tr>',
+      '<tr><td>Resolution</td><td></td></tr>',
+    );
+
+    const result = await runBatch(db, runId, {
+      limit: 10,
+      rateDelayMs: 0,
+      fetchOpts: { fetchImpl: okFetch(blankPage), ...FAST },
+    });
+
+    expect(getChangedFieldHistogram(db, runId).map(([f]) => f)).not.toContain('resolution_status');
+    expect(getRow(db, 41487)?.['resolution_status']).toBe('resolved');
+    expect(result.written + result.unchanged).toBe(1);
   });
 
   test('a second run over unchanged content short-circuits on the stored hash', async () => {
