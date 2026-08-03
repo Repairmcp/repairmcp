@@ -19,14 +19,14 @@ import {
   getRunSummary,
   getChangedFieldHistogram,
   getSkippedItems,
-  getHighWater,
+  getHighWaterInfo,
   setHighWater,
   setState,
   getState,
   STATE_LAST_INDEX_SYNC,
   STATE_MAKES_REPAIRED,
 } from './state.js';
-import type { SyncMode } from './state.js';
+import type { SyncMode, HighWater } from './state.js';
 
 const out = (s: string): void => void process.stdout.write(s);
 const err = (s: string): void => void process.stderr.write(s);
@@ -87,18 +87,26 @@ DEG delta sync — catch-up and nightly.
   --mode <catchup|nightly> Recorded on the run. Default catchup.
 `;
 
-function printPlan(plan: SyncPlan, highWater: number, args: Args): void {
+function printPlan(plan: SyncPlan, highWater: HighWater, args: Args): void {
   out('\n=== Plan ===\n');
   out(`Live index            : ${plan.indexCount} unique db_ids, max ${plan.indexMaxDbId}\n`);
-  out(`High-water mark       : ${highWater}\n`);
+  out(
+    `High-water mark       : ${highWater.value}` +
+      `${highWater.source === 'stored' ? ' (recorded)' : ' (NOT yet recorded — showing MAX(db_id))'}\n`,
+  );
   out('\nCohorts\n');
   out(`  NEW (not held)      : ${plan.newIds.length}\n`);
-  const below = plan.newIds.filter((id) => id <= highWater);
+  const below = plan.newIds.filter((id) => id <= highWater.value);
   if (below.length > 0) {
     out(`    ...of which gaps below the high-water mark: ${below.length} -> ${below.join(', ')}\n`);
   }
   out(`  index-diff changed  : ${plan.indexChangedIds.length}\n`);
   out(`  unresolved cohort   : ${plan.unresolvedIds.length}\n`);
+  out(`  suspected dead      : ${plan.suspectedDeadIds.length}`);
+  if (plan.suspectedDeadIds.length > 0 && plan.suspectedDeadIds.length <= 20) {
+    out(` -> ${plan.suspectedDeadIds.join(', ')}`);
+  }
+  out('\n');
   out(`  resolved, no text   : ${plan.resolvedBlankIds.length}`);
   if (plan.resolvedBlankIds.length > 0 && plan.resolvedBlankIds.length <= 20) {
     out(` -> ${plan.resolvedBlankIds.join(', ')}`);
@@ -141,6 +149,14 @@ function printReport(
   if (batch.suspect.length > 0) {
     out(`\n  SUSPECT PARSES (not written, row preserved): ${batch.suspect.join(', ')}\n`);
     out('  Inspect these by hand — a markup change would look exactly like this.\n');
+  }
+
+  if (batch.suspectedDead.length > 0) {
+    out(`\n  DEAD SUSPECTED (still served): ${batch.suspectedDead.join(', ')}\n`);
+    out('  Page 404s but the index still lists it. One more pass confirms or clears.\n');
+  }
+  if (batch.confirmedDead.length > 0) {
+    out(`\n  DEAD CONFIRMED (dropping from served JSON): ${batch.confirmedDead.join(', ')}\n`);
   }
 
   const histogram = getChangedFieldHistogram(db, runId);
@@ -236,7 +252,7 @@ async function main(): Promise<void> {
 
     err('Fetching live index...\n');
     const entries = await fetchIndex();
-    const highWater = getHighWater(db);
+    const highWater = getHighWaterInfo(db);
     const plan = planSync(db, entries, {
       refreshWindow: args.refreshWindow,
       indexDiffOnly: args.indexDiffOnly,
@@ -311,9 +327,14 @@ async function main(): Promise<void> {
   const run = getRun(db, runId);
   const newPassRemaining = countQueued(db, runId, 'new');
   if (run?.indexMaxDbId != null && newPassRemaining === 0) {
-    const before = getHighWater(db);
+    const before = getHighWaterInfo(db);
     setHighWater(db, run.indexMaxDbId);
-    out(`\nHigh-water mark advanced: ${before} -> ${run.indexMaxDbId}\n`);
+    out(
+      before.source === 'stored'
+        ? `\nHigh-water mark advanced: ${before.value} -> ${run.indexMaxDbId}\n`
+        : `\nHigh-water mark recorded for the first time: ${run.indexMaxDbId}` +
+            ` (previously unrecorded — MAX(db_id) had been standing in)\n`,
+    );
   } else {
     out('\nHigh-water mark NOT advanced — the new pass did not fully drain.\n');
   }

@@ -12,7 +12,7 @@
  * Requires: better-sqlite3 (already installed)
  */
 import Database from 'better-sqlite3';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEGInquirySchema, type DEGInquiry } from '../packages/deg/src/schema.js';
@@ -23,9 +23,21 @@ const REPO_ROOT = join(__dirname, '..');
 const SQLITE_PATH = 'C:\\degdata\\deg.sqlite';
 const OUT_PATH = join(REPO_ROOT, 'apps', 'deg-server', 'data', 'deg-inquiries-full.json');
 
-const EXCLUDED_IDS = new Set<number>([
-  38943, // DEG retracted this inquiry; page 404s on degweb.org. Confirmed by Travis 2026-06-30.
-]);
+/**
+ * No hardcoded exclusions.
+ *
+ * 38943 used to live here with the note "DEG retracted this inquiry; page 404s".
+ * 41179 turned up in the delta sync's first refresh run with exactly the same
+ * shape — still advertised in DEG's index, detail page redirecting to
+ * /deg-database/ — which established it as a recurring class rather than a
+ * one-off. Both are now marked via inquiry.dead_at by the sync's two-pass
+ * confirmation rule (see markDeadSuspected / confirmDead in
+ * ingestion/deg-backfill/src/db.ts), and this script simply honours that
+ * column. A record whose page comes back is un-marked automatically, which a
+ * hardcoded list could never do.
+ */
+
+const DRY_RUN = process.argv.includes('--dry-run');
 
 interface RawRow {
   db_id: number;
@@ -49,6 +61,7 @@ interface RawRow {
   body_fetched_at: string | null;
   last_seen_at: string | null;
   delisted_at: string | null;
+  dead_at: string | null;
 }
 
 function mapStatus(raw: string | null): 'pending' | 'resolved' | 'closed' {
@@ -143,8 +156,6 @@ function deriveLastUpdated(row: RawRow, submittedAt: Date): Date {
 }
 
 function transformRow(row: RawRow): DEGInquiry | null {
-  if (EXCLUDED_IDS.has(row.db_id)) return null;
-
   const submittedAt = parseDate(row.submission_date) ?? parseDate(row.submitted_datetime);
 
   if (!submittedAt) {
@@ -213,23 +224,25 @@ function main(): void {
 
   const results: DEGInquiry[] = [];
   const errors: Array<{ id: number; issue: string }> = [];
-  let excluded = 0;
+  let dead = 0;
   let delisted = 0;
   let skipped = 0;
   let derived = 0;
 
   for (const row of rows) {
-    if (EXCLUDED_IDS.has(row.db_id)) {
-      excluded++;
+    // Dropped from DEG's index entirely. Row kept in SQLite for audit.
+    if (row.delisted_at) {
+      console.warn(`  DELISTED: db_id=${row.db_id} removed from index ${row.delisted_at}`);
+      delisted++;
       continue;
     }
 
-    // Retracted upstream: the row is kept in SQLite for audit, but serving it
-    // would cite a degweb.org page that no longer exists. Stamped by the
-    // delta sync (ingestion/deg-backfill/src/sync.ts).
-    if (row.delisted_at) {
-      console.warn(`  DELISTED: db_id=${row.db_id} removed upstream ${row.delisted_at}`);
-      delisted++;
+    // Still listed in the index, but the detail page is gone — confirmed over
+    // two separate passes by the delta sync. Serving it would hand a shop a
+    // citation URL that 404s.
+    if (row.dead_at) {
+      console.warn(`  DEAD: db_id=${row.db_id} page gone, confirmed ${row.dead_at}`);
+      dead++;
       continue;
     }
 
@@ -252,8 +265,8 @@ function main(): void {
 
   console.log(`\n=== Transform Summary ===`);
   console.log(`Total raw rows:           ${rows.length}`);
-  console.log(`Excluded (manual):        ${excluded}`);
-  console.log(`Delisted upstream:        ${delisted}`);
+  console.log(`Delisted (off index):     ${delisted}`);
+  console.log(`Dead (page gone):         ${dead}`);
   console.log(`Skipped (no usable text): ${skipped}`);
   console.log(`Derived issueSummary:     ${derived}`);
   console.log(`Schema validation errors: ${errors.length}`);
@@ -265,6 +278,26 @@ function main(): void {
       console.log(`  db_id=${e.id}: ${e.issue}`);
     }
     if (errors.length > 20) console.log(`  ... and ${errors.length - 20} more`);
+  }
+
+  // Compare against what is currently served, so the size of the change is
+  // visible before it lands rather than after.
+  if (existsSync(OUT_PATH)) {
+    const current = JSON.parse(readFileSync(OUT_PATH, 'utf-8')) as DEGInquiry[];
+    const currentIds = new Set(current.map((i) => i.id));
+    const nextIds = new Set(results.map((i) => i.id));
+    const added = [...nextIds].filter((id) => !currentIds.has(id));
+    const removed = [...currentIds].filter((id) => !nextIds.has(id));
+    console.log(`\n=== Against the currently served file ===`);
+    console.log(`Currently served:         ${current.length}`);
+    console.log(`Would serve:              ${results.length}`);
+    console.log(`Added:                    ${added.length}`);
+    console.log(`Removed:                  ${removed.length}${removed.length > 0 ? ` -> ${removed.join(', ')}` : ''}`);
+  }
+
+  if (DRY_RUN) {
+    console.log(`\nDry run — ${OUT_PATH} NOT written.`);
+    return;
   }
 
   const outDir = dirname(OUT_PATH);

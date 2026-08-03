@@ -79,7 +79,10 @@ export function migrateSyncSchema(db: Database): void {
 
   addColumnIfMissing(db, 'inquiry', 'content_hash', 'TEXT');
   addColumnIfMissing(db, 'inquiry', 'delisted_at', 'TEXT');
+  addColumnIfMissing(db, 'inquiry', 'dead_suspected_at', 'TEXT');
+  addColumnIfMissing(db, 'inquiry', 'dead_at', 'TEXT');
   db.run(`CREATE INDEX IF NOT EXISTS idx_inquiry_delisted ON inquiry(delisted_at)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_inquiry_dead ON inquiry(dead_at)`);
 }
 
 function addColumnIfMissing(
@@ -108,19 +111,38 @@ export function setState(db: Database, key: string, value: string): void {
   );
 }
 
+export interface HighWater {
+  value: number;
+  /**
+   * 'stored'     — an actual recorded mark from a completed run.
+   * 'corpus-max' — nothing recorded yet, so MAX(db_id) stands in.
+   */
+  source: 'stored' | 'corpus-max';
+}
+
 /**
- * The recorded high-water mark, or — on a DB that has never been synced — the
- * max db_id already present. Falling back to the corpus itself means the first
- * run does not re-crawl everything.
+ * The recorded high-water mark, or — on a DB that has never completed a sync —
+ * the max db_id already present. Falling back to the corpus means a first run
+ * does not re-crawl everything.
+ *
+ * The caller needs to know WHICH it got. The fallback tracks MAX(db_id), so it
+ * moves the instant new rows are ingested: during run 1 it read 41481 before
+ * the new pass and 41745 immediately after, making the mark look like it had
+ * advanced when nothing had been recorded at all. Reporting the source keeps
+ * "not yet recorded" from being mistaken for "recorded and up to date".
  */
-export function getHighWater(db: Database): number {
+export function getHighWaterInfo(db: Database): HighWater {
   const stored = getState(db, STATE_HIGH_WATER);
   if (stored !== null) {
     const parsed = parseInt(stored, 10);
-    if (!Number.isNaN(parsed)) return parsed;
+    if (!Number.isNaN(parsed)) return { value: parsed, source: 'stored' };
   }
   const row = db.prepare('SELECT MAX(db_id) AS max_id FROM inquiry').get<{ max_id: number | null }>();
-  return row?.max_id ?? 0;
+  return { value: row?.max_id ?? 0, source: 'corpus-max' };
+}
+
+export function getHighWater(db: Database): number {
+  return getHighWaterInfo(db).value;
 }
 
 export function setHighWater(db: Database, dbId: number): void {

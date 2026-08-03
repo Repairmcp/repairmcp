@@ -13,6 +13,7 @@ import {
   getRunSummary,
   getChangedFieldHistogram,
   getHighWater,
+  getHighWaterInfo,
   setHighWater,
 } from '../src/state.js';
 import {
@@ -279,6 +280,24 @@ describe('planSync — cohort selection', () => {
     const ids = plan.queue.map((q) => q.dbId);
     expect(new Set(ids).size).toBe(ids.length);
     expect(plan.queue.filter((q) => q.pass === 'new')).toEqual([{ dbId: 200, pass: 'new' }]);
+  });
+
+  test('a suspected-dead row is always re-queued so the verdict resolves', () => {
+    const db = makeDb();
+    insertRow(db, 41179, { dead_suspected_at: '2026-08-02T00:00:00.000Z' });
+    const plan = planSync(db, [entry(41179)], { refreshWindow: 0, indexDiffOnly: true });
+    expect(plan.suspectedDeadIds).toEqual([41179]);
+    expect(plan.queue).toEqual([{ dbId: 41179, pass: 'refresh' }]);
+  });
+
+  test('a confirmed-dead row is never fetched again', () => {
+    const db = makeDb();
+    insertRow(db, 41179, {
+      dead_suspected_at: '2026-08-02T00:00:00.000Z',
+      dead_at: '2026-08-03T00:00:00.000Z',
+    });
+    const plan = planSync(db, [entry(41179)], { refreshWindow: 1000 });
+    expect(plan.queue).toEqual([]);
   });
 
   test('detects a row that disappeared upstream', () => {
@@ -571,6 +590,99 @@ describe('runBatch', () => {
     expect(countQueued(db, runId)).toBe(1);
   });
 
+  test('a first 404 only suspects — the record keeps being served', async () => {
+    const db = makeDb();
+    insertRow(db, 41179);
+    const runId = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+
+    const gone: typeof fetch = (async () =>
+      ({
+        ok: true,
+        status: 200,
+        url: 'https://degweb.org/deg-database/',
+        text: async () => '<html></html>',
+      }) as unknown as Response) as typeof fetch;
+
+    const result = await runBatch(db, runId, {
+      limit: 10,
+      rateDelayMs: 0,
+      fetchOpts: { fetchImpl: gone, ...FAST },
+    });
+
+    expect(result.suspectedDead).toEqual([41179]);
+    expect(result.confirmedDead).toEqual([]);
+    expect(getRow(db, 41179)?.['dead_suspected_at']).toBeTruthy();
+    // Still servable — one sighting is not proof.
+    expect(getRow(db, 41179)?.['dead_at']).toBeNull();
+  });
+
+  test('a second 404 on a later pass confirms the record dead', async () => {
+    const db = makeDb();
+    insertRow(db, 41179);
+    const gone: typeof fetch = (async () =>
+      ({
+        ok: true,
+        status: 200,
+        url: 'https://degweb.org/deg-database/',
+        text: async () => '<html></html>',
+      }) as unknown as Response) as typeof fetch;
+
+    const first = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+    await runBatch(db, first, { limit: 10, rateDelayMs: 0, fetchOpts: { fetchImpl: gone, ...FAST } });
+
+    const second = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+    const result = await runBatch(db, second, {
+      limit: 10,
+      rateDelayMs: 0,
+      fetchOpts: { fetchImpl: gone, ...FAST },
+    });
+
+    expect(result.confirmedDead).toEqual([41179]);
+    expect(getRow(db, 41179)?.['dead_at']).toBeTruthy();
+  });
+
+  test('a page that comes back clears the suspicion — no eviction on a blip', async () => {
+    const db = makeDb();
+    insertRow(db, 41179);
+    const gone: typeof fetch = (async () =>
+      ({
+        ok: true,
+        status: 200,
+        url: 'https://degweb.org/deg-database/',
+        text: async () => '<html></html>',
+      }) as unknown as Response) as typeof fetch;
+
+    const first = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+    await runBatch(db, first, { limit: 10, rateDelayMs: 0, fetchOpts: { fetchImpl: gone, ...FAST } });
+    expect(getRow(db, 41179)?.['dead_suspected_at']).toBeTruthy();
+
+    const second = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+    await runBatch(db, second, {
+      limit: 10,
+      rateDelayMs: 0,
+      fetchOpts: { fetchImpl: okFetch(RESOLVED_HTML), ...FAST },
+    });
+
+    expect(getRow(db, 41179)?.['dead_suspected_at']).toBeNull();
+    expect(getRow(db, 41179)?.['dead_at']).toBeNull();
+  });
+
+  test('a parse error is never mistaken for a gone page', async () => {
+    const db = makeDb();
+    insertRow(db, 41179);
+    const runId = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
+
+    // 200 on the right URL, but unparseable — the page exists.
+    const result = await runBatch(db, runId, {
+      limit: 10,
+      rateDelayMs: 0,
+      fetchOpts: { fetchImpl: okFetch('<html><body><form></form></body></html>'), ...FAST },
+    });
+
+    expect(result.suspectedDead).toEqual([]);
+    expect(getRow(db, 41179)?.['dead_suspected_at']).toBeNull();
+  });
+
   test('a definitive 404 is skipped and never retried', async () => {
     const db = makeDb();
     insertRow(db, 41477);
@@ -754,6 +866,20 @@ describe('queue ordering and state plumbing', () => {
     expect(getHighWater(db)).toBe(41481);
     setHighWater(db, 41745);
     expect(getHighWater(db)).toBe(41745);
+  });
+
+  test('the fallback is labelled so it cannot be read as a recorded mark', () => {
+    const db = makeDb();
+    insertRow(db, 41481);
+    expect(getHighWaterInfo(db)).toEqual({ value: 41481, source: 'corpus-max' });
+
+    // The trap: ingesting new rows moves MAX(db_id), so the unrecorded mark
+    // appears to advance on its own. Exactly what happened during run 1.
+    insertRow(db, 41745);
+    expect(getHighWaterInfo(db)).toEqual({ value: 41745, source: 'corpus-max' });
+
+    setHighWater(db, 41745);
+    expect(getHighWaterInfo(db)).toEqual({ value: 41745, source: 'stored' });
   });
 
   test('migrateSyncSchema is idempotent on an existing corpus', () => {

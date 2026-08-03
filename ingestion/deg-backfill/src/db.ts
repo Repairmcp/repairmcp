@@ -61,7 +61,9 @@ export function createSchema(db: Database): void {
       body_fetched_at   TEXT,
       last_seen_at      TEXT,
       content_hash      TEXT,
-      delisted_at       TEXT
+      delisted_at       TEXT,
+      dead_suspected_at TEXT,
+      dead_at           TEXT
     )
   `);
   db.run(`CREATE INDEX IF NOT EXISTS idx_inquiry_body_pending ON inquiry(body_fetched_at)`);
@@ -275,7 +277,7 @@ export function getUnresolvedIds(db: Database): number[] {
     db
       .prepare(
         `SELECT db_id FROM inquiry
-         WHERE delisted_at IS NULL
+         WHERE delisted_at IS NULL AND dead_at IS NULL
            AND (resolution_status = 'pending' OR status = 'Submitted to IP')
          ORDER BY db_id ASC`,
       )
@@ -317,7 +319,7 @@ export function getResolvedWithoutResolutionIds(db: Database, cutoffDate?: strin
     db
       .prepare(
         `SELECT db_id FROM inquiry
-         WHERE delisted_at IS NULL
+         WHERE delisted_at IS NULL AND dead_at IS NULL
            AND status LIKE 'Resolved%'
            AND (resolution IS NULL OR resolution = '' OR resolution = 'Awaiting resolution')
            AND (resolution_date IS NULL OR resolution_date = '' OR resolution_date >= ?)
@@ -334,7 +336,7 @@ export function getTrailingIds(db: Database, n: number): number[] {
     db
       .prepare(
         `SELECT db_id FROM inquiry
-         WHERE delisted_at IS NULL
+         WHERE delisted_at IS NULL AND dead_at IS NULL
          ORDER BY db_id DESC LIMIT ?`,
       )
       .all<{ db_id: number }>(n) ?? [];
@@ -424,6 +426,67 @@ export function repairTruncatedMakes(db: Database, makes: readonly string[]): Ma
   run();
 
   return { repaired, byMake };
+}
+
+/**
+ * A record whose page 404s while the index still lists it.
+ *
+ * Distinct from delisting: `delisted_at` means DEG dropped the inquiry from
+ * its index, which is directly observable and trusted on sight. This is the
+ * opposite case — the index still advertises the record but the detail page
+ * redirects to /deg-database/. Confirmed instances: 38943 (Travis 2026-06-30)
+ * and 41179 (found in run 1 batch 2). Both were previously handled by a
+ * hardcoded EXCLUDED_IDS entry in the transform, which does not scale.
+ *
+ * A single 404 is not enough — degweb.org has an instability history and a
+ * transient soft-404 would otherwise evict a good record permanently. So the
+ * first sighting only raises suspicion; a second sighting on a later pass
+ * confirms. A successful fetch clears the suspicion outright.
+ */
+export function markDeadSuspected(db: Database, dbId: number, at: string): void {
+  db.run(
+    'UPDATE inquiry SET dead_suspected_at = ? WHERE db_id = ? AND dead_suspected_at IS NULL',
+    [at, dbId],
+  );
+}
+
+export function confirmDead(db: Database, dbId: number, at: string): void {
+  db.run('UPDATE inquiry SET dead_at = ? WHERE db_id = ? AND dead_at IS NULL', [at, dbId]);
+}
+
+/** The page came back — whatever we saw before was transient. */
+export function clearDeadSuspicion(db: Database, dbId: number): void {
+  db.run(
+    'UPDATE inquiry SET dead_suspected_at = NULL, dead_at = NULL WHERE db_id = ? AND (dead_suspected_at IS NOT NULL OR dead_at IS NOT NULL)',
+    [dbId],
+  );
+}
+
+export function isDeadSuspected(db: Database, dbId: number): boolean {
+  const row = db
+    .prepare('SELECT dead_suspected_at FROM inquiry WHERE db_id = ?')
+    .get<{ dead_suspected_at: string | null }>(dbId);
+  return row?.dead_suspected_at != null;
+}
+
+export function getDeadIds(db: Database): number[] {
+  const rows =
+    db
+      .prepare('SELECT db_id FROM inquiry WHERE dead_at IS NOT NULL ORDER BY db_id ASC')
+      .all<{ db_id: number }>() ?? [];
+  return rows.map((r) => r.db_id);
+}
+
+export function getSuspectedDeadIds(db: Database): number[] {
+  const rows =
+    db
+      .prepare(
+        `SELECT db_id FROM inquiry
+         WHERE dead_suspected_at IS NOT NULL AND dead_at IS NULL
+         ORDER BY db_id ASC`,
+      )
+      .all<{ db_id: number }>() ?? [];
+  return rows.map((r) => r.db_id);
 }
 
 export function getDelistedIds(db: Database): number[] {

@@ -7,6 +7,12 @@ import {
   getResolvedWithoutResolutionIds,
   getTrailingIds,
   getDelistedIds,
+  getSuspectedDeadIds,
+  getDeadIds,
+  markDeadSuspected,
+  confirmDead,
+  clearDeadSuspicion,
+  isDeadSuspected,
   writeRefreshedBody,
   setContentHash,
 } from './db.js';
@@ -35,6 +41,8 @@ export interface SyncPlan {
   unresolvedIds: number[];
   /** Held rows the index calls Resolved but which have no resolution text. */
   resolvedBlankIds: number[];
+  /** Rows whose page 404'd once — re-fetched to confirm or clear. */
+  suspectedDeadIds: number[];
   /** Trailing re-verify sweep. */
   trailingIds: number[];
   /** Held locally, no longer in the live index. */
@@ -95,12 +103,25 @@ export function planSync(db: Database, entries: IndexEntry[], opts: PlanOptions)
   const trailingIds =
     opts.indexDiffOnly === true ? [] : getTrailingIds(db, opts.refreshWindow);
 
-  // Delisted rows are not worth fetching — the page is gone.
-  const skip = new Set(delistedIds);
+  // Always queued, even under --index-diff-only: a record sitting in the
+  // suspected state is neither served nor cleared, so leaving it unresolved is
+  // the one outcome worse than either verdict.
+  const suspectedDeadIds = getSuspectedDeadIds(db);
+
+  // Delisted rows are not worth fetching — DEG dropped them from the index.
+  // Confirmed-dead rows likewise: their page is gone and re-checking it every
+  // run buys nothing.
+  const skip = new Set([...delistedIds, ...getDeadIds(db)]);
   const newSet = new Set(newIds);
 
   const refreshSet = new Set<number>();
-  for (const id of [...indexChangedIds, ...unresolvedIds, ...resolvedBlankIds, ...trailingIds]) {
+  for (const id of [
+    ...indexChangedIds,
+    ...unresolvedIds,
+    ...resolvedBlankIds,
+    ...suspectedDeadIds,
+    ...trailingIds,
+  ]) {
     if (skip.has(id) || newSet.has(id)) continue;
     refreshSet.add(id);
   }
@@ -117,6 +138,7 @@ export function planSync(db: Database, entries: IndexEntry[], opts: PlanOptions)
     indexChangedIds,
     unresolvedIds,
     resolvedBlankIds,
+    suspectedDeadIds,
     trailingIds,
     delistedIds,
     reappearedIds,
@@ -278,7 +300,21 @@ export interface BatchResult {
   skipped: number;
   transient: number;
   suspect: number[];
+  /** First 404 sighting — not yet dropped from the served corpus. */
+  suspectedDead: number[];
+  /** Second 404 sighting — now excluded from the served corpus. */
+  confirmedDead: number[];
   breakerTripped: boolean;
+}
+
+/**
+ * Distinguishes "the page is gone" from "the page exists but we could not read
+ * it". A parse error means degweb.org served us something — possibly markup we
+ * need to fix — and must never be mistaken for a retraction.
+ */
+export function isPageGone(status: number, reason: string | undefined): boolean {
+  if (status === 404) return true;
+  return reason !== undefined && reason.startsWith('soft-404');
 }
 
 function sleep(ms: number): Promise<void> {
@@ -306,6 +342,8 @@ export async function runBatch(
     skipped: 0,
     transient: 0,
     suspect: [],
+    suspectedDead: [],
+    confirmedDead: [],
     breakerTripped: false,
   };
 
@@ -353,10 +391,30 @@ export async function runBatch(
       }
 
       // 404, soft-404, parse error — definitive, never retry.
+      //
+      // A gone page is special. Every queued item is, by construction, still
+      // listed in the index (planSync builds cohorts only from non-delisted,
+      // non-dead rows), so a 404 here means index-listed-but-page-gone. That
+      // record must stop being served, but not on one sighting — degweb.org
+      // has an instability history. First sighting suspects, second confirms.
+      let deadNote = '';
+      if (isPageGone(fetched.status, fetched.reason)) {
+        const now = new Date().toISOString();
+        if (isDeadSuspected(db, item.dbId)) {
+          confirmDead(db, item.dbId, now);
+          result.confirmedDead.push(item.dbId);
+          deadNote = ' [DEAD confirmed — dropping from served JSON]';
+        } else {
+          markDeadSuspected(db, item.dbId, now);
+          result.suspectedDead.push(item.dbId);
+          deadNote = ' [dead suspected — needs one more pass to confirm]';
+        }
+      }
+
       recordItemOutcome(db, runId, item.dbId, {
         state: 'skipped',
         httpStatus: fetched.status,
-        reason: fetched.reason ?? 'unknown',
+        reason: `${fetched.reason ?? 'unknown'}${deadNote}`,
       });
       result.skipped++;
       consecutiveTransient = 0;
@@ -364,7 +422,7 @@ export async function runBatch(
         dbId: item.dbId,
         pass: item.pass,
         outcome: 'skipped',
-        reason: fetched.reason ?? '',
+        reason: `${fetched.reason ?? ''}${deadNote}`,
         index: i + 1,
         total: items.length,
       });
@@ -372,6 +430,9 @@ export async function runBatch(
     }
 
     consecutiveTransient = 0;
+    // The page answered, so any earlier 404 was transient. Clearing dead_at as
+    // well as the suspicion means a wrongly-confirmed record heals itself.
+    clearDeadSuspicion(db, item.dbId);
 
     const storedRow = getRow(db, item.dbId);
 
