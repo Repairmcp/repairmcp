@@ -23,7 +23,10 @@ import {
   mergeParsedBody,
   isSuspectParse,
   isImplausibleMake,
+  checkPlanSanity,
+  DEFAULT_SANITY,
 } from '../src/sync.js';
+import type { SyncPlan } from '../src/sync.js';
 import type { IndexEntry } from '../src/tier1.js';
 
 const FIXTURES = join(import.meta.dir, 'fixtures');
@@ -329,6 +332,68 @@ describe('planSync — cohort selection', () => {
     const plan = planSync(db, [entry(7), entry(41745)], { refreshWindow: 0 });
     expect(plan.indexMaxDbId).toBe(41745);
     expect(plan.indexCount).toBe(2);
+  });
+});
+
+describe('checkPlanSanity', () => {
+  function planWith(indexCount: number, delisted: number[]): SyncPlan {
+    return {
+      newIds: [],
+      indexChangedIds: [],
+      unresolvedIds: [],
+      resolvedBlankIds: [],
+      suspectedDeadIds: [],
+      trailingIds: [],
+      delistedIds: delisted,
+      reappearedIds: [],
+      queue: [],
+      indexCount,
+      indexMaxDbId: 41745,
+      highWaterBefore: 0,
+    };
+  }
+
+  test('passes on a complete index', () => {
+    expect(checkPlanSanity(22661, planWith(22661, [38906])).ok).toBe(true);
+  });
+
+  test('rejects the exact 2026-08-02 collapse: 200 rows against 22,661 held', () => {
+    const result = checkPlanSanity(22661, planWith(200, Array.from({ length: 22461 }, (_, i) => i)));
+    expect(result.ok).toBe(false);
+    // Both tripwires should fire on this one.
+    expect(result.failures.length).toBe(2);
+    expect(result.failures[0]).toContain('200');
+    expect(result.failures[0]).toContain('22661');
+  });
+
+  test('rejects an index just under the 90% floor', () => {
+    expect(checkPlanSanity(1000, planWith(899, [])).ok).toBe(false);
+    expect(checkPlanSanity(1000, planWith(900, [])).ok).toBe(true);
+  });
+
+  test('rejects a mass delisting even when the index size looks fine', () => {
+    // 100% index coverage, but 51 delistings — the subtler partial response.
+    const result = checkPlanSanity(1000, planWith(1000, Array.from({ length: 51 }, (_, i) => i)));
+    expect(result.ok).toBe(false);
+    expect(result.failures).toHaveLength(1);
+    expect(result.failures[0]).toContain('51');
+  });
+
+  test('allows a delisting run right at the cap', () => {
+    expect(
+      checkPlanSanity(1000, planWith(1000, Array.from({ length: 50 }, (_, i) => i))).ok,
+    ).toBe(true);
+  });
+
+  test('does not divide by zero on an empty corpus', () => {
+    expect(checkPlanSanity(0, planWith(0, [])).ok).toBe(true);
+  });
+
+  test('thresholds are overridable for testing without weakening the default', () => {
+    expect(DEFAULT_SANITY).toEqual({ minIndexRatio: 0.9, maxDelistPerRun: 50 });
+    expect(
+      checkPlanSanity(1000, planWith(500, []), { minIndexRatio: 0.4, maxDelistPerRun: 50 }).ok,
+    ).toBe(true);
   });
 });
 

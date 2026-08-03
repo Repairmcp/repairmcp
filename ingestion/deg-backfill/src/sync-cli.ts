@@ -4,9 +4,10 @@ import {
   markDelisted,
   clearDelisted,
   repairTruncatedMakes,
+  countNonDelistedRows,
 } from './db.js';
 import { fetchIndex, upsertIndexEntries, MULTI_WORD_MAKES } from './tier1.js';
-import { planSync, materializePlan, runBatch } from './sync.js';
+import { planSync, materializePlan, runBatch, checkPlanSanity } from './sync.js';
 import type { SyncPlan } from './sync.js';
 import {
   migrateSyncSchema,
@@ -258,6 +259,22 @@ async function main(): Promise<void> {
       indexDiffOnly: args.indexDiffOnly,
     });
     printPlan(plan, highWater, args);
+
+    // Before anything is written. Runs on --dry-run too — a dry run is exactly
+    // when you want to be told the index is unusable.
+    const sanity = checkPlanSanity(countNonDelistedRows(db), plan);
+    if (!sanity.ok) {
+      err('\n');
+      err('*********************************************************\n');
+      err('*** ABORTING — THE LIVE INDEX FAILED A SANITY CHECK   ***\n');
+      err('*********************************************************\n\n');
+      for (const failure of sanity.failures) err(`  ${failure}\n\n`);
+      err('Nothing was written. No index upsert, no delisting, no fetches.\n');
+      err('Re-check https://degweb.org/grid/get/all by hand before retrying;\n');
+      err('proceeding on a partial index would delist most of the corpus.\n');
+      db.close();
+      process.exit(3);
+    }
 
     if (args.dryRun) {
       out('\nDry run — no index upsert, no detail fetches, no run created.\n');

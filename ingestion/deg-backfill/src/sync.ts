@@ -149,6 +149,73 @@ export function planSync(db: Database, entries: IndexEntry[], opts: PlanOptions)
   };
 }
 
+export interface SanityThresholds {
+  /** Live index must cover at least this fraction of our non-delisted rows. */
+  minIndexRatio: number;
+  /** A single run may not delist more than this many records. */
+  maxDelistPerRun: number;
+}
+
+export const DEFAULT_SANITY: SanityThresholds = {
+  minIndexRatio: 0.9,
+  maxDelistPerRun: 50,
+};
+
+export interface SanityResult {
+  ok: boolean;
+  failures: string[];
+}
+
+/**
+ * Refuse to act on an index that cannot be right.
+ *
+ * Delisting is computed as "held but absent from the live index", which is
+ * only sound while the index is complete. On 2026-08-02 the endpoint that had
+ * been returning 22,661 rows all day started returning 200 (49 KB instead of
+ * 5.78 MB, `count: 200` declared by the server, reproducible). Against that
+ * response the planner would have marked ~22,460 records delisted in one
+ * transaction and the next transform would have dropped them — the served
+ * corpus reduced to a couple of hundred inquiries by a single command.
+ *
+ * Two independent tripwires, because either alone has a blind spot: the ratio
+ * catches wholesale truncation, the absolute cap catches a subtler partial
+ * response that still clears 90%.
+ *
+ * There is deliberately no override flag. A genuine mass-delisting is a thing
+ * a human should look at, and an escape hatch would be reached for on exactly
+ * the night it should not be.
+ */
+export function checkPlanSanity(
+  heldNonDelisted: number,
+  plan: SyncPlan,
+  thresholds: SanityThresholds = DEFAULT_SANITY,
+): SanityResult {
+  const failures: string[] = [];
+
+  if (heldNonDelisted > 0) {
+    const ratio = plan.indexCount / heldNonDelisted;
+    if (ratio < thresholds.minIndexRatio) {
+      failures.push(
+        `Live index returned ${plan.indexCount} unique db_ids but we hold ` +
+          `${heldNonDelisted} non-delisted rows (${(ratio * 100).toFixed(1)}% — ` +
+          `expected at least ${(thresholds.minIndexRatio * 100).toFixed(0)}%). ` +
+          `The index response looks truncated or the endpoint changed.`,
+      );
+    }
+  }
+
+  if (plan.delistedIds.length > thresholds.maxDelistPerRun) {
+    failures.push(
+      `This run would delist ${plan.delistedIds.length} records, over the ` +
+        `limit of ${thresholds.maxDelistPerRun}. DEG retiring that many ` +
+        `inquiries at once would be unprecedented; a partial index response ` +
+        `is far likelier.`,
+    );
+  }
+
+  return { ok: failures.length === 0, failures };
+}
+
 export function materializePlan(db: Database, runId: number, plan: SyncPlan): void {
   enqueueItems(db, runId, plan.queue);
 }

@@ -343,6 +343,21 @@ export function getTrailingIds(db: Database, n: number): number[] {
   return rows.map((r) => r.db_id).sort((a, b) => a - b);
 }
 
+/**
+ * Rows we expect the live index to still advertise.
+ *
+ * Delisted rows are excluded because their absence from the index is the
+ * definition of delisting. Dead rows are INCLUDED: a dead record is one the
+ * index still lists while its detail page 404s, so it must count toward what
+ * we expect to see.
+ */
+export function countNonDelistedRows(db: Database): number {
+  const row = db
+    .prepare('SELECT COUNT(*) AS n FROM inquiry WHERE delisted_at IS NULL')
+    .get<{ n: number }>();
+  return row?.n ?? 0;
+}
+
 export function getAllDbIds(db: Database): Set<number> {
   const rows = db.prepare('SELECT db_id FROM inquiry').all<{ db_id: number }>() ?? [];
   return new Set(rows.map((r) => r.db_id));
