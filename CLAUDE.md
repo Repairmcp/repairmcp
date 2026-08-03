@@ -163,17 +163,34 @@ What it caught, in rough order of importance:
   would have found them.
 - 38906 delisted; 38943 and 41179 confirmed dead (page gone, still index-listed).
 
-**Open:** rebuild + restart Claude Desktop to serve the new corpus. And one polite
-fetch of `/grid/get/all` to tell throttling from an endpoint change — ~22,661 means
-it recovered, ~200 means `fetchIndex` needs pagination. The 200-row response spanned
-db_id 33→41734 rather than being a contiguous slice, which leans endpoint change.
+**Index status:** recovered 2026-08-03 — the truncation was a transient throttle (see
+Backlog). Verified offline against the saved response: 100% coverage, 0 delistings,
+0 new records, guard passes. The corpus is current; there was nothing new upstream
+overnight, so no sync was run.
+
+**Open:** rebuild + restart Claude Desktop. Until that happens the server is still
+serving the old 22,425 from the previously loaded `dist/stdio.js`.
 
 ---
 
 ## Backlog (deferred until called)
 
-- **Resolve the `/grid/get/all` 200-row response** (see Build status). Blocks all
-  further syncing — the guard will refuse to plan until the index is complete again.
+- ~~Resolve the `/grid/get/all` 200-row response.~~ **Resolved 2026-08-03**: transient
+  throttle, not an endpoint change. One polite fetch that morning returned 5,777,228
+  bytes, `count: 22674`, 22,661 unique db_ids, max 41745 — fully recovered. No
+  pagination work needed; `fetchIndex` stays as is. The guard stays permanently: the
+  failure is recurrable and nothing in a degraded response identifies it as partial.
+  Both of our diagnoses at the time were wrong — the max being 41734 rather than 41745,
+  and the 200 rows spanning db_id 33→41734 rather than forming a contiguous slice, both
+  read as an endpoint change. A degraded response simply isn't obliged to be a clean
+  prefix of the real one. Don't infer structure from the shape of a partial payload.
+- **Watch for index degradation late in a large run.** The 200-row response appeared
+  after roughly 1,300 detail fetches in one day — the exact shape of a full catch-up.
+  If that correlation is real, expect the index to degrade toward the end of any run of
+  that size. `checkPlanSanity` makes it safe rather than corpus-fatal, but note the
+  consequence: a *subsequent* invocation may abort at planning even though the batch
+  before it completed cleanly. That is the guard working, not a regression. Wait and
+  re-check the index rather than reaching for a workaround.
 - **Nightly unattended sync.** `--mode nightly` is recorded on the run but the
   operational design doesn't exist: no scheduling, no failure alerting, no rule for
   who regenerates the JSON and restarts the server. The script is parametrized and
@@ -204,9 +221,11 @@ db_id 33→41734 rather than being a contiguous slice, which leans endpoint chan
 - **`process.env.TZ` mutation** takes effect mid-process on bun (calls `tzset()`). The TZ-invariance citation test relies on this — it isn't a tautology.
 - **The DEG index can come back truncated, and that is corpus-fatal.** `/grid/get/all`
   returned 22,661 rows all day on 2026-08-02 and 200 that evening — HTTP 200, valid
-  JSON, `count: 200` declared, reproducible. Nothing about the response says it is
-  partial. `checkPlanSanity` aborts (exit 3) when the index covers under 90% of
+  JSON, `count: 200` declared, reproducible across fetches, recovered by the next
+  morning. Nothing about the response says it is partial; the server states the short
+  count as fact. `checkPlanSanity` aborts (exit 3) when the index covers under 90% of
   non-delisted rows or a run would delist more than 50. Deliberately no override flag.
+  Transient is the dangerous case, not the reassuring one — it means this recurs.
 - **Three ways a DEG record can be unservable, and they are not the same.**
   `delisted_at` = gone from the index. `dead_at` = still indexed, detail page 404s
   (needs two sightings to confirm; any success clears it). "Skipped" = no usable text
