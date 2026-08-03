@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach } from 'bun:test';
 import { Database } from 'bun:sqlite';
+import type { SQLQueryBindings } from 'bun:sqlite';
 import { createSchema, upsertMetadata, getPendingIds, getRow, countByResolutionStatus } from '../src/db.js';
 import type { MetadataRow } from '../src/db.js';
 
@@ -29,8 +30,8 @@ describe('createSchema', () => {
     const db = new Database(':memory:');
     createSchema(db);
     const table = db
-      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='inquiry'")
-      .get<{ name: string }>();
+      .prepare<{ name: string }, SQLQueryBindings[]>("SELECT name FROM sqlite_master WHERE type='table' AND name='inquiry'")
+      .get();
     expect(table?.name).toBe('inquiry');
   });
 
@@ -46,8 +47,8 @@ describe('upsertMetadata', () => {
     const db = makeDb();
     upsertMetadata(db, [BASE_ROW]);
     const row = db
-      .prepare('SELECT db_id, database FROM inquiry WHERE db_id = 41477')
-      .get<{ db_id: number; database: string }>();
+      .prepare<{ db_id: number; database: string }, SQLQueryBindings[]>('SELECT db_id, database FROM inquiry WHERE db_id = 41477')
+      .get();
     expect(row?.db_id).toBe(41477);
     expect(row?.database).toBe('CCC');
   });
@@ -56,8 +57,8 @@ describe('upsertMetadata', () => {
     const db = makeDb();
     upsertMetadata(db, [BASE_ROW]);
     const row = db
-      .prepare('SELECT body_fetched_at FROM inquiry WHERE db_id = 41477')
-      .get<{ body_fetched_at: string | null }>();
+      .prepare<{ body_fetched_at: string | null }, SQLQueryBindings[]>('SELECT body_fetched_at FROM inquiry WHERE db_id = 41477')
+      .get();
     expect(row?.body_fetched_at).toBeNull();
   });
 
@@ -67,8 +68,8 @@ describe('upsertMetadata', () => {
     db.run("UPDATE inquiry SET body_fetched_at = '2026-06-26T01:00:00.000Z' WHERE db_id = 41477");
     upsertMetadata(db, [BASE_ROW]);
     const row = db
-      .prepare('SELECT body_fetched_at FROM inquiry WHERE db_id = 41477')
-      .get<{ body_fetched_at: string | null }>();
+      .prepare<{ body_fetched_at: string | null }, SQLQueryBindings[]>('SELECT body_fetched_at FROM inquiry WHERE db_id = 41477')
+      .get();
     expect(row?.body_fetched_at).toBe('2026-06-26T01:00:00.000Z');
   });
 
@@ -87,8 +88,8 @@ describe('upsertMetadata', () => {
       { ...pending, status: 'Resolved (IP Change)', resolutionStatus: 'resolved', resolutionDate: '2023-02-03' },
     ]);
     const row = db
-      .prepare('SELECT body_fetched_at FROM inquiry WHERE db_id = 101')
-      .get<{ body_fetched_at: string | null }>();
+      .prepare<{ body_fetched_at: string | null }, SQLQueryBindings[]>('SELECT body_fetched_at FROM inquiry WHERE db_id = 101')
+      .get();
     expect(row?.body_fetched_at).toBeNull();
   });
 
@@ -98,8 +99,8 @@ describe('upsertMetadata', () => {
     db.run("UPDATE inquiry SET year = 2023, make = 'TOYOTA' WHERE db_id = 41477");
     upsertMetadata(db, [BASE_ROW]); // Tier-1 re-sync with year=2022
     const row = db
-      .prepare('SELECT year, make FROM inquiry WHERE db_id = 41477')
-      .get<{ year: number; make: string }>();
+      .prepare<{ year: number; make: string }, SQLQueryBindings[]>('SELECT year, make FROM inquiry WHERE db_id = 41477')
+      .get();
     expect(row?.year).toBe(2023);
     expect(row?.make).toBe('TOYOTA');
   });

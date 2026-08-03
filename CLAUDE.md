@@ -65,7 +65,8 @@ bun install                               # sync workspace deps
 bun run build                             # turbo build all 3 packages → dist/
 cd packages/core        && bun test       # 7 tests (citation TZ invariance)
 cd packages/deg         && bun test       # 24 tests (scoring + integration)
-cd ingestion/deg-backfill && bun test     # 135 tests (sync, hash, parser, tier1/2)
+cd ingestion/deg-backfill && bun test     # 147 tests (sync, hash, parser, openDb, tier1/2)
+cd ingestion/deg-backfill && bun run typecheck   # tsc --noEmit, clean since 2026-08-03
 bun scripts/seed-sample.ts                # re-scrape DEG into sample-inquiries.json
 ```
 
@@ -139,7 +140,7 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 
-**Test totals:** 166 passing (7 core + 24 deg + 135 ingestion). 0 failing.
+**Test totals:** 178 passing (7 core + 24 deg + 147 ingestion). 0 failing.
 
 ### Delta sync, 2026-08-02
 
@@ -202,9 +203,10 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
 - **Make normalization.** 101 rows say `Mercedes` where others say `Mercedes Benz` /
   `MERCEDES`; `Ford`/`FORD`/`ford` throughout. Distinct from the truncation bug, which
   is fixed. Belongs at query time, not ingest — source fidelity is the convention.
-- **`openDb` creates on open**, so a mistyped `--db` yields an empty corpus rather than
-  an error. `--db` being required is the main protection; refusing to open a database
-  with no `inquiry` table would close it.
+- ~~`openDb` creates on open.~~ **Fixed 2026-08-03**: a bare `openDb` now refuses a
+  path that does not exist or that holds no `inquiry` table, naming the path. Creating
+  one is explicit — `--create`, or `openDb(path, { create: true })`. In-memory
+  databases are exempt; they cannot be a typo.
 - **Cloudflare Workers transport research before any deploy.** SDK 1.29.0 has `StreamableHTTPServerTransport` (Node-only) but not the `WebStandardStreamableHTTPServerTransport` mentioned in researcher findings. Need 15-min report on three options: (a) bump SDK, (b) custom fetch-handler wrapper that creates a fresh `McpServer`+transport per request, (c) Cloudflare's `agents/mcp` `createMcpHandler`. Report and recommend before implementing.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
@@ -240,10 +242,13 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
 - **The high-water mark falls back to `MAX(db_id)` when unrecorded**, so it appears to
   advance on its own as rows land. Use `getHighWaterInfo` and check `source`; the plain
   `getHighWater` cannot tell "never recorded" from "recorded".
-- **Bun's `Statement.all<T>()` type args don't typecheck** against the installed
-  `bun-types`, and `ingestion/deg-backfill/tsconfig.json` sets `rootDir: ./src` while
-  including `test/**/*`. Both predate this work; `tsc` has never been clean on that
-  package. `bun test` is the real gate.
+- **Statement generics go on `prepare`, not on `all`/`get`.** bun-types declares
+  `prepare<ReturnType, ParamsType>(sql)`; `.all()` and `.get()` take none. Writing
+  `.all<T>()` compiles to `unknown` and was the source of ~100 errors. Use
+  `db.prepare<{ db_id: number }, SQLQueryBindings[]>(sql).all()`.
+- **Inject `FetchLike`, not `typeof fetch`.** bun's lib type carries `preconnect`, so
+  every test double had to be cast to satisfy a method nothing calls. `FetchLike`
+  (`tier2.ts`) is the minimal shape this package actually uses.
 
 ---
 

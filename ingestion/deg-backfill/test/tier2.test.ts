@@ -3,6 +3,7 @@ import { Database } from 'bun:sqlite';
 import { createSchema, upsertMetadata } from '../src/db.js';
 import type { MetadataRow } from '../src/db.js';
 import { fetchDetail, runBackfill } from '../src/tier2.js';
+import type { FetchLike } from '../src/tier2.js';
 import type { ProgressTracker } from '../src/progress.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -28,7 +29,7 @@ const BASE_ROW: MetadataRow = {
 
 describe('fetchDetail', () => {
   test('returns ok=true with parsed body on 200', async () => {
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({
         ok: true,
         status: 200,
@@ -48,7 +49,7 @@ describe('fetchDetail', () => {
   });
 
   test('returns ok=false with reason on soft-404 redirect', async () => {
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({
         ok: true,
         status: 200,
@@ -66,7 +67,7 @@ describe('fetchDetail', () => {
   });
 
   test('returns ok=false on 404', async () => {
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({
         ok: false,
         status: 404,
@@ -84,7 +85,7 @@ describe('fetchDetail', () => {
 
   test('retries on 429 and succeeds', async () => {
     let callCount = 0;
-    const mockFetch: typeof fetch = async () => {
+    const mockFetch: FetchLike = async () => {
       callCount++;
       if (callCount < 2) {
         return ({
@@ -111,7 +112,7 @@ describe('fetchDetail', () => {
   });
 
   test('gives up after maxRetries on repeated 500', async () => {
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({
         ok: false,
         status: 500,
@@ -130,7 +131,7 @@ describe('fetchDetail', () => {
 
   test('sends User-Agent header on every request', async () => {
     let capturedUA = '';
-    const mockFetch: typeof fetch = async (_url, init) => {
+    const mockFetch: FetchLike = async (_url, init) => {
       const headers = init?.headers as Record<string, string> | undefined;
       capturedUA = headers?.['User-Agent'] ?? '';
       return ({
@@ -171,14 +172,14 @@ function getBodyFetchedAt(db: Database, dbId: number): string | null {
 describe('runBackfill — markBodyFetched gating', () => {
   test('status=0 (network error) leaves body_fetched_at NULL', async () => {
     const db = makeDb();
-    const mockFetch: typeof fetch = async () => { throw new Error('ECONNREFUSED'); };
+    const mockFetch: FetchLike = async () => { throw new Error('ECONNREFUSED'); };
     await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
     expect(getBodyFetchedAt(db, 41477)).toBeNull();
   });
 
   test('status=429 (rate limited) leaves body_fetched_at NULL', async () => {
     const db = makeDb();
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({ ok: false, status: 429, url: 'https://degweb.org/inquiries/41477/' }) as unknown as Response;
     await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
     expect(getBodyFetchedAt(db, 41477)).toBeNull();
@@ -186,7 +187,7 @@ describe('runBackfill — markBodyFetched gating', () => {
 
   test('status=503 (server error) leaves body_fetched_at NULL', async () => {
     const db = makeDb();
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({ ok: false, status: 503, url: 'https://degweb.org/inquiries/41477/' }) as unknown as Response;
     await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1, maxRetries: 1 });
     expect(getBodyFetchedAt(db, 41477)).toBeNull();
@@ -194,7 +195,7 @@ describe('runBackfill — markBodyFetched gating', () => {
 
   test('status=404 stamps body_fetched_at (definitive not-found)', async () => {
     const db = makeDb();
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({ ok: false, status: 404 }) as unknown as Response;
     await runBackfill(db, [41477], silentTracker, { fetchImpl: mockFetch, initialBackoffMs: 1 });
     expect(getBodyFetchedAt(db, 41477)).not.toBeNull();
@@ -202,7 +203,7 @@ describe('runBackfill — markBodyFetched gating', () => {
 
   test('successful parse stamps body_fetched_at', async () => {
     const db = makeDb();
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       ({
         ok: true,
         status: 200,

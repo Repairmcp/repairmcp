@@ -1,4 +1,5 @@
 import { describe, test, expect } from 'bun:test';
+import type { FetchLike } from '../src/tier2.js';
 import { Database } from 'bun:sqlite';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -104,14 +105,14 @@ function entry(dbId: number, overrides: Partial<IndexEntry> = {}): IndexEntry {
   };
 }
 
-function okFetch(html: string): typeof fetch {
-  return (async (url: string | URL | Request) =>
+function okFetch(html: string): FetchLike {
+  return async (url: string | URL | Request) =>
     ({
       ok: true,
       status: 200,
       url: String(url),
       text: async () => html,
-    }) as unknown as Response) as typeof fetch;
+    }) as unknown as Response;
 }
 
 const FAST = { initialBackoffMs: 1, maxRetries: 1 };
@@ -642,8 +643,8 @@ describe('runBatch', () => {
     insertRow(db, 41477);
     const runId = seedRun(db, [{ dbId: 41477, pass: 'refresh' }]);
 
-    const fetch503: typeof fetch = (async (url: string) =>
-      ({ ok: false, status: 503, url: String(url) }) as unknown as Response) as typeof fetch;
+    const fetch503: FetchLike = (async (url: string | URL | Request) =>
+      ({ ok: false, status: 503, url: String(url) }) as unknown as Response);
 
     const result = await runBatch(db, runId, {
       limit: 10,
@@ -660,13 +661,13 @@ describe('runBatch', () => {
     insertRow(db, 41179);
     const runId = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
 
-    const gone: typeof fetch = (async () =>
+    const gone: FetchLike = (async () =>
       ({
         ok: true,
         status: 200,
         url: 'https://degweb.org/deg-database/',
         text: async () => '<html></html>',
-      }) as unknown as Response) as typeof fetch;
+      }) as unknown as Response);
 
     const result = await runBatch(db, runId, {
       limit: 10,
@@ -684,13 +685,13 @@ describe('runBatch', () => {
   test('a second 404 on a later pass confirms the record dead', async () => {
     const db = makeDb();
     insertRow(db, 41179);
-    const gone: typeof fetch = (async () =>
+    const gone: FetchLike = (async () =>
       ({
         ok: true,
         status: 200,
         url: 'https://degweb.org/deg-database/',
         text: async () => '<html></html>',
-      }) as unknown as Response) as typeof fetch;
+      }) as unknown as Response);
 
     const first = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
     await runBatch(db, first, { limit: 10, rateDelayMs: 0, fetchOpts: { fetchImpl: gone, ...FAST } });
@@ -709,13 +710,13 @@ describe('runBatch', () => {
   test('a page that comes back clears the suspicion — no eviction on a blip', async () => {
     const db = makeDb();
     insertRow(db, 41179);
-    const gone: typeof fetch = (async () =>
+    const gone: FetchLike = (async () =>
       ({
         ok: true,
         status: 200,
         url: 'https://degweb.org/deg-database/',
         text: async () => '<html></html>',
-      }) as unknown as Response) as typeof fetch;
+      }) as unknown as Response);
 
     const first = seedRun(db, [{ dbId: 41179, pass: 'refresh' }]);
     await runBatch(db, first, { limit: 10, rateDelayMs: 0, fetchOpts: { fetchImpl: gone, ...FAST } });
@@ -753,8 +754,8 @@ describe('runBatch', () => {
     insertRow(db, 41477);
     const runId = seedRun(db, [{ dbId: 41477, pass: 'refresh' }]);
 
-    const fetch404: typeof fetch = (async () =>
-      ({ ok: false, status: 404 }) as unknown as Response) as typeof fetch;
+    const fetch404: FetchLike = (async () =>
+      ({ ok: false, status: 404 }) as unknown as Response);
 
     const result = await runBatch(db, runId, {
       limit: 10,
@@ -771,13 +772,13 @@ describe('runBatch', () => {
     insertRow(db, 41482);
     const runId = seedRun(db, [{ dbId: 41482, pass: 'refresh' }]);
 
-    const softFetch: typeof fetch = (async () =>
+    const softFetch: FetchLike = (async () =>
       ({
         ok: true,
         status: 200,
         url: 'https://degweb.org/deg-database/',
         text: async () => '<html></html>',
-      }) as unknown as Response) as typeof fetch;
+      }) as unknown as Response);
 
     const result = await runBatch(db, runId, {
       limit: 10,
@@ -816,8 +817,8 @@ describe('runBatch', () => {
     }
     const runId = seedRun(db, ids);
 
-    const fetch500: typeof fetch = (async (url: string) =>
-      ({ ok: false, status: 500, url: String(url) }) as unknown as Response) as typeof fetch;
+    const fetch500: FetchLike = (async (url: string | URL | Request) =>
+      ({ ok: false, status: 500, url: String(url) }) as unknown as Response);
 
     const result = await runBatch(db, runId, {
       limit: 15,
@@ -839,14 +840,14 @@ describe('runBatch', () => {
     );
 
     let call = 0;
-    const flaky: typeof fetch = (async (url: string) => {
+    const flaky: FetchLike = (async (url: string | URL | Request) => {
       call++;
       // Fail 9, succeed once, fail 9 again — must not trip.
       if (call === 10) {
         return { ok: true, status: 200, url: String(url), text: async () => RESOLVED_HTML } as unknown as Response;
       }
       return { ok: false, status: 500, url: String(url) } as unknown as Response;
-    }) as typeof fetch;
+    });
 
     const result = await runBatch(db, runId, {
       limit: 15,
@@ -886,10 +887,10 @@ describe('runBatch', () => {
     );
 
     let fetches = 0;
-    const counting: typeof fetch = (async (url: string) => {
+    const counting: FetchLike = (async (url: string | URL | Request) => {
       fetches++;
       return { ok: true, status: 200, url: String(url), text: async () => RESOLVED_HTML } as unknown as Response;
-    }) as typeof fetch;
+    });
 
     await runBatch(db, runId, { limit: 4, rateDelayMs: 0, fetchOpts: { fetchImpl: counting, ...FAST } });
     expect(fetches).toBe(4);

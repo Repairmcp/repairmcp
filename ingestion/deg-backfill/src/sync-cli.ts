@@ -40,6 +40,7 @@ interface Args {
   dryRun: boolean;
   forceNew: boolean;
   indexDiffOnly: boolean;
+  create: boolean;
   mode: SyncMode;
 }
 
@@ -65,6 +66,7 @@ function parseArgs(argv: string[]): Args {
     dryRun: hasFlag(argv, '--dry-run'),
     forceNew: hasFlag(argv, '--force-new'),
     indexDiffOnly: hasFlag(argv, '--index-diff-only'),
+    create: hasFlag(argv, '--create'),
     mode: modeRaw === 'nightly' ? 'nightly' : 'catchup',
   };
 }
@@ -85,6 +87,9 @@ DEG delta sync — catch-up and nightly.
   --index-diff-only        Skip the trailing sweep and pending cohort.
   --resume                 Continue the open run's queue. No re-planning.
   --force-new              Start a new run even if one is still open.
+  --create                 Initialise a new database at --db. Required only
+                           when the file does not already hold a corpus; a
+                           bare open refuses rather than creating one.
   --mode <catchup|nightly> Recorded on the run. Default catchup.
 `;
 
@@ -207,7 +212,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const db = openDb(args.dbPath);
+  const db = openDb(args.dbPath, { create: args.create });
   createSchema(db);
   migrateSyncSchema(db);
   out(`Database: ${args.dbPath}\n`);

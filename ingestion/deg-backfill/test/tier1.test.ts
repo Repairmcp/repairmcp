@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'bun:test';
+import type { FetchLike } from '../src/tier2.js';
 import { Database as MakeRepairDb } from 'bun:sqlite';
+import type { SQLQueryBindings } from 'bun:sqlite';
 import { createSchema as createSchemaForRepair, repairTruncatedMakes } from '../src/db.js';
 import { MULTI_WORD_MAKES } from '../src/tier1.js';
 
@@ -197,7 +199,7 @@ describe('syncIndex', () => {
       ],
     };
 
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       new Response(JSON.stringify(mockResponse), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -234,21 +236,21 @@ describe('syncIndex', () => {
       ],
     };
 
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       new Response(JSON.stringify(mockResponse), { status: 200 });
 
     await syncIndex(db, mockFetch);
 
     const row = db
-      .prepare('SELECT source_url FROM inquiry WHERE db_id = 12345')
-      .get<{ source_url: string }>();
+      .prepare<{ source_url: string }, SQLQueryBindings[]>('SELECT source_url FROM inquiry WHERE db_id = 12345')
+      .get();
     expect(row?.source_url).toBe('https://degweb.org/inquiries/12345/');
   });
 
   test('throws on non-200 response', async () => {
     const db = new Database(':memory:');
     createSchema(db);
-    const mockFetch: typeof fetch = async () =>
+    const mockFetch: FetchLike = async () =>
       new Response('Server Error', { status: 500 });
     await expect(syncIndex(db, mockFetch)).rejects.toThrow('Tier-1 fetch failed: 500');
   });

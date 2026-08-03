@@ -1,4 +1,5 @@
 import type { Database } from 'bun:sqlite';
+import type { SQLQueryBindings } from 'bun:sqlite';
 
 export type SyncMode = 'catchup' | 'nightly';
 export type RunStatus = 'running' | 'interrupted' | 'completed';
@@ -91,15 +92,15 @@ function addColumnIfMissing(
   column: string,
   type: string,
 ): void {
-  const cols = db.prepare(`PRAGMA table_info(${table})`).all<{ name: string }>() ?? [];
+  const cols = db.prepare<{ name: string }, SQLQueryBindings[]>(`PRAGMA table_info(${table})`).all() ?? [];
   if (cols.some((c) => c.name === column)) return;
   db.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
 }
 
 export function getState(db: Database, key: string): string | null {
   const row = db
-    .prepare('SELECT value FROM sync_state WHERE key = ?')
-    .get<{ value: string | null }>(key);
+    .prepare<{ value: string | null }, SQLQueryBindings[]>('SELECT value FROM sync_state WHERE key = ?')
+    .get(key);
   return row?.value ?? null;
 }
 
@@ -137,7 +138,7 @@ export function getHighWaterInfo(db: Database): HighWater {
     const parsed = parseInt(stored, 10);
     if (!Number.isNaN(parsed)) return { value: parsed, source: 'stored' };
   }
-  const row = db.prepare('SELECT MAX(db_id) AS max_id FROM inquiry').get<{ max_id: number | null }>();
+  const row = db.prepare<{ max_id: number | null }, SQLQueryBindings[]>('SELECT MAX(db_id) AS max_id FROM inquiry').get();
   return { value: row?.max_id ?? 0, source: 'corpus-max' };
 }
 
@@ -159,13 +160,13 @@ export function createRun(
   },
 ): number {
   const row = db
-    .prepare(
+    .prepare<{ run_id: number }, SQLQueryBindings[]>(
       `INSERT INTO sync_run
          (started_at, mode, refresh_window, index_max_db_id, index_count, status)
        VALUES (?, ?, ?, ?, ?, 'running')
        RETURNING run_id`,
     )
-    .get<{ run_id: number }>(
+    .get(
       new Date().toISOString(),
       opts.mode,
       opts.refreshWindow,
@@ -212,19 +213,19 @@ function toRun(row: {
 /** Newest run that still has work — what `--resume` reopens. */
 export function getResumableRun(db: Database): SyncRun | null {
   const row = db
-    .prepare(
+    .prepare<Parameters<typeof toRun>[0], SQLQueryBindings[]>(
       `SELECT * FROM sync_run
        WHERE status IN ('running', 'interrupted')
        ORDER BY run_id DESC LIMIT 1`,
     )
-    .get<Parameters<typeof toRun>[0]>();
+    .get();
   return row ? toRun(row) : null;
 }
 
 export function getRun(db: Database, runId: number): SyncRun | null {
   const row = db
-    .prepare('SELECT * FROM sync_run WHERE run_id = ?')
-    .get<Parameters<typeof toRun>[0]>(runId);
+    .prepare<Parameters<typeof toRun>[0], SQLQueryBindings[]>('SELECT * FROM sync_run WHERE run_id = ?')
+    .get(runId);
   return row ? toRun(row) : null;
 }
 
@@ -259,11 +260,11 @@ export function getQueuedItems(db: Database, runId: number, limit?: number): Que
   const rows =
     limit !== undefined
       ? db
-          .prepare(`${base} LIMIT ?`)
-          .all<{ db_id: number; pass: string; attempts: number }>(runId, limit) ?? []
+          .prepare<{ db_id: number; pass: string; attempts: number }, SQLQueryBindings[]>(`${base} LIMIT ?`)
+          .all(runId, limit) ?? []
       : db
-          .prepare(base)
-          .all<{ db_id: number; pass: string; attempts: number }>(runId) ?? [];
+          .prepare<{ db_id: number; pass: string; attempts: number }, SQLQueryBindings[]>(base)
+          .all(runId) ?? [];
   return rows.map((r) => ({ dbId: r.db_id, pass: r.pass as ItemPass, attempts: r.attempts }));
 }
 
@@ -274,8 +275,8 @@ export function countQueued(db: Database, runId: number, pass?: ItemPass): numbe
       : `SELECT COUNT(*) AS n FROM sync_item WHERE run_id = ? AND state = 'queued'`;
   const row =
     pass !== undefined
-      ? db.prepare(sql).get<{ n: number }>(runId, pass)
-      : db.prepare(sql).get<{ n: number }>(runId);
+      ? db.prepare<{ n: number }, SQLQueryBindings[]>(sql).get(runId, pass)
+      : db.prepare<{ n: number }, SQLQueryBindings[]>(sql).get(runId);
   return row?.n ?? 0;
 }
 
@@ -323,7 +324,7 @@ export function recordItemOutcome(
 
 export function getRunSummary(db: Database, runId: number): RunSummary {
   const row = db
-    .prepare(
+    .prepare<RunSummary, SQLQueryBindings[]>(
       `SELECT
          SUM(CASE WHEN state = 'written'   THEN 1 ELSE 0 END) AS written,
          SUM(CASE WHEN state = 'unchanged' THEN 1 ELSE 0 END) AS unchanged,
@@ -332,7 +333,7 @@ export function getRunSummary(db: Database, runId: number): RunSummary {
          COUNT(*) AS total
        FROM sync_item WHERE run_id = ?`,
     )
-    .get<RunSummary>(runId);
+    .get(runId);
   return {
     written: row?.written ?? 0,
     unchanged: row?.unchanged ?? 0,
@@ -350,11 +351,11 @@ export function getRunSummary(db: Database, runId: number): RunSummary {
 export function getChangedFieldHistogram(db: Database, runId: number): Array<[string, number]> {
   const rows =
     db
-      .prepare(
+      .prepare<{ changed_fields: string }, SQLQueryBindings[]>(
         `SELECT changed_fields FROM sync_item
          WHERE run_id = ? AND pass = 'refresh' AND changed = 1 AND changed_fields IS NOT NULL`,
       )
-      .all<{ changed_fields: string }>(runId) ?? [];
+      .all(runId) ?? [];
   const counts = new Map<string, number>();
   for (const row of rows) {
     for (const field of row.changed_fields.split(',')) {
@@ -371,10 +372,10 @@ export function getSkippedItems(
 ): Array<{ dbId: number; httpStatus: number | null; reason: string | null }> {
   const rows =
     db
-      .prepare(
+      .prepare<{ db_id: number; http_status: number | null; reason: string | null }, SQLQueryBindings[]>(
         `SELECT db_id, http_status, reason FROM sync_item
          WHERE run_id = ? AND state = 'skipped' ORDER BY db_id ASC`,
       )
-      .all<{ db_id: number; http_status: number | null; reason: string | null }>(runId) ?? [];
+      .all(runId) ?? [];
   return rows.map((r) => ({ dbId: r.db_id, httpStatus: r.http_status, reason: r.reason }));
 }

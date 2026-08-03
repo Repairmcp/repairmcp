@@ -1,6 +1,7 @@
 import type { Database } from 'bun:sqlite';
 import { upsertMetadata } from './db.js';
 import type { MetadataRow } from './db.js';
+import type { FetchLike } from './tier2.js';
 
 const INDEX_URL = 'https://degweb.org/grid/get/all';
 const USER_AGENT = 'RepairMCP-Bot/1.0 (+https://repairmcp.org)';
@@ -115,7 +116,7 @@ function entryToRow(entry: IndexEntry, now: string): MetadataRow {
  * (21493-21495, 21529-21531, 23145-23151), each under two WordPress post_ids
  * with identical payloads. Last occurrence wins.
  */
-export async function fetchIndex(fetchImpl: typeof fetch = fetch): Promise<IndexEntry[]> {
+export async function fetchIndex(fetchImpl: FetchLike = fetch): Promise<IndexEntry[]> {
   const res = await fetchImpl(INDEX_URL, {
     headers: {
       'User-Agent': USER_AGENT,
@@ -147,7 +148,7 @@ export function indexMaxDbId(entries: IndexEntry[]): number {
 
 export async function syncIndex(
   db: Database,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: FetchLike = fetch,
 ): Promise<SyncResult> {
   const entries = await fetchIndex(fetchImpl);
   return upsertIndexEntries(db, entries);

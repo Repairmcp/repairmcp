@@ -1,8 +1,17 @@
 {
+  // This package is never compiled — bun runs the TypeScript directly (see the
+  // backfill/sync scripts in package.json; turbo's build task finds no build
+  // script here). The old rootDir/outDir pair was vestigial and actively
+  // harmful: rootDir pointed at ./src while include pulled in ./test, so every
+  // test file raised TS6059 and `tsc` had never once run clean on this package.
+  //
+  // noEmit states the intent instead of papering over it, and removes the
+  // conflict without excluding the tests from type checking.
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "types": ["bun-types"]
   },
   "include": ["src/**/*", "test/**/*"]

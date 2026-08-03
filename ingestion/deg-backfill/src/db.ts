@@ -1,4 +1,6 @@
 import { Database } from 'bun:sqlite';
+import type { SQLQueryBindings } from 'bun:sqlite';
+import { existsSync } from 'node:fs';
 
 export interface MetadataRow {
   dbId: number;
@@ -30,8 +32,69 @@ export interface ParsedBody {
   submittedDatetime: string | null;
 }
 
-export function openDb(path: string): Database {
+export interface OpenDbOptions {
+  /**
+   * Initialise a new database at this path. Required whenever the file does not
+   * already hold a corpus — creating one is never inferred from a bare open.
+   */
+  create?: boolean;
+}
+
+/** bun treats both of these as transient databases with no file behind them. */
+function isInMemory(path: string): boolean {
+  return path === ':memory:' || path === '';
+}
+
+function hasInquiryTable(db: Database): boolean {
+  const row = db
+    .prepare<{ name: string }, SQLQueryBindings[]>(
+      `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'inquiry'`,
+    )
+    .get();
+  return row !== null;
+}
+
+/**
+ * Open an existing DEG corpus.
+ *
+ * `new Database(path)` creates the file when it is missing, so before this check
+ * existed a mistyped `--db` produced a plausible-looking empty corpus instead of
+ * an error — silently, and with every subsequent query returning nothing. That
+ * happened for real on 2026-08-02: a shell-mangled path created a stray
+ * `degdatadeg.sqlite` in the repo, and the only symptom was "no such table".
+ *
+ * So a bare open now requires the file to exist AND to contain an `inquiry`
+ * table. Creating a new database is a separate, explicit act — pass
+ * `{ create: true }`, or `--create` at the CLI.
+ *
+ * In-memory databases are exempt: they cannot be a typo, and they are how the
+ * tests build fixtures.
+ */
+export function openDb(path: string, opts: OpenDbOptions = {}): Database {
+  if (!isInMemory(path) && opts.create !== true) {
+    if (!existsSync(path)) {
+      throw new Error(
+        `Refusing to open ${path} — no such file.\n` +
+          `  A missing database is almost always a mistyped path. Opening one would\n` +
+          `  create an empty corpus that looks valid and returns nothing.\n` +
+          `  To initialise a new database here, pass --create (CLI) or { create: true }.`,
+      );
+    }
+  }
+
   const db = new Database(path);
+
+  if (!isInMemory(path) && opts.create !== true && !hasInquiryTable(db)) {
+    db.close();
+    throw new Error(
+      `Refusing to open ${path} — the file exists but has no 'inquiry' table.\n` +
+        `  This is not a DEG corpus. Check the path: the live corpus is\n` +
+        `  C:\\degdata\\deg.sqlite, and ingestion/deg-backfill/deg.sqlite is a\n` +
+        `  stale partial.\n` +
+        `  To initialise a new database here, pass --create (CLI) or { create: true }.`,
+    );
+  }
+
   db.run('PRAGMA journal_mode = WAL');
   db.run('PRAGMA synchronous = NORMAL');
   return db;
@@ -172,16 +235,16 @@ export function getPendingIds(db: Database, limit?: number): number[] {
       : 'SELECT db_id FROM inquiry WHERE body_fetched_at IS NULL ORDER BY db_id ASC';
   const rows =
     limit !== undefined
-      ? db.prepare(sql).all<{ db_id: number }>(limit) ?? []
-      : db.prepare(sql).all<{ db_id: number }>() ?? [];
+      ? db.prepare<{ db_id: number }, SQLQueryBindings[]>(sql).all(limit) ?? []
+      : db.prepare<{ db_id: number }, SQLQueryBindings[]>(sql).all() ?? [];
   return rows.map((r) => r.db_id);
 }
 
 export function getRow(db: Database, dbId: number): Record<string, unknown> | null {
   return (
     db
-      .prepare('SELECT * FROM inquiry WHERE db_id = ?')
-      .get<Record<string, unknown>>(dbId) ?? null
+      .prepare<Record<string, unknown>, SQLQueryBindings[]>('SELECT * FROM inquiry WHERE db_id = ?')
+      .get(dbId) ?? null
   );
 }
 
@@ -259,8 +322,8 @@ export interface IndexComparable {
 export function getIndexComparableRows(db: Database): Map<number, IndexComparable> {
   const rows =
     db
-      .prepare('SELECT db_id, status, resolution_date FROM inquiry')
-      .all<{ db_id: number; status: string | null; resolution_date: string | null }>() ?? [];
+      .prepare<{ db_id: number; status: string | null; resolution_date: string | null }, SQLQueryBindings[]>('SELECT db_id, status, resolution_date FROM inquiry')
+      .all() ?? [];
   const out = new Map<number, IndexComparable>();
   for (const row of rows) {
     out.set(row.db_id, { status: row.status, resolutionDate: row.resolution_date });
@@ -275,13 +338,13 @@ export function getIndexComparableRows(db: Database): Map<number, IndexComparabl
 export function getUnresolvedIds(db: Database): number[] {
   const rows =
     db
-      .prepare(
+      .prepare<{ db_id: number }, SQLQueryBindings[]>(
         `SELECT db_id FROM inquiry
          WHERE delisted_at IS NULL AND dead_at IS NULL
            AND (resolution_status = 'pending' OR status = 'Submitted to IP')
          ORDER BY db_id ASC`,
       )
-      .all<{ db_id: number }>() ?? [];
+      .all() ?? [];
   return rows.map((r) => r.db_id);
 }
 
@@ -317,7 +380,7 @@ export function getResolvedWithoutResolutionIds(db: Database, cutoffDate?: strin
   const cutoff = cutoffDate ?? defaultResolvedBlankCutoff();
   const rows =
     db
-      .prepare(
+      .prepare<{ db_id: number }, SQLQueryBindings[]>(
         `SELECT db_id FROM inquiry
          WHERE delisted_at IS NULL AND dead_at IS NULL
            AND status LIKE 'Resolved%'
@@ -325,7 +388,7 @@ export function getResolvedWithoutResolutionIds(db: Database, cutoffDate?: strin
            AND (resolution_date IS NULL OR resolution_date = '' OR resolution_date >= ?)
          ORDER BY db_id ASC`,
       )
-      .all<{ db_id: number }>(cutoff) ?? [];
+      .all(cutoff) ?? [];
   return rows.map((r) => r.db_id);
 }
 
@@ -334,12 +397,12 @@ export function getTrailingIds(db: Database, n: number): number[] {
   if (n <= 0) return [];
   const rows =
     db
-      .prepare(
+      .prepare<{ db_id: number }, SQLQueryBindings[]>(
         `SELECT db_id FROM inquiry
          WHERE delisted_at IS NULL AND dead_at IS NULL
          ORDER BY db_id DESC LIMIT ?`,
       )
-      .all<{ db_id: number }>(n) ?? [];
+      .all(n) ?? [];
   return rows.map((r) => r.db_id).sort((a, b) => a - b);
 }
 
@@ -353,13 +416,13 @@ export function getTrailingIds(db: Database, n: number): number[] {
  */
 export function countNonDelistedRows(db: Database): number {
   const row = db
-    .prepare('SELECT COUNT(*) AS n FROM inquiry WHERE delisted_at IS NULL')
-    .get<{ n: number }>();
+    .prepare<{ n: number }, SQLQueryBindings[]>('SELECT COUNT(*) AS n FROM inquiry WHERE delisted_at IS NULL')
+    .get();
   return row?.n ?? 0;
 }
 
 export function getAllDbIds(db: Database): Set<number> {
-  const rows = db.prepare('SELECT db_id FROM inquiry').all<{ db_id: number }>() ?? [];
+  const rows = db.prepare<{ db_id: number }, SQLQueryBindings[]>('SELECT db_id FROM inquiry').all() ?? [];
   return new Set(rows.map((r) => r.db_id));
 }
 
@@ -419,12 +482,12 @@ export function repairTruncatedMakes(db: Database, makes: readonly string[]): Ma
 
       const rows =
         db
-          .prepare(
+          .prepare<{ db_id: number; make: string; model: string }, SQLQueryBindings[]>(
             `SELECT db_id, make, model FROM inquiry
              WHERE LOWER(make) = LOWER(?)
                AND (LOWER(model) = LOWER(?) OR LOWER(model) LIKE LOWER(?) || ' %')`,
           )
-          .all<{ db_id: number; make: string; model: string }>(first, rest, rest) ?? [];
+          .all(first, rest, rest) ?? [];
 
       if (rows.length === 0) continue;
 
@@ -479,36 +542,36 @@ export function clearDeadSuspicion(db: Database, dbId: number): void {
 
 export function isDeadSuspected(db: Database, dbId: number): boolean {
   const row = db
-    .prepare('SELECT dead_suspected_at FROM inquiry WHERE db_id = ?')
-    .get<{ dead_suspected_at: string | null }>(dbId);
+    .prepare<{ dead_suspected_at: string | null }, SQLQueryBindings[]>('SELECT dead_suspected_at FROM inquiry WHERE db_id = ?')
+    .get(dbId);
   return row?.dead_suspected_at != null;
 }
 
 export function getDeadIds(db: Database): number[] {
   const rows =
     db
-      .prepare('SELECT db_id FROM inquiry WHERE dead_at IS NOT NULL ORDER BY db_id ASC')
-      .all<{ db_id: number }>() ?? [];
+      .prepare<{ db_id: number }, SQLQueryBindings[]>('SELECT db_id FROM inquiry WHERE dead_at IS NOT NULL ORDER BY db_id ASC')
+      .all() ?? [];
   return rows.map((r) => r.db_id);
 }
 
 export function getSuspectedDeadIds(db: Database): number[] {
   const rows =
     db
-      .prepare(
+      .prepare<{ db_id: number }, SQLQueryBindings[]>(
         `SELECT db_id FROM inquiry
          WHERE dead_suspected_at IS NOT NULL AND dead_at IS NULL
          ORDER BY db_id ASC`,
       )
-      .all<{ db_id: number }>() ?? [];
+      .all() ?? [];
   return rows.map((r) => r.db_id);
 }
 
 export function getDelistedIds(db: Database): number[] {
   const rows =
     db
-      .prepare('SELECT db_id FROM inquiry WHERE delisted_at IS NOT NULL ORDER BY db_id ASC')
-      .all<{ db_id: number }>() ?? [];
+      .prepare<{ db_id: number }, SQLQueryBindings[]>('SELECT db_id FROM inquiry WHERE delisted_at IS NOT NULL ORDER BY db_id ASC')
+      .all() ?? [];
   return rows.map((r) => r.db_id);
 }
 
@@ -518,13 +581,13 @@ export function countByResolutionStatus(db: Database): {
   total: number;
 } {
   const row = db
-    .prepare(
+    .prepare<{ resolved: number; pending: number; total: number }, SQLQueryBindings[]>(
       `SELECT
         SUM(CASE WHEN resolution_status = 'resolved' THEN 1 ELSE 0 END) AS resolved,
         SUM(CASE WHEN resolution_status = 'pending'  THEN 1 ELSE 0 END) AS pending,
         COUNT(*) AS total
       FROM inquiry`,
     )
-    .get<{ resolved: number; pending: number; total: number }>();
+    .get();
   return { resolved: row?.resolved ?? 0, pending: row?.pending ?? 0, total: row?.total ?? 0 };
 }

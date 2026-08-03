@@ -9,6 +9,19 @@ const USER_AGENT = 'RepairMCP-Bot/1.0 (+https://repairmcp.org)';
 /** Politeness floor: 1 request / 2 s. Shared with the delta sync. */
 export const RATE_DELAY_MS = 2000;
 
+/**
+ * The only part of `fetch` this package actually uses.
+ *
+ * Injecting `typeof fetch` demanded the whole platform surface — bun's lib type
+ * carries `preconnect`, so every test double had to be cast to satisfy a method
+ * nothing here calls. Depending on the minimal shape instead lets a plain async
+ * function stand in, and the real `fetch` still satisfies it.
+ */
+export type FetchLike = (
+  input: string | URL | Request,
+  init?: RequestInit,
+) => Promise<Response>;
+
 export function isTransientStatus(status: number): boolean {
   return status === 0 || status === 429 || status >= 500;
 }
@@ -17,7 +30,7 @@ export interface FetchDetailOpts {
   maxRetries?: number;
   initialBackoffMs?: number;
   maxBackoffMs?: number;
-  fetchImpl?: typeof fetch;
+  fetchImpl?: FetchLike;
 }
 
 export interface FetchDetailResult {

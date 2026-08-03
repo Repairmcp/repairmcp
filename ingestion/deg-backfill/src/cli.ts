@@ -26,7 +26,7 @@ function printSampleRows(db: ReturnType<typeof openDb>, ids: number[]): void {
 async function main(): Promise<void> {
   const { limit, inspectId } = parseArgs(process.argv.slice(2));
 
-  const db = openDb(DB_PATH);
+  const db = openDb(DB_PATH, { create: process.argv.includes('--create') });
   createSchema(db);
 
   if (inspectId !== undefined) {
