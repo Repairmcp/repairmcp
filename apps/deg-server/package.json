@@ -6,13 +6,22 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.worker.json",
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
     "test": "echo \"(no tests yet)\" && exit 0",
-    "lint": "echo \"(no lint yet)\" && exit 0"
+    "lint": "echo \"(no lint yet)\" && exit 0",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "d1:local": "wrangler d1 execute repairmcp-deg --local",
+    "d1:remote": "wrangler d1 execute repairmcp-deg --remote"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@repairmcp/core": "workspace:*",
     "@repairmcp/deg": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260730.1",
+    "wrangler": "^4.118.0"
   }
 }

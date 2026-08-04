@@ -6,5 +6,10 @@
     "types": ["node"],
     "noEmit": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  // The Worker files are bundled by wrangler, not by tsc, and they type-check
+  // against @cloudflare/workers-types — which collides with @types/node on
+  // fetch, Request, Response, and friends. They get their own config
+  // (tsconfig.worker.json) rather than forcing both type sets into one program.
+  "exclude": ["src/worker.ts", "src/cache.ts"]
 }

@@ -1,0 +1,47 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "repairmcp-deg",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01",
+
+  // Insurance only. The web-standard transport is written against Request /
+  // Response / ReadableStream and should need nothing from node, but the MCP
+  // SDK is a large dependency tree and a missing builtin surfaces as a cryptic
+  // bundling failure. Drop this once a clean build confirms it is unused.
+  "compatibility_flags": ["nodejs_compat"],
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "repairmcp-deg",
+      // From `wrangler d1 create repairmcp-deg`, region WNAM, 2026-08-03.
+      "database_id": "c0a4f4f0-aec8-4d1e-b947-647353033448"
+    }
+  ],
+
+  "vars": {
+    // Part of the result-cache key. Bump on every corpus refresh — that is the
+    // whole cache invalidation mechanism, see src/cache.ts.
+    "CORPUS_VERSION": "2026-08-03"
+  },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Deliberate. The corpus is public and unauthenticated, and a zone-scoped WAF
+  // rate limit rule cannot cover a workers.dev hostname — only a custom domain.
+  // Leaving this false means the endpoint stays unreachable until it can go
+  // live behind the rate limit, rather than opening an unprotected window in
+  // between. The account has no workers.dev subdomain registered today, so this
+  // is currently belt-and-braces; it stops a future deploy from publishing by
+  // surprise if one is ever registered for another project.
+  "workers_dev": false
+
+  // Custom domain is added here once repairmcp.org is a Cloudflare zone:
+  //
+  //   "routes": [{ "pattern": "deg.repairmcp.org", "custom_domain": true }]
+  //
+  // Cloudflare creates the DNS record and issues the certificate on deploy.
+  // Until then the Worker is reachable at repairmcp-deg.<subdomain>.workers.dev.
+}

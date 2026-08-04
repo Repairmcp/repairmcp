@@ -190,9 +190,9 @@ describe('scoreInquiry — components', () => {
 describe('findSupporting — corpus integration', () => {
   const adapter = loadCorpus();
 
-  test.skipIf(adapter === null)('"blend two-tone refinish" ranks #40990 #1 with confidence > 0.7', () => {
+  test.skipIf(adapter === null)('"blend two-tone refinish" ranks #40990 #1 with confidence > 0.7', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const results = adapter.findSupporting({
+    const results = await adapter.findSupporting({
       lineItemText: 'blend two-tone refinish',
       now: FIXED_NOW,
       limit: 5,
@@ -203,14 +203,14 @@ describe('findSupporting — corpus integration', () => {
     expect(top.score).toBeGreaterThan(0.7);
   });
 
-  test.skipIf(adapter === null)('vehicle filter pushes Ford inquiries higher', () => {
+  test.skipIf(adapter === null)('vehicle filter pushes Ford inquiries higher', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const noFilter = adapter.findSupporting({
+    const noFilter = await adapter.findSupporting({
       lineItemText: 'labor time refinish',
       now: FIXED_NOW,
       limit: 10,
     });
-    const withFord = adapter.findSupporting({
+    const withFord = await adapter.findSupporting({
       lineItemText: 'labor time refinish',
       now: FIXED_NOW,
       vehicleMake: 'Ford',
@@ -229,9 +229,9 @@ describe('findSupporting — corpus integration', () => {
     }
   });
 
-  test.skipIf(adapter === null)('IP-implying query boosts CCC inquiries', () => {
+  test.skipIf(adapter === null)('IP-implying query boosts CCC inquiries', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const results = adapter.findSupporting({
+    const results = await adapter.findSupporting({
       lineItemText: 'MOTOR GTE pages refinish question',
       now: FIXED_NOW,
       limit: 10,
@@ -243,9 +243,9 @@ describe('findSupporting — corpus integration', () => {
     expect(cccCount).toBeGreaterThanOrEqual(2);
   });
 
-  test.skipIf(adapter === null)('results are sorted by score descending', () => {
+  test.skipIf(adapter === null)('results are sorted by score descending', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const results = adapter.findSupporting({
+    const results = await adapter.findSupporting({
       lineItemText: 'rear bumper refinish adjacent panel',
       now: FIXED_NOW,
       limit: 10,
@@ -255,15 +255,15 @@ describe('findSupporting — corpus integration', () => {
     }
   });
 
-  test.skipIf(adapter === null)('limit respected', () => {
+  test.skipIf(adapter === null)('limit respected', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const r = adapter.findSupporting({ lineItemText: 'refinish', now: FIXED_NOW, limit: 3 });
+    const r = await adapter.findSupporting({ lineItemText: 'refinish', now: FIXED_NOW, limit: 3 });
     expect(r.length).toBeLessThanOrEqual(3);
   });
 
-  test.skipIf(adapter === null)('breakdown components sum approximately to score (modulo clamping)', () => {
+  test.skipIf(adapter === null)('breakdown components sum approximately to score (modulo clamping)', async () => {
     if (!adapter) throw new Error('corpus not available');
-    const r = adapter.findSupporting({
+    const r = await adapter.findSupporting({
       lineItemText: 'blend two-tone refinish',
       now: FIXED_NOW,
       limit: 1,

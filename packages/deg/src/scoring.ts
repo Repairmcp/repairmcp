@@ -199,6 +199,28 @@ export function scoreInquiry(
   };
 }
 
+/**
+ * The ranking order for `find_supporting` results: score desc, then effective
+ * date desc, then id desc.
+ *
+ * The third key is not decoration. Score ties are common — a one-word query
+ * saturates thousands of records at the same score — and the date ties too on
+ * inquiries resolved the same day. Without a final key the winner is decided by
+ * whatever order the candidates arrived in, which is the corpus's JSON order
+ * locally and bm25 order on D1. That is precisely how two servers holding
+ * identical data hand a shop two different citations.
+ */
+export function compareSupportingHits(
+  a: { inquiry: DEGInquiry; score: number },
+  b: { inquiry: DEGInquiry; score: number },
+): number {
+  if (b.score !== a.score) return b.score - a.score;
+  const at = (a.inquiry.resolvedAt ?? a.inquiry.submittedAt).getTime();
+  const bt = (b.inquiry.resolvedAt ?? b.inquiry.submittedAt).getTime();
+  if (bt !== at) return bt - at;
+  return Number(b.inquiry.id) - Number(a.inquiry.id);
+}
+
 /** Pick a snippet centered on the first matched query token in the inquiry. */
 export function snippetForQuery(query: string, inq: DEGInquiry): string | undefined {
   const tokens = tokenize(query);

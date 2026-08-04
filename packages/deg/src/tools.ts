@@ -6,7 +6,7 @@ import {
   type RepairMCPServer,
   type ToolRegistrar,
 } from '@repairmcp/core';
-import type { DEGAdapter } from './adapter.js';
+import type { DegSource, FindSupportingOpts } from './ports.js';
 import type { DEGInquiry } from './schema.js';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -78,19 +78,19 @@ Confidence interpretation:
 // is fully custom because of its scoring + breakdown payload.
 // ─────────────────────────────────────────────────────────────────────
 
-export function buildDegSearchInquiriesTool(adapter: DEGAdapter): ToolRegistrar {
+export function buildDegSearchInquiriesTool(adapter: DegSource): ToolRegistrar {
   return buildSearchTool(adapter, { description: DEG_SEARCH_DESCRIPTION });
 }
 
-export function buildDegGetInquiryTool(adapter: DEGAdapter): ToolRegistrar {
+export function buildDegGetInquiryTool(adapter: DegSource): ToolRegistrar {
   return buildGetByIdTool(adapter, { description: DEG_GET_DESCRIPTION });
 }
 
-export function buildDegListRecentTool(adapter: DEGAdapter): ToolRegistrar {
+export function buildDegListRecentTool(adapter: DegSource): ToolRegistrar {
   return buildListRecentTool(adapter, { description: DEG_LIST_RECENT_DESCRIPTION });
 }
 
-export function buildDegFindSupportingTool(adapter: DEGAdapter): ToolRegistrar {
+export function buildDegFindSupportingTool(adapter: DegSource): ToolRegistrar {
   return (server) => {
     server.registerTool(
       'deg_find_supporting',
@@ -116,7 +116,7 @@ export function buildDegFindSupportingTool(adapter: DEGAdapter): ToolRegistrar {
         annotations: { readOnlyHint: true, openWorldHint: false },
       },
       async (args) => {
-        const findOpts: Parameters<DEGAdapter['findSupporting']>[0] = {
+        const findOpts: FindSupportingOpts = {
           lineItemText: args.lineItemText,
           limit: args.limit ?? 5,
         };
@@ -124,7 +124,7 @@ export function buildDegFindSupportingTool(adapter: DEGAdapter): ToolRegistrar {
         if (args.vehicleMake) findOpts.vehicleMake = args.vehicleMake;
         if (args.vehicleModel) findOpts.vehicleModel = args.vehicleModel;
 
-        const results = adapter.findSupporting(findOpts);
+        const results = await adapter.findSupporting(findOpts);
         const hits = results.map((r) => ({
           id: r.inquiry.id,
           title: r.inquiry.title,
@@ -166,7 +166,7 @@ export function buildDegFindSupportingTool(adapter: DEGAdapter): ToolRegistrar {
  * override only — schema and handler unchanged) and the find_supporting
  * baseline (full custom scoring + breakdown payload).
  */
-export function registerDegTools(server: RepairMCPServer<DEGInquiry>, adapter: DEGAdapter): void {
+export function registerDegTools(server: RepairMCPServer<DEGInquiry>, adapter: DegSource): void {
   server.registerCustomTool(buildDegSearchInquiriesTool(adapter));
   server.registerCustomTool(buildDegGetInquiryTool(adapter));
   server.registerCustomTool(buildDegListRecentTool(adapter));

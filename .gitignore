@@ -156,6 +156,13 @@ app/deg-server/data/deg-inquiries-full.json
 apps/deg-server/data/deg-inquiries-full.json
 ingestion/deg-backfill/deg.sqlite
 
+# Generated D1 import — ~35 MB, derived from the corpus JSON above by
+# scripts/build-d1-sql.ts. The schema and FTS migrations beside it ARE tracked.
+apps/deg-server/migrations/0002_data.sql
+
+# Local D1 (miniflare) state created by `wrangler dev` / `d1 execute --local`
+apps/deg-server/.wrangler/
+
 # SQLite WAL sidecars (transient, recreated on every open)
 *.sqlite-shm
 *.sqlite-wal

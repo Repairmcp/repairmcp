@@ -19,15 +19,31 @@ packages/deg/         @repairmcp/deg    — DEG vertical (the first one)
   src/schema.ts       DEGInquiry Zod schema
   src/scraper.ts      Cheerio parser + fetchInquiry + IP classifier
   src/adapter.ts      DEGAdapter (in-memory, fromJsonFile loader)
+  src/ports.ts        DegSource — the interface both adapters satisfy
+  src/identity.ts     DEG_IDENTITY + formatDegCitation (one producer, both adapters)
+  src/filters.ts      parseFilters / inquiryMatchesFilters (shared)
+  src/text-match.ts   Search coverage scoring + snippets (shared)
   src/scoring.ts      Killer scoring for find_supporting (bigram + unigram + IP/vehicle/op/recency)
   src/tools.ts        DEG tool builders + registerDegTools(server, adapter)
-  test/               scoring unit tests (24)
+  src/openai.ts       ChatGPT connector search/fetch + degInquiryToDocument
+  src/d1/             D1Like interface, row mapping, FTS5 query building, D1DEGAdapter
+  src/worker.ts       Worker-safe barrel → `@repairmcp/deg/worker` (no cheerio, no node:fs)
+  test/               scoring (24) + d1-adapter (22) + parity (18) + full-corpus parity (23)
 
-apps/deg-server/      @repairmcp/deg-server — Cloudflare Worker (currently STDIO only)
+apps/deg-server/      @repairmcp/deg-server — STDIO entry + Cloudflare Worker
   src/stdio.ts        Local STDIO entry for Claude Desktop
+  src/worker.ts       Cloudflare Worker: /mcp (stateless Streamable HTTP), /health
+  src/cache.ts        Tool-result cache over caches.default
+  wrangler.jsonc      Worker + D1 config. workers_dev deliberately false.
+  tsconfig.worker.json  Separate program — CF types collide with @types/node
+  migrations/0001_schema.sql   base tables + indexes
+  migrations/0002_data.sql     GENERATED, 25.5 MB, gitignored
+  migrations/0003_fts.sql      FTS5 virtual table + rebuild + sync triggers
   data/sample-inquiries.json        50 hand-curated DEG inquiries
   data/deg-inquiries-full.json      the served corpus — 22,652 records, gitignored
   dist/stdio.js       The path Claude Desktop spawns
+
+scripts/build-d1-sql.ts   corpus JSON → 0002_data.sql (chunked under D1's limits)
 
 ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
   src/tier1.ts        index fetch (fetchIndex) + metadata upsert (upsertIndexEntries)
@@ -63,12 +79,33 @@ wired (post-demo).
 ```bash
 bun install                               # sync workspace deps
 bun run build                             # turbo build all 3 packages → dist/
-cd packages/core        && bun test       # 7 tests (citation TZ invariance)
-cd packages/deg         && bun test       # 24 tests (scoring + integration)
+cd packages/core        && bun test       # 21 tests (citation TZ invariance + OpenAI contract)
+cd packages/deg         && bun test       # 87 tests (scoring, D1 adapter, local/remote parity)
 cd ingestion/deg-backfill && bun test     # 147 tests (sync, hash, parser, openDb, tier1/2)
 cd ingestion/deg-backfill && bun run typecheck   # tsc --noEmit, clean since 2026-08-03
 bun scripts/seed-sample.ts                # re-scrape DEG into sample-inquiries.json
 ```
+
+**Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
+after any corpus change; the migrations are the corpus on the remote side.
+
+```bash
+npx tsx ../../scripts/build-d1-sql.ts --dry-run   # statement count + largest statement
+npx tsx ../../scripts/build-d1-sql.ts             # writes migrations/0002_data.sql
+
+wrangler d1 execute repairmcp-deg --local --file=migrations/0001_schema.sql   # then 0002, then 0003
+wrangler dev                                       # local D1, http://127.0.0.1:8787
+wrangler dev --remote                              # real edge + remote D1 — the honest rehearsal
+
+wrangler d1 execute repairmcp-deg --remote -y --file=migrations/0001_schema.sql   # then 0002, 0003
+wrangler d1 execute repairmcp-deg --remote -y --command "SELECT COUNT(*) FROM inquiry_fts"
+wrangler deploy
+```
+
+Order is always 0001 → 0002 → 0003. `0001` drops and recreates `inquiry` (which
+takes its triggers with it) and `0003` rebuilds the index from scratch, so a
+full re-import is idempotent. Building the FTS index before the rows land would
+fire 22,652 trigger inserts instead of one `'rebuild'`.
 
 **Delta sync** — supervised batches, always dry-run first:
 
@@ -97,7 +134,10 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
 
 ## Conventions (vital)
 
-- **Vertical-agnostic core, vertical-specific adapters.** Anything DEG-specific (shop-floor language, IP keywords, scoring weights) lives in `packages/deg/`. `packages/core/` knows nothing about collision repair.
+- **Vertical-agnostic core, vertical-specific adapters.** Anything DEG-specific (shop-floor language, IP keywords, scoring weights) lives in `packages/deg/`. `packages/core/` knows nothing about collision repair. The OpenAI `search`/`fetch` builders are in core for exactly this reason — "expose a ChatGPT connector over a SourceAdapter" is as true for I-CAR as for DEG. What core cannot know is how to flatten a domain record into one text blob, so that arrives as the `toDocument` mapper.
+- **Two adapters, one set of answers.** `DEGAdapter` (JSON, STDIO) and `D1DEGAdapter` (D1, Worker) both satisfy `DegSource`. Every behaviour they share lives in a module they both import — `identity.ts` for citations, `filters.ts` for filter parsing, `text-match.ts` for search scoring, `scoring.ts` for the killer scorer and its ranking comparator. Nothing is duplicated "because it's only five lines"; that is precisely how a shop ends up with two different citations for the same query. `d1-parity*.test.ts` is what enforces it.
+- **Never let user text reach FTS5 raw.** It goes through `buildMatchExpression`, which runs the scorer's own `tokenize` — leaving only `[a-z0-9]+` — then quotes each token. An FTS5 syntax error or an injected `NEAR`/`OR`/`*` is structurally impossible, not merely unlikely. Zero usable tokens returns `null`, and callers must treat that as no results: an empty MATCH string is a syntax error, and "match everything" would be a lie.
+- **Cache results, never the JSON-RPC envelope.** A response embeds the id of the request that produced it. Replaying a cached HTTP response hands a client someone else's id. `src/cache.ts` caches raw D1 rows — pure JSON, no Dates to lose — and the Worker rebuilds the envelope every time. Invalidation is the `CORPUS_VERSION` var, which is part of the cache key: bump it on every corpus refresh.
 - **Tool descriptions matter as much as code.** They are the AI's primary signal for routing. Always follow the "USE THIS WHEN: / INPUT: / OUTPUT:" pattern from §7.3. Shop-floor vocabulary improves accuracy: *supplement, short-pay, denial, blueprinting, DRP, non-included, P-pages, MOTOR GTE, DBRM, Qapter*.
 - **Citation discipline.** All dates render via `fmtDateUtc` (`packages/core/src/citation/formatter.ts`) — `toLocaleDateString('en-US', { timeZone: 'UTC' })`. Never inline `.toLocaleDateString` elsewhere; if you need date formatting, route through that helper or add a sibling. AI clients are instructed to drop `citation.shortForm` verbatim — never reformat.
 - **STDIO transport: stdout is the JSON-RPC channel.** All logging in `apps/deg-server/src/stdio.ts` goes to stderr. `console.log` corrupts the protocol.
@@ -139,8 +179,37 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
 | D2 h6 End-to-end test | ⏳ next | 3 supplement-writing scenarios in Claude Desktop |
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
+| Phase 2 remote server | 🟡 deployed, not public | D1 + FTS5 loaded, Worker deployed and verified on the edge. No route until repairmcp.org exists. |
 
-**Test totals:** 178 passing (7 core + 24 deg + 147 ingestion). 0 failing.
+**Test totals:** 255 passing (21 core + 87 deg + 147 ingestion). 0 failing.
+
+### Phase 2 — remote MCP server, 2026-08-03
+
+Live at nothing yet, deliberately. The Worker is deployed and verified; it has no
+route because a zone-scoped WAF rate limit rule cannot cover a workers.dev
+hostname, and the corpus is open and unauthenticated. It goes public when
+`deg.repairmcp.org` can go public behind that rule, not before.
+
+- **D1** `repairmcp-deg`, region WNAM, `c0a4f4f0-aec8-4d1e-b947-647353033448`.
+  22,652 rows in `inquiry` and `inquiry_fts`, 48.6 MB of a 500 MB Free ceiling.
+- **Six tools.** The four `deg_*` tools unchanged, plus `search` and `fetch`
+  implementing OpenAI's connector contract exactly (one string argument each,
+  declared output schema, payload in both `structuredContent` and a JSON string
+  in `content[0].text`).
+- **Retrieval is two-armed.** FTS5 bm25 alone agreed with the in-memory adapter
+  on only 13/20 of the agreement panel, and more bm25 depth plateaued at 17/20 —
+  the records it misses are not deep in the ranking, they are recent records bm25
+  ranks poorly and the scorer ranks first. Adding a second arm ordered by the
+  tie-break's own date, plus length-gated prefix matching to close the
+  substring-vs-token gap ("measurements", "aiming"), reached 20/20 on both top-1
+  and top-5. See `d1-parity-full.test.ts` — the panel is the fixture.
+- **Search score is term coverage, ordering is bm25.** Not normalized bm25:
+  measured, a deliberate nonsense query's top hit scores bm25-raw 15.25 while a
+  real one tops out at 16.87, because bm25 magnitude tracks query length and term
+  rarity rather than relevance. Coverage is the same number the local server
+  reports, so the two agree.
+- **Open:** register `repairmcp.org`, add the zone, add the `routes` stanza,
+  create the WAF rule, run the MCP Inspector, connect Claude and ChatGPT.
 
 ### Delta sync, 2026-08-02
 
@@ -200,6 +269,20 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
   2026-08-02; the newest in the whole corpus is 41424 (2026-06-18). Audatex is 8.4% of
   the corpus historically but 1.3% of the last 1,000 ids. Kills any plan to balance IP
   distribution by pulling recent inquiries.
+- **Confidence saturates on common queries.** `deg_find_supporting` returns 1.000 for
+  30 different inquiries on "blend two-tone refinish", and does the same on any query
+  whose words are all common in the corpus. Once that happens the score stops
+  discriminating and the ranking is decided entirely by the tie-break — recency, then
+  id. Two consequences. First, the documented "40990 #1 at 0.883" benchmark is a
+  *sample-corpus* result and does not hold on the full 22,652 records, where 40990 sits
+  at rank 31; the demo script needs re-checking against real output. Second, a shop
+  reading "confidence 1.000" on thirty different citations is being told nothing.
+  The scorer needs finer separation at the top — IDF-style weighting so a rare term
+  counts for more than a common one, or a length normalization so a long record
+  cannot cover a short query by accident. Not urgent: the ordering is still sensible
+  and parity between local and remote is exact. But the number is doing less work than
+  it appears to. Do not "fix" it by rescaling — the components are calibrated and
+  documented; the missing piece is term weighting.
 - **Make normalization.** 101 rows say `Mercedes` where others say `Mercedes Benz` /
   `MERCEDES`; `Ford`/`FORD`/`ford` throughout. Distinct from the truncation bug, which
   is fixed. Belongs at query time, not ingest — source fidelity is the convention.
@@ -207,7 +290,30 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
   path that does not exist or that holds no `inquiry` table, naming the path. Creating
   one is explicit — `--create`, or `openDb(path, { create: true })`. In-memory
   databases are exempt; they cannot be a typo.
-- **Cloudflare Workers transport research before any deploy.** SDK 1.29.0 has `StreamableHTTPServerTransport` (Node-only) but not the `WebStandardStreamableHTTPServerTransport` mentioned in researcher findings. Need 15-min report on three options: (a) bump SDK, (b) custom fetch-handler wrapper that creates a fresh `McpServer`+transport per request, (c) Cloudflare's `agents/mcp` `createMcpHandler`. Report and recommend before implementing.
+- ~~Cloudflare Workers transport research before any deploy.~~ **Answered 2026-08-03
+  by looking.** SDK 1.29.0 *does* ship
+  `@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js`, and its doc comment
+  contains a Cloudflare Workers usage example. No SDK bump, no custom fetch wrapper,
+  no `agents/mcp`. The backlog entry had been carrying a claim nobody had checked
+  against `node_modules`.
+- **Take `deg.repairmcp.org` live.** In order: register `repairmcp.org`; add the zone
+  to Cloudflare (nameserver change at the registrar); add
+  `"routes": [{ "pattern": "deg.repairmcp.org", "custom_domain": true }]` to
+  `wrangler.jsonc` and redeploy — Cloudflare creates the DNS record and issues the
+  certificate; create the WAF rate limit rule (match `http.request.uri.path eq "/mcp"`,
+  count by IP, **60 requests / 60 s**, block, longest available timeout — Free allows
+  exactly one rule); run `npx @modelcontextprotocol/inspector` against the live URL;
+  then add the connector in Claude and in ChatGPT and run the three supplement
+  scenarios. Flip `workers_dev` only if you decide a soft launch is worth an
+  unprotected window — a zone-scoped WAF rule cannot cover a workers.dev hostname.
+  The in-Worker alternative is Cloudflare's Workers rate limiting binding
+  (`unsafe.bindings`, type `ratelimit`), roughly 15 lines, which does work there.
+- **The result cache is thinner on the edge than it looks locally.** Warm/cold was
+  64 ms / 247 ms against local D1 but 349 ms / 401 ms against the real edge:
+  `caches.default` is per-colo and a preview session never accumulates hits. Do not
+  size the D1 read budget assuming the cache absorbs repeats until real traffic shows
+  it does. A `find_supporting` call reads on the order of 1,000 rows against a Free
+  ceiling of 5M/day.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 
@@ -215,6 +321,29 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
 
 ## Known gotchas
 
+- **Closing the MCP server after `handleRequest` returns an empty 200.** In the Worker,
+  `transport.handleRequest()` resolves as soon as the response *stream* exists — the
+  JSON-RPC payload is written into it later, when the server finishes handling the
+  message. A `ctx.waitUntil(server.close())` after it tears the transport down first,
+  and the client gets HTTP 200 with correct SSE headers and a completely empty body,
+  which reads as a hung server rather than an error. Do not add teardown: everything
+  in the handler is per-request and collected with the isolate.
+- **`wrangler d1 execute` rejects a file over the phrase in a comment.** The check is
+  `sql.includes("BEGIN TRANSACTION")` on raw text — no comment stripping, no
+  string-literal awareness — and its one-shot `.replace()` cannot remove a second
+  occurrence. A comment *saying* the file contains no such statement is enough to be
+  refused. `build-d1-sql.ts` now hard-fails at generation time if the phrase appears
+  anywhere in the output, including inside a quoted inquiry, because at import time
+  the error names nothing.
+- **`wrangler d1 execute --file` does not stream the file through `execute`.** It
+  routes a large file through D1's dedicated import path automatically. The 25.5 MB /
+  338-statement corpus imported in 6.9 s on the first attempt. Don't pre-chunk.
+- **A deployed Worker with no route is not reachable, and says so unhelpfully.** With
+  no workers.dev subdomain registered on the account, the printed
+  `*.workers.dev` URL resolves in DNS (wildcard) but fails the TLS handshake, which
+  looks like a broken deploy. It is not: `wrangler deploy` reports "No targets
+  deployed". Verify with `wrangler dev --remote`, which runs the real Worker on the
+  edge against remote D1 without any public hostname.
 - **Bun + OneDrive `mkdirSync(..., { recursive: true })` throws EEXIST** even with `recursive: true` on already-existing dirs. Pattern: `if (!existsSync(dir)) mkdirSync(dir, { recursive: true })`. Caught in `scripts/seed-sample.ts`.
 - **DEG soft-404s.** Unknown/private inquiry IDs redirect to `/deg-database/` with HTTP 200, not 404. `fetchInquiry` checks `res.url.includes('/inquiries/{id}/')` and skips on mismatch.
 - **DEG inquiry formats vary by year.** Pre-2020 inquiries embed `Issue Summary` / `Suggested Action` / `Area of Vehicle` inside a single `Description` field with `Section6_*` and `Section3_*` markers. `parseDescriptionField` in `scraper.ts` handles the fallback.

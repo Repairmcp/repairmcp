@@ -1,6 +1,7 @@
 export * from './schema.js';
 export * from './scraper.js';
 export { DEGAdapter } from './adapter.js';
+export type { DegSource, FindSupportingOpts, FindSupportingHit } from './ports.js';
 export {
   buildDegSearchInquiriesTool,
   buildDegGetInquiryTool,

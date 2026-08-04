@@ -28,3 +28,13 @@ export {
   buildListRecentTool,
   buildSearchTool,
 } from './server/tool-builder.js';
+
+// OpenAI / ChatGPT connector contract (search + fetch)
+export type {
+  ConnectorDocument,
+  BuildOpenAiToolOpts,
+} from './server/openai-tools.js';
+export {
+  buildOpenAiSearchTool,
+  buildOpenAiFetchTool,
+} from './server/openai-tools.js';
