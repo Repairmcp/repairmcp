@@ -29,19 +29,20 @@
     "enabled": true
   },
 
-  // Deliberate. The corpus is public and unauthenticated, and a zone-scoped WAF
-  // rate limit rule cannot cover a workers.dev hostname — only a custom domain.
-  // Leaving this false means the endpoint stays unreachable until it can go
-  // live behind the rate limit, rather than opening an unprotected window in
-  // between. The account has no workers.dev subdomain registered today, so this
-  // is currently belt-and-braces; it stops a future deploy from publishing by
-  // surprise if one is ever registered for another project.
-  "workers_dev": false
+  // The only public entrance. Cloudflare creates the DNS record and issues the
+  // certificate on deploy; nothing needs adding by hand in the dashboard.
+  //
+  // This deploy fails until the repairmcp.com zone is active on the account —
+  // that is the intended behaviour, not something to work around. A custom
+  // domain is also what makes the WAF rate limit rule possible at all; rate
+  // limiting rules are zone-scoped and cannot cover a workers.dev hostname.
+  "routes": [{ "pattern": "deg.repairmcp.com", "custom_domain": true }],
 
-  // Custom domain is added here once repairmcp.org is a Cloudflare zone:
-  //
-  //   "routes": [{ "pattern": "deg.repairmcp.org", "custom_domain": true }]
-  //
-  // Cloudflare creates the DNS record and issues the certificate on deploy.
-  // Until then the Worker is reachable at repairmcp-deg.<subdomain>.workers.dev.
+  // Deliberate, and it stays false after the custom domain lands. The corpus is
+  // public and unauthenticated, so it should have exactly one hostname — the one
+  // the rate limit rule protects. A workers.dev URL would be a second, unrated
+  // door into the same data. The account has no workers.dev subdomain registered
+  // today, so this also stops a future deploy from publishing by surprise if one
+  // is ever registered for another project.
+  "workers_dev": false
 }

@@ -179,16 +179,21 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
 | D2 h6 End-to-end test | ⏳ next | 3 supplement-writing scenarios in Claude Desktop |
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
-| Phase 2 remote server | 🟡 deployed, not public | D1 + FTS5 loaded, Worker deployed and verified on the edge. No route until repairmcp.org exists. |
+| Phase 2 remote server | 🟡 deployed, awaiting zone | D1 + FTS5 loaded, Worker deployed and verified on the edge. Route set to `deg.repairmcp.com`; goes live when the zone is active. |
 
 **Test totals:** 255 passing (21 core + 87 deg + 147 ingestion). 0 failing.
 
 ### Phase 2 — remote MCP server, 2026-08-03
 
-Live at nothing yet, deliberately. The Worker is deployed and verified; it has no
-route because a zone-scoped WAF rate limit rule cannot cover a workers.dev
-hostname, and the corpus is open and unauthenticated. It goes public when
-`deg.repairmcp.org` can go public behind that rule, not before.
+Not public yet, deliberately. The Worker is deployed and verified against real
+D1; its route is `deg.repairmcp.com` and it goes live when that zone is active.
+There is no workers.dev fallback and there will not be one: a zone-scoped WAF
+rate limit rule cannot cover a workers.dev hostname, and an open unauthenticated
+corpus should have exactly one door — the one the rate limit protects.
+
+**Everything serves on `.com`.** `repairmcp.org` appears only in the scraper's
+User-Agent, which is left alone until the site launches. Do not "fix" it to match
+the serving hostname without checking that decision first.
 
 - **D1** `repairmcp-deg`, region WNAM, `c0a4f4f0-aec8-4d1e-b947-647353033448`.
   22,652 rows in `inquiry` and `inquiry_fts`, 48.6 MB of a 500 MB Free ceiling.
@@ -208,8 +213,8 @@ hostname, and the corpus is open and unauthenticated. It goes public when
   real one tops out at 16.87, because bm25 magnitude tracks query length and term
   rarity rather than relevance. Coverage is the same number the local server
   reports, so the two agree.
-- **Open:** register `repairmcp.org`, add the zone, add the `routes` stanza,
-  create the WAF rule, run the MCP Inspector, connect Claude and ChatGPT.
+- **Open:** wait for the `repairmcp.com` zone to go active, redeploy, verify on
+  the wire, create the WAF rule, run the MCP Inspector, connect Claude and ChatGPT.
 
 ### Delta sync, 2026-08-02
 
@@ -296,18 +301,20 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
   contains a Cloudflare Workers usage example. No SDK bump, no custom fetch wrapper,
   no `agents/mcp`. The backlog entry had been carrying a claim nobody had checked
   against `node_modules`.
-- **Take `deg.repairmcp.org` live.** In order: register `repairmcp.org`; add the zone
-  to Cloudflare (nameserver change at the registrar); add
-  `"routes": [{ "pattern": "deg.repairmcp.org", "custom_domain": true }]` to
-  `wrangler.jsonc` and redeploy — Cloudflare creates the DNS record and issues the
-  certificate; create the WAF rate limit rule (match `http.request.uri.path eq "/mcp"`,
-  count by IP, **60 requests / 60 s**, block, longest available timeout — Free allows
-  exactly one rule); run `npx @modelcontextprotocol/inspector` against the live URL;
-  then add the connector in Claude and in ChatGPT and run the three supplement
-  scenarios. Flip `workers_dev` only if you decide a soft launch is worth an
-  unprotected window — a zone-scoped WAF rule cannot cover a workers.dev hostname.
-  The in-Worker alternative is Cloudflare's Workers rate limiting binding
-  (`unsafe.bindings`, type `ratelimit`), roughly 15 lines, which does work there.
+- **Take `deg.repairmcp.com` live.** The route is already in `wrangler.jsonc`; the
+  deploy fails until the zone is active, which is the intended gate. In order: confirm
+  the `repairmcp.com` zone is active on the Cloudflare account (registered, nameservers
+  moved 2026-08-03, propagation was in progress); `wrangler deploy` — Cloudflare
+  creates the DNS record and issues the certificate, nothing to add by hand; verify
+  `/health` and all six tools against `https://deg.repairmcp.com/mcp` on the wire;
+  create the WAF rate limit rule (match `http.request.uri.path eq "/mcp"`, count by IP,
+  **60 requests / 60 s**, block, longest available timeout — Free allows exactly one
+  rule); run `npx @modelcontextprotocol/inspector` against the live URL; then add the
+  connector in Claude and in ChatGPT and run the three supplement scenarios.
+  Leave `workers_dev` false — a second hostname the WAF rule does not cover is a
+  second door into the same open corpus. If a soft launch on workers.dev is ever
+  wanted, the only real mitigation there is Cloudflare's in-Worker rate limiting
+  binding (`unsafe.bindings`, type `ratelimit`), roughly 15 lines.
 - **The result cache is thinner on the edge than it looks locally.** Warm/cold was
   64 ms / 247 ms against local D1 but 349 ms / 401 ms against the real edge:
   `caches.default` is per-colo and a preview session never accumulates hits. Do not

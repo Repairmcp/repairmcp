@@ -221,6 +221,29 @@ describe('fetch', () => {
     expect(meta['found']).toBe(true);
   });
 
+  test('a numeric id is coerced, not rejected', async () => {
+    // The MCP Inspector's CLI emits `--tool-arg id=101` as the JSON number 101,
+    // and models drop the quotes on integer-looking ids often enough to matter.
+    // A -32602 here reads to the client as a broken server.
+    const res = await client.callTool({ name: 'fetch', arguments: { id: 101 } });
+    expect(res.isError).toBeFalsy();
+    expect((res.structuredContent as { id: string }).id).toBe('101');
+  });
+
+  test('the declared schema still says type: string', async () => {
+    // Tolerant parsing must not leak into the declared surface — OpenAI's
+    // contract is a single string argument, not a string-or-number union.
+    const { tools } = await client.listTools();
+    const fetchTool = tools.find((t) => t.name === 'fetch')!;
+    const schema = fetchTool.inputSchema as { properties: Record<string, { type?: string }> };
+    expect(schema.properties['id']!.type).toBe('string');
+  });
+
+  test('a missing id is still rejected', async () => {
+    const res = await client.callTool({ name: 'fetch', arguments: {} });
+    expect(res.isError).toBe(true);
+  });
+
   test('an unknown id keeps the shape rather than raising a protocol error', async () => {
     const res = await client.callTool({ name: 'fetch', arguments: { id: 'nope' } });
     expect(res.isError).toBeFalsy();

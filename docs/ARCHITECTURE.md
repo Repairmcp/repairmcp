@@ -731,9 +731,14 @@ pnpm --filter deg-server wrangler d1 execute repairmcp_deg --file=migrations/000
 
 ### Domains
 
-- `repairmcp.org` → main website (Cloudflare Pages, future)
-- `repairmcp.com` → 301 redirect to `.org`
-- `deg.repairmcp.org` → DEG MCP server endpoint *(Cloudflare Worker route)*
+**Revised 2026-08-03: everything serves on `.com`.** The original spec had it the
+other way round.
+
+- `repairmcp.com` → main website (Cloudflare Pages, future)
+- `deg.repairmcp.com` → DEG MCP server endpoint *(Cloudflare Worker custom domain)*
+- `repairmcp.org` → not a serving hostname. It survives only in the scraper's
+  User-Agent (`RepairMCP-Bot/1.0 (+https://repairmcp.org)`), which is revisited
+  when the site launches, not before.
 
 ### Cloudflare resources (free tier)
 
@@ -743,6 +748,13 @@ pnpm --filter deg-server wrangler d1 execute repairmcp_deg --file=migrations/000
 - 1× Cron Trigger — daily refresh
 
 ### `apps/deg-server/wrangler.toml`
+
+> **As built, this block is the original spec and not the shipped config.**
+> `apps/deg-server/wrangler.jsonc` is authoritative. What actually shipped
+> differs in more than the domain: JSONC rather than TOML, a `custom_domain`
+> route rather than a pattern + `zone_name`, the Workers Cache API rather than a
+> KV namespace, database name `repairmcp-deg`, and no cron trigger yet. Read the
+> real file before changing anything here.
 
 ```toml
 name = "repairmcp-deg"
@@ -764,8 +776,8 @@ id = "REPLACE_WITH_REAL_ID"
 crons = ["0 3 * * *"]
 
 [routes]
-pattern = "deg.repairmcp.org/*"
-zone_name = "repairmcp.org"
+pattern = "deg.repairmcp.com/*"
+zone_name = "repairmcp.com"
 
 [vars]
 LOG_LEVEL = "info"
@@ -819,7 +831,7 @@ This is the section that proves RepairMCP is a protocol, not a project. Document
 6. Create `apps/{vertical}-server/` Cloudflare Worker (copy from `deg-server`)
 7. Add migration SQL for vertical-specific schema
 8. Update `docs/ARCHITECTURE.md` with new vertical entry
-9. Deploy to `{vertical}.repairmcp.org`
+9. Deploy to `{vertical}.repairmcp.com`
 
 **Time to add a new vertical with a stable source: 1–2 days once core is solid.**
 

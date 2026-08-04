@@ -168,7 +168,18 @@ OUTPUT: { id, title, text, url, metadata }. text is the full record. url is the 
         title: opts.title ?? `Fetch ${adapter.sourceShortName} ${adapter.itemNoun}`,
         description: opts.description ?? defaultDescription,
         inputSchema: {
-          id: z.string().describe(`The ${adapter.itemNoun} id to retrieve.`),
+          // Coerce, do not merely accept. Ids that look like integers get
+          // emitted as JSON numbers by more clients than you would hope — the
+          // MCP Inspector's own CLI does it, and a model asked to pass back
+          // "40990" will sometimes drop the quotes. `z.string()` answers that
+          // with a -32602 protocol error, which reads to the client as a broken
+          // server rather than a bad argument.
+          //
+          // z.coerce.string() is the shape that fixes it without breaking
+          // OpenAI's contract: the emitted JSON Schema is still {"type":"string"},
+          // so the declared surface is unchanged, and a missing argument is still
+          // rejected. Strict in what it declares, tolerant in what it parses.
+          id: z.coerce.string().describe(`The ${adapter.itemNoun} id to retrieve.`),
         },
         outputSchema: FetchOutputShape,
         annotations: { readOnlyHint: true, openWorldHint: false },

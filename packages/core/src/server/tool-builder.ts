@@ -139,7 +139,11 @@ OUTPUT: The complete ${adapter.itemNoun} record plus a \`citation\` object. If n
         title: opts.title ?? `Get ${adapter.sourceName} ${adapter.itemNoun}`,
         description: opts.description ?? defaultDescription,
         inputSchema: {
-          id: z.string().min(1).describe(`The ${adapter.itemNoun} ID.`),
+          // Coerced for the same reason as the connector `fetch` tool: clients
+          // and models emit integer-looking ids as JSON numbers, and a bare
+          // z.string() turns that into a -32602 protocol error. The declared
+          // schema is still {"type":"string"}; only the parsing is forgiving.
+          id: z.coerce.string().min(1).describe(`The ${adapter.itemNoun} ID.`),
         },
         annotations: { readOnlyHint: true, openWorldHint: false },
       },
