@@ -25,6 +25,12 @@
     "CORPUS_VERSION": "2026-08-03"
   },
 
+  // Hands the Worker its own deployment id at runtime, so /health can answer
+  // "did my deploy land?". Without it the version field is a source constant
+  // that reads identically before and after a deploy — which is exactly the
+  // question you curl /health to settle.
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+
   "observability": {
     "enabled": true
   },

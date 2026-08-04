@@ -213,8 +213,47 @@ the serving hostname without checking that decision first.
   real one tops out at 16.87, because bm25 magnitude tracks query length and term
   rarity rather than relevance. Coverage is the same number the local server
   reports, so the two agree.
-- **Open:** wait for the `repairmcp.com` zone to go active, redeploy, verify on
-  the wire, create the WAF rule, run the MCP Inspector, connect Claude and ChatGPT.
+- **Rate limiting is live**, and not at the shape originally specced. The Free plan
+  locks both the counting window and the mitigation duration to **10 seconds**, so
+  the recommended 60 requests / 60 s could not be entered as written. Deployed as
+  **20 requests / 10 s, by IP, Block**, matching on `/mcp`. Same intent rescaled:
+  1 req/s sustained becomes 2 req/s sustained, but a burst is caught six times
+  faster. Free allows exactly one rate limiting rule and this uses it — a second
+  rule means Pro.
+- **The demo query is `labor allowance for cargo van side panel extension
+  replacement`.** See below.
+- **Open:** connect Claude and ChatGPT, run the three supplement scenarios.
+
+### The demo query, chosen with data 2026-08-04
+
+`deg_find_supporting("labor allowance for cargo van side panel extension replacement")`
+
+```
+41715  0.950  CCC       Welded Panel Operations: Quarter Panel
+14187  0.775  Audatex   Welded Panel Operations
+39325  0.725  CCC       Welded Panel Operations: Cab
+31902  0.675  CCC       Welded Panel Operations: Body Shell
+19240  0.675  Mitchell  Welded Panel Operations: Pillars, Rocker...
+```
+
+Picked against two criteria, not one. **Separation:** a unique winner at 0.950 with
+a 0.175 drop to #2 and 0.275 to #5 — a visible ranking rather than the wall of
+1.000s that "blend two-tone refinish" produces (30 records tie there, so recency
+picks the winner, not relevance). **Payoff:** DEG #41715 is the best story in the
+corpus — CCC allowed 1.0 hour for a welded structural extension, the shop
+documented ~20 factory spot welds and asked for 3.5, and MOTOR's resolution reads
+"the estimated work time applied to the Extension has been updated to 3.5 hours
+from 1.0 hours." A 2.5-hour win, resolved 2026-07-30.
+
+Runner-up: `structural adhesive and anti-flutter foam on roof replacement` →
+#16628 at 0.967 with the widest drop in the corpus (0.443 to #5); MOTOR raised
+roof replacement 18.5 → 20.0 hours. Older (2020) and a smaller delta, but the
+confidence curve is even cleaner.
+
+**1,429 inquiries** carry a resolution matching `updated to X hours from Y` where
+X > Y — a documented labor increase. That is the pool worth mining for any future
+demo or site copy, not the corpus at large. The largest are startling: #17025
+went 19 → 44.9 hours, #20868 went 8 → 29.5.
 
 ### Delta sync, 2026-08-02
 

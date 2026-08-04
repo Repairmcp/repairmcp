@@ -34,6 +34,12 @@ export interface Env {
   CORPUS_VERSION?: string;
   /** Set to any non-empty value to bypass the result cache entirely. */
   CACHE_DISABLED?: string;
+  /**
+   * The running deployment's own id, supplied by Cloudflare. `SERVER_VERSION`
+   * below is a source constant and does not move on deploy, so it cannot answer
+   * "is the new code live?" — this can.
+   */
+  CF_VERSION_METADATA?: WorkerVersionMetadata;
 }
 
 const SERVER_NAME = 'repairmcp-deg';
@@ -124,6 +130,11 @@ export default {
           ok: records > 0,
           server: SERVER_NAME,
           version: SERVER_VERSION,
+          // The two version fields answer different questions and both are
+          // needed: `version` is what the source says it is, `deployment` is
+          // what is actually running.
+          deployment: env.CF_VERSION_METADATA?.id ?? null,
+          deployedAt: env.CF_VERSION_METADATA?.timestamp ?? null,
           corpusVersion: env.CORPUS_VERSION ?? null,
           records,
         });
