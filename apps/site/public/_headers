@@ -1,0 +1,31 @@
+# Cloudflare Workers static assets reads this file. Up to 100 rules, 2,000
+# characters per line. It applies to assets, which is all this project serves:
+# there is no "main" in wrangler.jsonc, so no Worker code ever runs.
+#
+# Deliberately one rule block. Two blocks matching the same path leaves the
+# merge order deciding which header wins, and nothing here is worth that.
+#
+# No Cache-Control on purpose. The default for static assets is
+# "public, max-age=0, must-revalidate" with an ETag, which is the right answer
+# for a small site edited by hand: revalidation is cheap and an edit is never
+# stuck behind a stale cache. Filenames are not content-hashed, so a long
+# max-age here would serve old CSS after a deploy.
+#
+# The CSP is this strict because the site genuinely has nothing in it: no
+# scripts, no web fonts, no frames, no forms, no third-party requests at all.
+# If any of those are ever added, this line has to change with them.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Robots-Tag: noindex, nofollow
+
+# LAUNCH GATE: delete the X-Robots-Tag line above when the apex route is
+# attached, and open up robots.txt in the same commit. Assets-only mode cannot
+# make that header conditional on hostname, so it is a checklist item rather
+# than something the config handles.
+#
+# Verify after launch. This must print nothing:
+#   curl -sI https://repairmcp.com/ | grep -i x-robots-tag

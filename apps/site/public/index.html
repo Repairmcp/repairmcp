@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RepairMCP: DEG inquiries inside Claude and ChatGPT</title>
+<meta name="description" content="Connect Claude or ChatGPT to more than 22,000 real Database Enhancement Gateway inquiries. Ask in plain shop language, get back the inquiry number, the date, and what the estimating system published. Free.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://repairmcp.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RepairMCP: DEG inquiries inside Claude and ChatGPT">
+<meta property="og:description" content="More than 22,000 real DEG inquiries, cited by inquiry number and date, inside the AI assistant you already use. Free.">
+<meta property="og:url" content="https://repairmcp.com/">
+<meta property="og:image" content="https://repairmcp.com/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="/">Repair<span class="brand-b">MCP</span></a>
+    <nav aria-label="Sections">
+      <ul class="navlist">
+        <li><a href="#claude">Claude setup</a></li>
+        <li><a href="#chatgpt">ChatGPT setup</a></li>
+        <li><a href="#inside">What's inside</a></li>
+        <li><a href="#next">What's next</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <h1><span>Ask your AI.</span> <span>Cite the DEG.</span></h1>
+    <p class="lede">
+      RepairMCP connects Claude or ChatGPT to more than 22,000 real Database
+      Enhancement Gateway inquiries. Ask in plain shop language. Get back the
+      inquiry number, the date, and what CCC, Mitchell, or Audatex actually
+      published.
+    </p>
+
+    <div class="urlbox">
+      <p class="urlbox-label">Connector URL</p>
+      <p class="urlbox-url"><code>https://deg.repairmcp.com/mcp</code></p>
+      <p class="urlbox-note">Free. No account. No sign-in. It only reads.</p>
+    </div>
+
+    <figure class="shot shot-hero">
+      <img src="/img/hero-claude-answer.png" alt="Claude answering a question about the labor allowance on a welded Transit side panel extension by citing a DEG inquiry number, its date, and the hours the estimating system published" width="600" height="554" fetchpriority="high">
+    </figure>
+
+    <p class="proofline">More than 1,400 resolved inquiries in there record a
+    labor time that went up after a shop asked.</p>
+
+    <p class="jump">
+      Set it up in about two minutes:
+      <a href="#claude">Claude</a> or <a href="#chatgpt">ChatGPT</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CLAUDE ============ -->
+<section id="claude" class="band band-alt">
+  <div class="wrap">
+    <h2>Set it up in Claude</h2>
+    <p class="prose">
+      About two minutes, once. After that it is there in every conversation.
+    </p>
+
+    <ol class="steps">
+
+      <li class="step">
+        <h3>Open Settings</h3>
+        <p>Click your initials at the bottom left corner, then
+        <strong>Settings</strong>.</p>
+        <figure class="shot">
+          <img src="/img/claude-01-settings.png" alt="The Claude account menu opened from the initials button, with Settings as the first item" loading="lazy" decoding="async" width="320" height="297">
+          <figcaption>Settings is the first item in the menu.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Go to Connectors and add a custom one</h3>
+        <p>In the settings window, <strong>Connectors</strong> is in the left
+        list, under Customize. Open it, click <strong>Add</strong>, then
+        <strong>Add custom connector</strong>.</p>
+        <figure class="shot">
+          <img src="/img/claude-02-add-custom-connector.png" alt="The Claude settings window on the Connectors page with the Add menu open, showing Browse connectors and Add custom connector" loading="lazy" decoding="async" width="782" height="596">
+          <figcaption>Connectors, with the Add menu open.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Name it and paste the URL</h3>
+        <p>Give it a name you will recognize later. The screenshots here use
+        <strong>DEG Inquiry Search</strong>. Paste this as the URL:</p>
+        <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
+        <p>Open Advanced settings if you want to see them, then leave them
+        alone. There is no client ID and no secret to fill in. Click Add.</p>
+        <figure class="shot">
+          <img src="/img/claude-03-url-entered.png" alt="The Add custom connector dialog in Claude, named DEG Inquiry Search, with the connector URL filled in and both OAuth fields left empty" loading="lazy" decoding="async" width="446" height="430">
+          <figcaption>Name and URL. The two OAuth boxes stay empty.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Click Connect</h3>
+        <p>Adding it and turning it on are two different things, and this is the
+        step people miss. Claude will tell you it is not connected yet. Click
+        <strong>Connect</strong>.</p>
+        <figure class="shot">
+          <img src="/img/claude-04-connect.png" alt="Claude showing the message that you are not connected to DEG Inquiry Search yet, with a Connect button" loading="lazy" decoding="async" width="617" height="438">
+          <figcaption>One more click after Add.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>See what it is allowed to do</h3>
+        <p>It now shows as connected, with its six tools listed under a heading
+        that reads <strong>Read-only tools</strong>. That heading is Claude's
+        own label for what the connector offers, not ours. Now go ask it about
+        a job you argued over last week.</p>
+        <figure class="shot">
+          <img src="/img/claude-05-connected.png" alt="The connected DEG Inquiry Search connector in Claude, listing its six tools under a heading that reads Read-only tools" loading="lazy" decoding="async" width="782" height="596">
+          <figcaption>Connected. Claude sorts all six tools under Read-only.</figcaption>
+        </figure>
+      </li>
+
+    </ol>
+
+    <div class="callout">
+      <h3>Which Claude plans this works on</h3>
+      <p>Custom connectors work on Claude Free, Pro, Max, Team, and Enterprise.
+      On the Free plan you can have one custom connector at a time, so this
+      would be it. On Team and Enterprise an owner adds it in the organization
+      settings first, then everyone else turns it on from their own connector
+      list.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHATGPT ============ -->
+<section id="chatgpt" class="band">
+  <div class="wrap">
+    <h2>Set it up in ChatGPT</h2>
+    <p class="prose">
+      Longer than Claude, because ChatGPT keeps custom connectors behind a
+      developer setting. It is worth doing once. Web browser only.
+    </p>
+
+    <div class="callout">
+      <h3>Which ChatGPT accounts this works on</h3>
+      <p>OpenAI's own documentation says custom connectors need a paid account.
+      In practice, every screenshot below was taken on a <strong>free</strong>
+      ChatGPT account in August 2026: the developer setting was there, the
+      connector was created, and it worked.</p>
+      <p>So take the paid-plan requirement as what OpenAI publishes rather than
+      what you will definitely hit. This may differ by account and it may change
+      without notice. If you cannot find the developer setting, that is the
+      documented behaviour and a paid plan is the answer. It is worth looking
+      before you assume you need one. Either way this has to be done in a web
+      browser, not the phone app.</p>
+    </div>
+
+    <ol class="steps">
+
+      <li class="step">
+        <h3>Turn on developer mode</h3>
+        <p>Open ChatGPT in a browser. Go to Settings, then
+        <strong>Security and login</strong>, and scroll to
+        <strong>Developer mode</strong>. Switch it on.</p>
+        <p>It is flagged <strong>Elevated risk</strong> and described as letting
+        you add unverified connectors that could modify or erase data. That is
+        an accurate description of the category. The section further down deals
+        with it properly.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-01-developer-mode.png" alt="The ChatGPT Security and login settings with the Developer mode toggle switched on and flagged Elevated risk" loading="lazy" decoding="async" width="690" height="610">
+          <figcaption>Security and login, then Developer mode.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Open the Plugins settings</h3>
+        <p>Still in Settings, open <strong>Plugins</strong>. With developer mode
+        on, a Developer mode entry now appears here too.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-02-plugins-developer-mode.png" alt="The ChatGPT Plugins settings page showing Browse plugins and a Developer mode entry" loading="lazy" decoding="async" width="690" height="610">
+          <figcaption>Plugins, now with a Developer mode entry.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Start a new one</h3>
+        <p>Go to your plugins page and click the <strong>plus</strong> button
+        beside the search box, at the top right.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-03-new-plugin.png" alt="The top of the ChatGPT plugins page with the search box and the plus button used to add a new plugin" loading="lazy" decoding="async" width="800" height="345">
+          <figcaption>The plus button, top right.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Change Authentication to No Auth</h3>
+        <p>A form opens. Before anything else, look at
+        <strong>Authentication</strong>. It starts on <strong>OAuth</strong>,
+        which is wrong for this one. This connector has no sign-in, so there is
+        no key to paste and nothing to approve. Change it to
+        <strong>No Auth</strong>.</p>
+        <p>Get this wrong and it will fail to connect for a reason the error
+        message will not make obvious.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-04-form-empty.png" alt="The empty ChatGPT new plugin form, with the Authentication field defaulting to OAuth" loading="lazy" decoding="async" width="432" height="724">
+          <figcaption>The form as it opens. Authentication starts on OAuth.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Fill it in, then read the warning</h3>
+        <p>Name it <strong>DEG</strong>. The description is optional. Leave
+        Connection on <strong>Server URL</strong> and paste this:</p>
+        <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
+        <p>Then the warning appears, with a box you have to tick before Create
+        will do anything. Do not click past it. The next section quotes it in
+        full and answers it.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-05-risk-warning.png" alt="The filled ChatGPT plugin form named DEG with No Auth selected, showing the risk warning and its confirmation checkbox ticked" loading="lazy" decoding="async" width="420" height="644">
+          <figcaption>Filled in, No Auth, warning acknowledged.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Connect it</h3>
+        <p>ChatGPT shows a card asking whether to add DEG. Click
+        <strong>Connect</strong>.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-06-connect.png" alt="The ChatGPT card headed Add DEG to ChatGPT with a Connect button" loading="lazy" decoding="async" width="584" height="436">
+          <figcaption>The last click.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>See what it is allowed to do</h3>
+        <p>Open it and you get the list of what it can actually do. Every one is
+        tagged <strong>READ</strong>. Again, that is ChatGPT's label for the
+        connector, not ours. Now go ask it about a job.</p>
+        <figure class="shot">
+          <img src="/img/chatgpt-07-connected.png" alt="The connected DEG plugin in ChatGPT showing its actions, each tagged READ" loading="lazy" decoding="async" width="496" height="548">
+          <figcaption>Connected, with every action tagged READ.</figcaption>
+        </figure>
+      </li>
+
+    </ol>
+
+    <div class="callout callout-warn">
+      <h3>About that warning box</h3>
+
+      <p>Word for word, here is what it says:</p>
+
+      <blockquote class="verbatim">
+        <p>Custom MCP servers introduce risk.</p>
+        <p>I understand and want to continue. OpenAI hasn't reviewed this MCP
+        server. Attackers may attempt to steal your data or trick the model into
+        taking unintended actions, including destroying data.</p>
+      </blockquote>
+
+      <p><strong>All of that is fair, and none of it is boilerplate.</strong> A
+      connector is outside code that ChatGPT is allowed to call. Some connectors
+      can write: send mail, change records, move money. Some can be talked into
+      doing something you never asked for by text they read along the way.
+      OpenAI cannot tell which kind you are adding, so they warn about every one
+      of them the same way.</p>
+
+      <p><strong>Why this one sits at the low end of that range.</strong></p>
+      <ul class="ticks">
+        <li>It only reads, and you do not have to take that on faith. Claude
+        files all six tools under a heading that reads Read-only, and ChatGPT
+        tags every action READ. Both screenshots above show it.</li>
+        <li>It holds public data. Every inquiry it can reach is already
+        published free at degweb.org.</li>
+        <li>There is no sign-in and no token, which is why you set
+        Authentication to No Auth. It has no route to your account, your files,
+        your estimates, or your management system, because it was never handed
+        one.</li>
+        <li>What it can do is fixed and published at the URL. Six operations,
+        all of them looking up inquiries.</li>
+      </ul>
+
+      <p><strong>You still have to tick the box.</strong> That is by design.
+      OpenAI is asking you to confirm you trust the source. Read the four points
+      above, decide for yourself, tick it, and carry on.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSIDE ============ -->
+<section id="inside" class="band band-alt">
+  <div class="wrap">
+    <h2>What's inside, and what it is not</h2>
+
+    <div class="statgrid">
+      <div class="stat">
+        <p class="stat-n">22,652</p>
+        <p class="stat-l">resolved and pending inquiries, current through July 2026</p>
+      </div>
+      <div class="stat">
+        <p class="stat-n">2005</p>
+        <p class="stat-l">the oldest inquiry in the set, so the history is all there</p>
+      </div>
+      <div class="stat">
+        <p class="stat-n">3</p>
+        <p class="stat-l">estimating systems covered: CCC, Mitchell, and Audatex</p>
+      </div>
+      <div class="stat">
+        <p class="stat-n">1,400+</p>
+        <p class="stat-l">inquiries where a published labor time went up</p>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Where the data comes from</h3>
+      <p>All of it comes from the Database Enhancement Gateway at degweb.org,
+      which publishes every one of these inquiries free to anyone. This is a
+      copy that an AI assistant can search quickly, kept current and cited back
+      to the original. Every answer carries the inquiry number and the date so
+      you can open the real page and read it yourself.</p>
+
+      <p>The mix follows the source: most inquiries are CCC, with smaller sets
+      for Mitchell and Audatex. Nothing is filtered out or rewritten. Dates,
+      spellings, and vehicle names are left exactly as the source has them,
+      typos included, because a citation that quietly cleans things up is not a
+      citation.</p>
+
+      <h3>How it behaves</h3>
+      <ul class="ticks">
+        <li><strong>It only reads.</strong> There is no operation that writes
+        anything, anywhere.</li>
+        <li><strong>No account, no sign-in, no cost.</strong> Paste the URL
+        and it works.</li>
+        <li><strong>It does not see your data.</strong> No estimates, no files,
+        no customer information, no management system.</li>
+        <li><strong>Nothing is stored about you.</strong> This site sets no
+        cookies, runs no scripts, and carries no analytics of any kind.</li>
+        <li><strong>The source is open.</strong> Apache 2.0, and the whole thing
+        is on GitHub if you want to read it.</li>
+      </ul>
+
+      <h3>Support the source</h3>
+      <p>The Database Enhancement Gateway is free because the industry pays for
+      it. It was created and is equally funded by the Alliance of Automotive
+      Service Providers and the Society of Collision Repair Specialists. It only
+      works because shops take the time to write in when a time is wrong.</p>
+      <p>If this tool helps you find a good inquiry, the way to pay that
+      forward is to file your own next time you hit a bad one:
+      <a href="https://degweb.org/" rel="noopener">degweb.org</a>. RepairMCP is
+      only the plumbing. Everything worth reading in it was written by shops,
+      one inquiry at a time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEXT ============ -->
+<section id="next" class="band">
+  <div class="wrap">
+    <h2>What's next</h2>
+    <p class="prose">
+      Same idea, different sources. These are being built. There is no date and
+      nothing to sign up for. When one is ready it will show up here with a URL,
+      the same way DEG did.
+    </p>
+
+    <div class="cardgrid">
+
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
+        <h3>Database Enhancement Gateway</h3>
+        <p>Labor times, included and not-included operations, and how they
+        were resolved across CCC, Mitchell, and Audatex.</p>
+        <p class="card-link"><a href="#claude">Set it up</a></p>
+      </article>
+
+      <article class="card card-soon">
+        <p class="tag">Building</p>
+        <h3>NHTSA</h3>
+        <p>Recalls, complaints, and investigations by year, make, and model.
+        For the open-recall check and for the pattern behind a complaint
+        you have now seen three times.</p>
+      </article>
+
+      <article class="card card-soon">
+        <p class="tag">Building</p>
+        <h3>State regulations</h3>
+        <p>What the rules actually say about steering, aftermarket parts,
+        appraisals, and short-pays. Washington first.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-urlline">
+      <span>Connector URL</span>
+      <code>https://deg.repairmcp.com/mcp</code>
+    </p>
+    <p class="foot-dis">
+      RepairMCP is an independent project. It is not affiliated with, endorsed
+      by, or sponsored by the Database Enhancement Gateway, the Alliance of
+      Automotive Service Providers, the Society of Collision Repair Specialists,
+      CCC, Mitchell, Audatex, or MOTOR. All inquiry content belongs to its
+      original authors and is published by the Database Enhancement Gateway at
+      <a href="https://degweb.org/" rel="noopener">degweb.org</a>. Product names
+      are the trademarks of their owners.
+    </p>
+    <p class="foot-meta">
+      Built on Model Context Protocol (MCP), the open standard Claude and
+      ChatGPT both use to reach outside data.
+      &middot;
+      <a href="https://github.com/Repairmcp/repairmcp" rel="noopener">Source on GitHub</a>
+      &middot;
+      Apache 2.0
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

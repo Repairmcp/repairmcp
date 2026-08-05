@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "repairmcp-site",
+  "compatibility_date": "2026-08-01",
+
+  // Assets-only. There is deliberately no "main" here: nothing runs, no
+  // isolate is spun up, no request is billed as a Worker invocation. Every
+  // response header comes from public/_headers.
+  //
+  // The moment a "main" is added with run_worker_first, _headers stops
+  // applying and header management moves into code. Don't do that without
+  // moving the whole header set at the same time.
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "404-page"
+  },
+
+  // LAUNCH GATE. Preview only, on purpose.
+  //
+  // repairmcp.com and www still hold Namecheap parking records that answer
+  // 522 and 525. Adding an apex custom_domain here BEFORE those records are
+  // deleted in the dashboard will fail on a DNS conflict, and deleting the
+  // wrong record takes the domain's email forwarding with it. The order and
+  // the exact records are in README.md. Do not uncomment this without
+  // walking that runbook:
+  //
+  //   { "pattern": "repairmcp.com", "custom_domain": true }
+  //
+  // preview.repairmcp.com is served noindex (see public/_headers) so it
+  // cannot be found before launch.
+  "routes": [{ "pattern": "preview.repairmcp.com", "custom_domain": true }],
+
+  // Same reasoning as apps/deg-server: one public hostname, not two. A
+  // workers.dev URL would be a second door that the zone's rules do not
+  // cover, and the account has no workers.dev subdomain registered anyway.
+  "workers_dev": false,
+
+  "observability": {
+    "enabled": true
+  }
+}

@@ -734,8 +734,17 @@ pnpm --filter deg-server wrangler d1 execute repairmcp_deg --file=migrations/000
 **Revised 2026-08-03: everything serves on `.com`.** The original spec had it the
 other way round.
 
-- `repairmcp.com` → main website (Cloudflare Pages, future)
-- `deg.repairmcp.com` → DEG MCP server endpoint *(Cloudflare Worker custom domain)*
+- `repairmcp.com` → main website *(Cloudflare Workers static assets, `apps/site`)*.
+  **Revised 2026-08-04: Workers, not Pages.** Pages' one advantage here was a free
+  `*.pages.dev` preview hostname without touching DNS, and that stopped mattering the
+  moment the zone went active: a preview subdomain is one line of `wrangler.jsonc` and
+  Cloudflare provisions the record and certificate itself. Against that, Pages meant a
+  second product and a second deploy model next to the `wrangler deploy` this repo
+  already runs, with no versions and no gradual deployments. Not attached yet, see below.
+- `preview.repairmcp.com` → the same site, pre-launch. Served `noindex`. Retired once
+  the apex is attached.
+- `deg.repairmcp.com` → DEG MCP server endpoint *(Cloudflare Worker custom domain)*.
+  Live and verified.
 - `repairmcp.org` → not a serving hostname. It survives only in the scraper's
   User-Agent (`RepairMCP-Bot/1.0 (+https://repairmcp.org)`), which is revisited
   when the site launches, not before.

@@ -160,8 +160,12 @@ ingestion/deg-backfill/deg.sqlite
 # scripts/build-d1-sql.ts. The schema and FTS migrations beside it ARE tracked.
 apps/deg-server/migrations/0002_data.sql
 
-# Local D1 (miniflare) state created by `wrangler dev` / `d1 execute --local`
-apps/deg-server/.wrangler/
+# Local wrangler state: miniflare D1, caches, and the bundles `wrangler dev`
+# writes to tmp. Every Worker in the repo grows one of these the first time it
+# is run locally, so this is matched by name rather than by path. It used to
+# name apps/deg-server explicitly, which meant apps/site quietly staged 10 files
+# of build scratch the first time it was committed.
+**/.wrangler/
 
 # SQLite WAL sidecars (transient, recreated on every open)
 *.sqlite-shm

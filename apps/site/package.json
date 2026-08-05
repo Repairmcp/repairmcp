@@ -1,0 +1,19 @@
+{
+  "name": "@repairmcp/site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The public site at repairmcp.com. Static assets on a Cloudflare Worker, no script.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo \"(static, nothing to build)\" && exit 0",
+    "test": "bun ../../scripts/check-copy.ts",
+    "lint": "echo \"(no lint yet)\" && exit 0",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "shots": "bun ../../scripts/make-placeholder-shots.ts"
+  },
+  "devDependencies": {
+    "wrangler": "^4.118.0"
+  }
+}

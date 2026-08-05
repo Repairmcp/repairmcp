@@ -43,7 +43,19 @@ apps/deg-server/      @repairmcp/deg-server — STDIO entry + Cloudflare Worker
   data/deg-inquiries-full.json      the served corpus — 22,652 records, gitignored
   dist/stdio.js       The path Claude Desktop spawns
 
-scripts/build-d1-sql.ts   corpus JSON → 0002_data.sql (chunked under D1's limits)
+apps/site/            @repairmcp/site — the public site at repairmcp.com
+  wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
+  public/index.html   The whole site. One page, six anchors.
+  public/styles.css   One stylesheet. No scripts, no web fonts, no third-party anything.
+  public/_headers     Security headers + the LAUNCH GATE noindex line
+  public/robots.txt   LAUNCH GATE: Disallow: / while preview-only
+  public/img/         Screenshots. Placeholders until Travis shoots them
+  SCREENSHOT_MANIFEST.md  What to capture and how to crop it
+  README.md           Deploy notes + the launch runbook, including the DNS surgery
+
+scripts/build-d1-sql.ts          corpus JSON → 0002_data.sql (chunked under D1's limits)
+scripts/check-copy.ts            site copy linter — runs as apps/site's `test` task
+scripts/make-placeholder-shots.ts  flat PNGs at the exact declared dimensions
 
 ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
   src/tier1.ts        index fetch (fetchIndex) + metadata upsert (upsertIndexEntries)
@@ -130,6 +142,26 @@ npx tsx scripts/transform-deg-sqlite.ts             # writes it
 
 After editing source, **always rebuild before Claude Desktop re-spawns** the server — it loads `dist/stdio.js`, not source. Force a re-spawn by killing all `Claude.exe` and relaunching.
 
+**A corpus refresh touches three places, not one.** Regenerating the JSON is the
+first of them; the other two are easy to forget and both are visible to users:
+
+1. `scripts/transform-deg-sqlite.ts` — the served JSON
+2. `CORPUS_VERSION` in `apps/deg-server/wrangler.jsonc` — the cache key, and the
+   whole invalidation mechanism
+3. the record count hard-coded in `apps/site/public/index.html` — three spots: the
+   description meta tag, the hero, and the stat grid. It is a constant because the
+   site ships no scripts and has nothing to fetch a live count with. The current
+   value is whatever `curl -s https://deg.repairmcp.com/health` reports.
+
+**Public site** — from `apps/site/`:
+
+```bash
+bun run test        # copy linter. Also runs from `bun run test` at the root
+bun run dev         # wrangler dev, http://127.0.0.1:8787
+bun run deploy      # wrangler deploy → preview.repairmcp.com
+bun run shots       # regenerate placeholder images, skipping any real screenshot
+```
+
 ---
 
 ## Conventions (vital)
@@ -160,6 +192,19 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
   guards sit in front of it: `isSuspectParse` (a page parsing to nothing against a
   populated row) and `isImplausibleMake` (DEG's free-text Make cell is junk on `Other`
   inquiries — one page supplied the entire vehicle string, with typos, as the make).
+- **Site copy is linted, not remembered.** The writing rules for `apps/site` are
+  narrow and easy to break six months from now, so `scripts/check-copy.ts` enforces
+  them: no em dashes or en dashes anywhere, no hype or AI-industry jargon, the
+  acronym MCP exactly once and expanded, every `<img>` carrying `alt`/`width`/`height`,
+  and nothing the site's own Content-Security-Policy would silently kill (`<script>`,
+  `<form>`, inline `style=`, plain `http://`). Say "your AI assistant", never "MCP
+  client". If a banned word is genuinely the right one, change the list and say why
+  in the commit; do not route around it.
+- **The site ships nothing to the browser but HTML and CSS.** No scripts, no web
+  fonts, no icon library, no analytics, no cookies, no third-party requests at all.
+  That is what lets the CSP be `default-src 'none'`, and the CSP is what makes the
+  "it does not see your data" claim on the page true rather than aspirational. Adding
+  one script tag breaks the header, the linter, and the promise, in that order.
 
 ---
 
@@ -179,9 +224,11 @@ After editing source, **always rebuild before Claude Desktop re-spawns** the ser
 | D2 h6 End-to-end test | ⏳ next | 3 supplement-writing scenarios in Claude Desktop |
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
-| Phase 2 remote server | 🟡 deployed, awaiting zone | D1 + FTS5 loaded, Worker deployed and verified on the edge. Route set to `deg.repairmcp.com`; goes live when the zone is active. |
+| Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
+| Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
 
 **Test totals:** 255 passing (21 core + 87 deg + 147 ingestion). 0 failing.
+Plus the site copy linter, which is a gate rather than a test count.
 
 ### Phase 2 — remote MCP server, 2026-08-03
 
@@ -340,20 +387,21 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
   contains a Cloudflare Workers usage example. No SDK bump, no custom fetch wrapper,
   no `agents/mcp`. The backlog entry had been carrying a claim nobody had checked
   against `node_modules`.
-- **Take `deg.repairmcp.com` live.** The route is already in `wrangler.jsonc`; the
-  deploy fails until the zone is active, which is the intended gate. In order: confirm
-  the `repairmcp.com` zone is active on the Cloudflare account (registered, nameservers
-  moved 2026-08-03, propagation was in progress); `wrangler deploy` — Cloudflare
-  creates the DNS record and issues the certificate, nothing to add by hand; verify
-  `/health` and all six tools against `https://deg.repairmcp.com/mcp` on the wire;
-  create the WAF rate limit rule (match `http.request.uri.path eq "/mcp"`, count by IP,
-  **60 requests / 60 s**, block, longest available timeout — Free allows exactly one
-  rule); run `npx @modelcontextprotocol/inspector` against the live URL; then add the
-  connector in Claude and in ChatGPT and run the three supplement scenarios.
-  Leave `workers_dev` false — a second hostname the WAF rule does not cover is a
-  second door into the same open corpus. If a soft launch on workers.dev is ever
-  wanted, the only real mitigation there is Cloudflare's in-Worker rate limiting
+- ~~Take `deg.repairmcp.com` live.~~ **Done.** The zone is active and the endpoint
+  serves. Both connector gates passed with real supplement scenarios. `workers_dev`
+  stays false on every worker in this repo: a second hostname the WAF rule does not
+  cover is a second door into the same open corpus. If a soft launch on workers.dev is
+  ever wanted, the only real mitigation there is Cloudflare's in-Worker rate limiting
   binding (`unsafe.bindings`, type `ratelimit`), roughly 15 lines.
+- **Take `repairmcp.com` live.** The apex and `www` still carry orphaned Namecheap
+  parking records and answer **522** and **525** to the public right now. The site is
+  built and deployed to `preview.repairmcp.com`; attaching the apex is gated on
+  Travis's own launch prerequisite, not on anything in the repo. The full runbook,
+  including which DNS records to delete and which to leave alone, is
+  `apps/site/README.md`. The one that will bite: the five `MX` records to
+  `eforward*.registrar-servers.com` and the `TXT` SPF beside them are live Namecheap
+  **email forwarding**, not parking. They look like leftovers. Deleting them kills
+  every address at the domain and nothing will say so.
 - **The result cache is thinner on the edge than it looks locally.** Warm/cold was
   64 ms / 247 ms against local D1 but 349 ms / 401 ms against the real edge:
   `caches.default` is per-colo and a preview session never accumulates hits. Do not

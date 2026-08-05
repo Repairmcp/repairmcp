@@ -1,0 +1,11 @@
+# LAUNCH GATE: closed while this is preview only.
+# At launch, replace the two lines below with:
+#
+#   User-agent: *
+#   Allow: /
+#   Sitemap: https://repairmcp.com/sitemap.xml   (only if a sitemap is added)
+#
+# See apps/site/README.md.
+
+User-agent: *
+Disallow: /
