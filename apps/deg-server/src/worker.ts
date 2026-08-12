@@ -85,6 +85,24 @@ function makeAdapter(env: Env, ctx: ExecutionContext): D1DEGAdapter {
   });
 }
 
+/**
+ * An adapter with no cache, for `/health` only.
+ *
+ * `/health` has to report what is in the database, not what a colo happens to
+ * be holding. The freshness row is cached like every other query — correctly,
+ * since the cache namespace is CORPUS_VERSION and a refresh moves it — but that
+ * makes a cached read useless for the one question /health exists to answer:
+ * whether CORPUS_VERSION was bumped to match the data. Applying 0005 without
+ * bumping the var leaves the old rows cached under the old key, and a cached
+ * read then agrees with the stale var and reports everything fine, for an hour,
+ * starting at the exact moment you would check.
+ *
+ * Costs nothing: `count()` never went through the cache either.
+ */
+function makeHealthAdapter(env: Env): D1DEGAdapter {
+  return new D1DEGAdapter(env.DB);
+}
+
 async function handleMcp(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const adapter = makeAdapter(env, ctx);
   const server = new RepairMCPServer<DEGInquiry>(adapter, {
@@ -94,8 +112,15 @@ async function handleMcp(request: Request, env: Env, ctx: ExecutionContext): Pro
 
   // Four domain tools with shop-floor descriptions, plus the two OpenAI
   // connector tools. Names are distinct, so no `skip` is needed.
-  registerDegTools(server, adapter);
-  registerDegConnectorTools(server, adapter);
+  //
+  // Awaited because both read the corpus cutoff out of D1 and embed it in the
+  // tool descriptions. That is one extra single-row read per request, cached,
+  // and it buys the property that a model cannot see this corpus without also
+  // seeing where it stops.
+  await Promise.all([
+    registerDegTools(server, adapter),
+    registerDegConnectorTools(server, adapter),
+  ]);
 
   // sessionIdGenerator: undefined selects stateless mode explicitly — no session
   // header is issued and none is validated.
@@ -125,7 +150,12 @@ export default {
 
     if (url.pathname === '/health') {
       try {
-        const records = await makeAdapter(env, ctx).count();
+        const adapter = makeHealthAdapter(env);
+        const [records, freshness] = await Promise.all([
+          adapter.count(),
+          adapter.corpusMeta(),
+        ]);
+        const corpusVersion = env.CORPUS_VERSION ?? null;
         return json({
           ok: records > 0,
           server: SERVER_NAME,
@@ -135,7 +165,17 @@ export default {
           // what is actually running.
           deployment: env.CF_VERSION_METADATA?.id ?? null,
           deployedAt: env.CF_VERSION_METADATA?.timestamp ?? null,
-          corpusVersion: env.CORPUS_VERSION ?? null,
+          corpusVersion,
+          // What the corpus says about itself, read from the same corpus_meta
+          // row the tools quote. If these are absent, 0004/0005 have not been
+          // applied and the tools are serving without stating a cutoff.
+          corpusCurrentThrough: freshness?.currentThrough ?? null,
+          corpusSyncedAt: freshness?.syncedAt ?? null,
+          // CORPUS_VERSION is the cache key and is meant to BE the sync date, so
+          // that a corpus refresh cannot land without retiring the cache. True
+          // here means someone regenerated the data and forgot the var — the
+          // cache is then serving pre-refresh rows under a stale key.
+          corpusVersionStale: freshness ? corpusVersion !== freshness.syncedAt : null,
           records,
         });
       } catch (err) {

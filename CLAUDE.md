@@ -105,19 +105,27 @@ after any corpus change; the migrations are the corpus on the remote side.
 npx tsx ../../scripts/build-d1-sql.ts --dry-run   # statement count + largest statement
 npx tsx ../../scripts/build-d1-sql.ts             # writes migrations/0002_data.sql
 
-wrangler d1 execute repairmcp-deg --local --file=migrations/0001_schema.sql   # then 0002, then 0003
+wrangler d1 execute repairmcp-deg --local --file=migrations/0001_schema.sql   # then 0002 … 0005
 wrangler dev                                       # local D1, http://127.0.0.1:8787
 wrangler dev --remote                              # real edge + remote D1 — the honest rehearsal
 
-wrangler d1 execute repairmcp-deg --remote -y --file=migrations/0001_schema.sql   # then 0002, 0003
+wrangler d1 execute repairmcp-deg --remote -y --file=migrations/0001_schema.sql   # then 0002 … 0005
 wrangler d1 execute repairmcp-deg --remote -y --command "SELECT COUNT(*) FROM inquiry_fts"
 wrangler deploy
 ```
 
-Order is always 0001 → 0002 → 0003. `0001` drops and recreates `inquiry` (which
-takes its triggers with it) and `0003` rebuilds the index from scratch, so a
-full re-import is idempotent. Building the FTS index before the rows land would
-fire 22,652 trigger inserts instead of one `'rebuild'`.
+Order is always 0001 → 0002 → 0003 → 0004 → 0005. `0001` drops and recreates
+`inquiry` (which takes its triggers with it) and `0003` rebuilds the index from
+scratch, so a full re-import is idempotent. Building the FTS index before the
+rows land would fire 22,652 trigger inserts instead of one `'rebuild'`.
+
+**0004 and 0005 are the freshness pair and are independent of `inquiry`.** After
+a routine corpus refresh only 0002 and 0005 change, and 0005 can be applied on
+its own — it is `DELETE` + `INSERT`, not `DROP`. Shipping a corrected cutoff
+therefore costs two statements rather than a 25.5 MB re-import. Apply them
+*before* deploying new code, not after: the code degrades to silence when the
+table is missing rather than erroring, so the only cost of the wrong order is a
+window where the server answers without stating its cutoff.
 
 **Delta sync** — supervised batches, always dry-run first:
 
@@ -142,13 +150,17 @@ npx tsx scripts/transform-deg-sqlite.ts             # writes it
 
 After editing source, **always rebuild before Claude Desktop re-spawns** the server — it loads `dist/stdio.js`, not source. Force a re-spawn by killing all `Claude.exe` and relaunching.
 
-**A corpus refresh touches three places, not one.** Regenerating the JSON is the
-first of them; the other two are easy to forget and both are visible to users:
+**A corpus refresh touches four places, not one.** Regenerating the JSON is the
+first of them; the rest are easy to forget and all are visible to users:
 
 1. `scripts/transform-deg-sqlite.ts` — the served JSON
-2. `CORPUS_VERSION` in `apps/deg-server/wrangler.jsonc` — the cache key, and the
-   whole invalidation mechanism
-3. the record count hard-coded in `apps/site/public/index.html` — three spots: the
+2. `scripts/build-d1-sql.ts` — regenerates `0002_data.sql` **and**
+   `0005_meta_data.sql`, the corpus's own statement about how current it is.
+   Apply 0005 or the server keeps declaring the previous cutoff.
+3. `CORPUS_VERSION` in `apps/deg-server/wrangler.jsonc` — the cache key, and the
+   whole invalidation mechanism. Set it to the `syncedAt` the generator prints;
+   `/health` answers `corpusVersionStale: true` until you do.
+4. the record count hard-coded in `apps/site/public/index.html` — three spots: the
    description meta tag, the hero, and the stat grid. It is a constant because the
    site ships no scripts and has nothing to fetch a live count with. The current
    value is whatever `curl -s https://deg.repairmcp.com/health` reports.
@@ -169,6 +181,18 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 - **Vertical-agnostic core, vertical-specific adapters.** Anything DEG-specific (shop-floor language, IP keywords, scoring weights) lives in `packages/deg/`. `packages/core/` knows nothing about collision repair. The OpenAI `search`/`fetch` builders are in core for exactly this reason — "expose a ChatGPT connector over a SourceAdapter" is as true for I-CAR as for DEG. What core cannot know is how to flatten a domain record into one text blob, so that arrives as the `toDocument` mapper.
 - **Two adapters, one set of answers.** `DEGAdapter` (JSON, STDIO) and `D1DEGAdapter` (D1, Worker) both satisfy `DegSource`. Every behaviour they share lives in a module they both import — `identity.ts` for citations, `filters.ts` for filter parsing, `text-match.ts` for search scoring, `scoring.ts` for the killer scorer and its ranking comparator. Nothing is duplicated "because it's only five lines"; that is precisely how a shop ends up with two different citations for the same query. `d1-parity*.test.ts` is what enforces it.
 - **Never let user text reach FTS5 raw.** It goes through `buildMatchExpression`, which runs the scorer's own `tokenize` — leaving only `[a-z0-9]+` — then quotes each token. An FTS5 syntax error or an injected `NEAR`/`OR`/`*` is structurally impossible, not merely unlikely. Zero usable tokens returns `null`, and callers must treat that as no results: an empty MATCH string is a syntax error, and "match everything" would be a lie.
+- **The corpus states its own cutoff; nothing hardcodes it.** `deriveCorpusMeta`
+  (`packages/deg/src/freshness.ts`) is the one producer of both dates —
+  `currentThrough` from `COALESCE(resolvedAt, submittedAt)`, `syncedAt` from
+  `metadata.lastSeenAt` (the index sighting, *not* `bodyFetchedAt`, which runs a
+  day later and would overstate currency). The in-memory adapter derives it, the
+  SQL generator writes it into `corpus_meta`, the D1 adapter reads it back, and
+  the test fake seeds it — all from that function, so the two servers cannot
+  disagree. It reaches the model three times: appended to every tool description,
+  as `corpusCurrentThrough` in every payload, and as `corpusNote` when the query
+  implied recency. This exists because a ChatGPT session claimed coverage
+  "through August 12" over a corpus ending July 31. If freshness is ever
+  unknown, every layer degrades to silence — never to a guess.
 - **Cache results, never the JSON-RPC envelope.** A response embeds the id of the request that produced it. Replaying a cached HTTP response hands a client someone else's id. `src/cache.ts` caches raw D1 rows — pure JSON, no Dates to lose — and the Worker rebuilds the envelope every time. Invalidation is the `CORPUS_VERSION` var, which is part of the cache key: bump it on every corpus refresh.
 - **Tool descriptions matter as much as code.** They are the AI's primary signal for routing. Always follow the "USE THIS WHEN: / INPUT: / OUTPUT:" pattern from §7.3. Shop-floor vocabulary improves accuracy: *supplement, short-pay, denial, blueprinting, DRP, non-included, P-pages, MOTOR GTE, DBRM, Qapter*.
 - **Citation discipline.** All dates render via `fmtDateUtc` (`packages/core/src/citation/formatter.ts`) — `toLocaleDateString('en-US', { timeZone: 'UTC' })`. Never inline `.toLocaleDateString` elsewhere; if you need date formatting, route through that helper or add a sibling. AI clients are instructed to drop `citation.shortForm` verbatim — never reformat.
@@ -226,8 +250,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
 | Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
+| Corpus freshness | 🟡 local only | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Verified end to end against local D1. Remote migrations + deploy pending Travis's go-ahead. |
 
-**Test totals:** 255 passing (21 core + 87 deg + 147 ingestion). 0 failing.
+**Test totals:** 329 passing (76 core + 106 deg + 147 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Phase 2 — remote MCP server, 2026-08-03
@@ -415,6 +440,15 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
 
 ## Known gotchas
 
+- **`/health` reads `corpus_meta` uncached, and must keep doing so.** Every other
+  D1 read on the Worker goes through the result cache, whose namespace is
+  `CORPUS_VERSION`. That is correct for tools and useless for `/health`: the one
+  question it answers is whether `CORPUS_VERSION` was bumped to match the data,
+  and if the var was *not* bumped then the stale rows are still cached under the
+  unchanged key. A cached read then agrees with the stale var and reports
+  `corpusVersionStale: false` for an hour, starting at the exact moment you would
+  check. Found by dropping the table under a running `wrangler dev` and watching
+  /health cheerfully keep reporting the dates.
 - **Closing the MCP server after `handleRequest` returns an empty 200.** In the Worker,
   `transport.handleRequest()` resolves as soon as the response *stream* exists — the
   JSON-RPC payload is written into it later, when the server finishes handling the

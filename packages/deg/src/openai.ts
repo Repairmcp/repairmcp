@@ -14,6 +14,7 @@ import {
   buildOpenAiFetchTool,
   buildOpenAiSearchTool,
   type ConnectorDocument,
+  type CorpusFreshness,
   type RepairMCPServer,
   type ToolRegistrar,
 } from '@repairmcp/core';
@@ -98,27 +99,42 @@ export function degInquiryToDocument(inq: DEGInquiry): ConnectorDocument {
   };
 }
 
-export function buildDegConnectorSearchTool(adapter: DegSource): ToolRegistrar {
+export function buildDegConnectorSearchTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
   return buildOpenAiSearchTool(adapter, {
     description: DEG_CONNECTOR_SEARCH_DESCRIPTION,
     title: 'Search DEG',
     toDocument: degInquiryToDocument,
+    freshness,
   });
 }
 
-export function buildDegConnectorFetchTool(adapter: DegSource): ToolRegistrar {
+export function buildDegConnectorFetchTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
   return buildOpenAiFetchTool(adapter, {
     description: DEG_CONNECTOR_FETCH_DESCRIPTION,
     title: 'Fetch DEG inquiry',
     toDocument: degInquiryToDocument,
+    freshness,
   });
 }
 
-/** Register the two OpenAI connector tools. Pair with `registerDegTools`. */
-export function registerDegConnectorTools(
+/**
+ * Register the two OpenAI connector tools. Pair with `registerDegTools`.
+ *
+ * These two matter most for freshness: the wrong-currency claim that prompted
+ * all of this came from ChatGPT, which sees no `citation` object and reaches the
+ * corpus only through here.
+ */
+export async function registerDegConnectorTools(
   server: RepairMCPServer<DEGInquiry>,
   adapter: DegSource,
-): void {
-  server.registerCustomTool(buildDegConnectorSearchTool(adapter));
-  server.registerCustomTool(buildDegConnectorFetchTool(adapter));
+): Promise<void> {
+  const freshness = (await adapter.corpusMeta()) ?? undefined;
+  server.registerCustomTool(buildDegConnectorSearchTool(adapter, freshness));
+  server.registerCustomTool(buildDegConnectorFetchTool(adapter, freshness));
 }

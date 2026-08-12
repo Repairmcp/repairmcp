@@ -7,6 +7,14 @@ import type {
   SearchQuery,
   SearchResult,
 } from '../adapter/types.js';
+import {
+  beyondCutoffNote,
+  freshnessFields,
+  impliesRecency,
+  sinceIsBeyondCorpus,
+  withFreshness,
+  type CorpusFreshness,
+} from '../corpus/freshness.js';
 
 /**
  * A function that registers a single tool against an MCP server.
@@ -26,6 +34,15 @@ export interface BuildToolOpts {
   description?: string;
   /** Override the default human-readable title. */
   title?: string;
+  /**
+   * What the source knows about its own currency. When supplied, the freshness
+   * sentence is appended to the tool description and every result carries
+   * `corpusCurrentThrough` / `corpusSyncedAt`.
+   *
+   * Optional because a source that cannot determine its cutoff must degrade to
+   * silence rather than to a guess — see `CorpusFreshness`.
+   */
+  freshness?: CorpusFreshness;
 }
 
 interface SerializedSearchHit {
@@ -76,7 +93,11 @@ OUTPUT: Ranked array of ${adapter.itemNounPlural} with relevance \`score\` (0–
       name,
       {
         title: opts.title ?? `Search ${adapter.sourceName}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           text: z.string().min(1).describe('Free-text query.').optional(),
           limit: z
@@ -103,7 +124,14 @@ OUTPUT: Ranked array of ${adapter.itemNounPlural} with relevance \`score\` (0–
         };
         const results = await adapter.search(query);
         const hits = results.map(serializeSearchResult);
-        const payload = { count: hits.length, results: hits };
+        const payload = {
+          count: hits.length,
+          results: hits,
+          ...freshnessFields(opts.freshness, {
+            note: impliesRecency(text, opts.freshness),
+            itemNounPlural: adapter.itemNounPlural,
+          }),
+        };
         return {
           content: [jsonContent(payload)],
           structuredContent: payload,
@@ -137,7 +165,11 @@ OUTPUT: The complete ${adapter.itemNoun} record plus a \`citation\` object. If n
       name,
       {
         title: opts.title ?? `Get ${adapter.sourceName} ${adapter.itemNoun}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           // Coerced for the same reason as the connector `fetch` tool: clients
           // and models emit integer-looking ids as JSON numbers, and a bare
@@ -148,16 +180,17 @@ OUTPUT: The complete ${adapter.itemNoun} record plus a \`citation\` object. If n
         annotations: { readOnlyHint: true, openWorldHint: false },
       },
       async ({ id }) => {
+        const fresh = freshnessFields(opts.freshness);
         const item = await adapter.getById(id);
         if (!item) {
-          const payload = { found: false, id };
+          const payload = { found: false, id, ...fresh };
           return {
             content: [jsonContent(payload)],
             structuredContent: payload,
           };
         }
         const citation = adapter.formatCitation(item);
-        const payload = { found: true, item, citation };
+        const payload = { found: true, item, citation, ...fresh };
         return {
           content: [jsonContent(payload)],
           structuredContent: payload,
@@ -191,7 +224,11 @@ OUTPUT: Array of ${adapter.itemNounPlural} sorted newest first, each with its ci
       name,
       {
         title: opts.title ?? `Recent ${adapter.sourceName} ${adapter.itemNounPlural}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           since: z
             .string()
@@ -209,16 +246,30 @@ OUTPUT: Array of ${adapter.itemNounPlural} sorted newest first, each with its ci
         annotations: { readOnlyHint: true, openWorldHint: false },
       },
       async ({ since, limit }) => {
-        const opts: ListRecentOpts = {};
-        if (since) opts.since = new Date(since);
-        if (limit !== undefined) opts.limit = limit;
-        const items = await adapter.listRecent(opts);
+        // Named `listOpts`, not `opts`: the builder's own `opts` (which carries
+        // `freshness`) is in scope here and shadowing it silently drops the
+        // freshness fields from every payload.
+        const listOpts: ListRecentOpts = {};
+        if (since) listOpts.since = new Date(since);
+        if (limit !== undefined) listOpts.limit = limit;
+        const items = await adapter.listRecent(listOpts);
         const payload = {
           count: items.length,
           items: items.map((item) => ({
             item,
             citation: adapter.formatCitation(item),
           })),
+          // Always noted, not conditionally: every call to this tool is a
+          // question about recency by definition, and "newest first" over a
+          // stale corpus is exactly the phrasing that invites a wrong currency
+          // claim.
+          ...freshnessFields(opts.freshness, {
+            note:
+              opts.freshness && sinceIsBeyondCorpus(listOpts.since, opts.freshness)
+                ? beyondCutoffNote(opts.freshness, adapter.itemNounPlural)
+                : true,
+            itemNounPlural: adapter.itemNounPlural,
+          }),
         };
         return {
           content: [jsonContent(payload)],
@@ -260,7 +311,11 @@ OUTPUT: Ranked list of supporting ${adapter.itemNounPlural} with \`confidence\` 
       name,
       {
         title: opts.title ?? `Find supporting ${adapter.sourceName} ${adapter.itemNounPlural}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           lineItemText: z
             .string()
@@ -298,7 +353,14 @@ OUTPUT: Ranked list of supporting ${adapter.itemNounPlural} with \`confidence\` 
           snippet: r.snippet,
           citation: r.citation,
         }));
-        const payload = { count: hits.length, results: hits };
+        const payload = {
+          count: hits.length,
+          results: hits,
+          ...freshnessFields(opts.freshness, {
+            note: impliesRecency(lineItemText, opts.freshness),
+            itemNounPlural: adapter.itemNounPlural,
+          }),
+        };
         return {
           content: [jsonContent(payload)],
           structuredContent: payload,

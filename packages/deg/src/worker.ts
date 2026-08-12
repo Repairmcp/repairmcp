@@ -13,6 +13,7 @@
 export * from './schema.js';
 export type { DegSource, FindSupportingOpts, FindSupportingHit } from './ports.js';
 export { DEG_IDENTITY, formatDegCitation } from './identity.js';
+export { deriveCorpusMeta } from './freshness.js';
 export {
   parseFilters,
   inquiryMatchesFilters,
@@ -54,8 +55,12 @@ export {
   INQUIRY_COLUMNS,
   SELECT_COLUMNS,
   BM25_RANK,
+  CORPUS_META_KEYS,
+  SELECT_CORPUS_META,
   buildMatchExpression,
   rowToInquiry,
+  rowsToCorpusMeta,
   inquiryToRow,
+  type CorpusMetaRow,
   type InquiryRow,
 } from './d1/sql.js';

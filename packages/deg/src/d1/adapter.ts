@@ -17,6 +17,7 @@
  */
 import type {
   Citation,
+  CorpusFreshness,
   ListRecentOpts,
   RefreshResult,
   SearchQuery,
@@ -36,8 +37,11 @@ import { coverageScore, extractSnippet } from '../text-match.js';
 import {
   BM25_RANK,
   SELECT_COLUMNS,
+  SELECT_CORPUS_META,
   buildMatchExpression,
   rowToInquiry,
+  rowsToCorpusMeta,
+  type CorpusMetaRow,
   type InquiryRow,
 } from './sql.js';
 import type { D1Like, ResultCache } from './types.js';
@@ -313,6 +317,30 @@ export class D1DEGAdapter implements DegSource {
     scored.sort(compareSupportingHits);
 
     return scored.slice(0, limit);
+  }
+
+  /**
+   * Freshness, read from the `corpus_meta` table the import writes.
+   *
+   * Not computed with `SELECT MAX(...) FROM inquiry`, even though that would
+   * always be true of the rows present: the sync date lives nowhere in the
+   * columns — it is inside each row's JSON `metadata` blob — and scanning 22,652
+   * of those per request to recover one date is the wrong trade. The value is
+   * derived once, at import, by the same `deriveCorpusMeta` the local adapter
+   * runs.
+   *
+   * Never throws. A database that has not had `0004`/`0005` applied yet answers
+   * this query with an error, and the honest degradation there is silence: the
+   * tools simply stop claiming a cutoff. Failing the call instead would take the
+   * whole server down over a metadata row.
+   */
+  async corpusMeta(): Promise<CorpusFreshness | null> {
+    try {
+      const rows = await this.rows<CorpusMetaRow>('corpus-meta', SELECT_CORPUS_META, []);
+      return rowsToCorpusMeta(rows);
+    } catch {
+      return null;
+    }
   }
 
   /** Row count, for the Worker's /health endpoint. */

@@ -12,7 +12,7 @@
  * reason to be: the D1 implementation must await a query, and a port that forces
  * every consumer to handle both shapes is worse than one that always awaits.
  */
-import type { SourceAdapter } from '@repairmcp/core';
+import type { CorpusFreshness, SourceAdapter } from '@repairmcp/core';
 import type { DEGInquiry } from './schema.js';
 import type { ScoringBreakdown } from './scoring.js';
 
@@ -40,4 +40,16 @@ export interface FindSupportingHit {
  */
 export interface DegSource extends SourceAdapter<DEGInquiry> {
   findSupporting(opts: FindSupportingOpts): Promise<FindSupportingHit[]>;
+
+  /**
+   * What this source can honestly claim about its own currency, or null when it
+   * cannot tell.
+   *
+   * Async for the same reason `findSupporting` is: D1 has to be asked. Nullable
+   * because the remote adapter reads it from a table that a not-yet-migrated
+   * database will not have, and the correct behaviour there is to say nothing
+   * rather than to fail a tool call — a server that 500s on `/mcp` because a
+   * metadata row is missing has traded a small silence for a total outage.
+   */
+  corpusMeta(): Promise<CorpusFreshness | null>;
 }

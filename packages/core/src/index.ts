@@ -9,6 +9,18 @@ export type {
 export { SearchQuerySchema } from './adapter/types.js';
 export type { SourceAdapter } from './adapter/source-adapter.js';
 
+// Corpus freshness — what a source knows about its own currency
+export type { CorpusFreshness, FreshnessPayload } from './corpus/freshness.js';
+export {
+  beyondCutoffNote,
+  freshnessFields,
+  freshnessSentence,
+  impliesRecency,
+  recencyNote,
+  sinceIsBeyondCorpus,
+  withFreshness,
+} from './corpus/freshness.js';
+
 // Citation
 export type { Citation } from './citation/schema.js';
 export type { CitationInput } from './citation/formatter.js';

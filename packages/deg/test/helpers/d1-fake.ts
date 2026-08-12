@@ -14,7 +14,8 @@ import { Database } from 'bun:sqlite';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { D1Like, D1PreparedLike } from '../../src/d1/types';
-import { INQUIRY_COLUMNS, inquiryToRow } from '../../src/d1/sql';
+import { CORPUS_META_KEYS, INQUIRY_COLUMNS, inquiryToRow } from '../../src/d1/sql';
+import { deriveCorpusMeta } from '../../src/freshness';
 import type { DEGInquiry } from '../../src/schema';
 
 const MIGRATIONS_DIR = join(
@@ -77,8 +78,13 @@ export class FakeD1 implements D1Like {
  * Apply order mirrors deployment exactly — schema, then rows, then the FTS
  * index. Building the index after the rows land is the whole reason `0003` is a
  * separate migration, so the tests had better do it in that order too.
+ *
+ * Pass `{ meta: false }` to skip `corpus_meta` entirely, reproducing a database
+ * that has not had the freshness migrations applied. The adapter must answer
+ * null there rather than throwing, and that is only testable if the table can
+ * genuinely be absent.
  */
-export function makeFakeD1(inquiries: DEGInquiry[]): FakeD1 {
+export function makeFakeD1(inquiries: DEGInquiry[], opts: { meta?: boolean } = {}): FakeD1 {
   const db = new Database(':memory:');
   db.run(migration('0001_schema.sql'));
 
@@ -95,5 +101,22 @@ export function makeFakeD1(inquiries: DEGInquiry[]): FakeD1 {
   })();
 
   db.run(migration('0003_fts.sql'));
+
+  // 0005_meta_data.sql is generated from the full corpus, so the fake applies
+  // the DDL from 0004 and derives its own rows with the same `deriveCorpusMeta`
+  // the generator uses. That is what makes the parity test meaningful: the D1
+  // side is not handed the in-memory adapter's answer, it is handed the output
+  // of the identical derivation over the identical input.
+  if (opts.meta !== false) {
+    db.run(migration('0004_meta.sql'));
+    const meta = deriveCorpusMeta(inquiries);
+    if (meta) {
+      const insert = db.prepare('INSERT INTO corpus_meta (key, value) VALUES (?, ?)');
+      insert.run(CORPUS_META_KEYS.currentThrough, meta.currentThrough);
+      insert.run(CORPUS_META_KEYS.syncedAt, meta.syncedAt);
+      insert.run(CORPUS_META_KEYS.recordCount, String(meta.recordCount));
+    }
+  }
+
   return new FakeD1(db);
 }

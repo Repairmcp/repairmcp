@@ -20,9 +20,14 @@
   ],
 
   "vars": {
-    // Part of the result-cache key. Bump on every corpus refresh — that is the
-    // whole cache invalidation mechanism, see src/cache.ts.
-    "CORPUS_VERSION": "2026-08-03"
+    // Part of the result-cache key, and the whole cache invalidation mechanism —
+    // see src/cache.ts.
+    //
+    // Set it to the corpus's own `syncedAt`, the value `corpus_meta` carries and
+    // /health reports. Tying the two together means the bump is no longer
+    // something to remember: a refresh moves the sync date, the sync date is the
+    // key, and /health answers `corpusVersionStale: true` the moment they drift.
+    "CORPUS_VERSION": "2026-08-02"
   },
 
   // Hands the Worker its own deployment id at runtime, so /health can answer

@@ -253,3 +253,116 @@ describe('fetch', () => {
     expect(payload['text']).toBe('');
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────
+// Corpus freshness over the same round trip
+// ──────────────────────────────────────────────────────────────────────
+
+/**
+ * The riskiest part of the freshness change is right here: `search` declares an
+ * `outputSchema`, and the SDK validates `structuredContent` against it. A
+ * corpus field attached but not declared would be stripped or rejected — and it
+ * would fail silently, on the one client that got the currency wrong in the
+ * first place. Only a real round trip through the SDK proves the declaration.
+ */
+describe('corpus freshness', () => {
+  const FRESHNESS = {
+    currentThrough: '2026-07-31',
+    syncedAt: '2026-08-02',
+    recordCount: 22652,
+  };
+
+  let freshClient: Client;
+
+  beforeAll(async () => {
+    const server = new RepairMCPServer(adapter, { name: 'test-fresh', version: '0.0.0' });
+    server.registerCustomTool(
+      buildOpenAiSearchTool(adapter, {
+        toDocument: (d) => ({ text: d.content, metadata: { kind: 'demo' } }),
+        freshness: FRESHNESS,
+      }),
+    );
+    server.registerCustomTool(
+      buildOpenAiFetchTool(adapter, {
+        toDocument: (d) => ({ text: d.content, metadata: { kind: 'demo' } }),
+        freshness: FRESHNESS,
+      }),
+    );
+
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    freshClient = new Client({ name: 'test-client', version: '0.0.0' });
+    await Promise.all([server.connect(serverTransport), freshClient.connect(clientTransport)]);
+  });
+
+  test('both descriptions state the cutoff before the model calls anything', async () => {
+    const { tools } = await freshClient.listTools();
+    for (const t of tools) {
+      expect(t.description).toContain('2026-07-31');
+      expect(t.description).toContain('CORPUS FRESHNESS');
+    }
+  });
+
+  test('search declares the corpus fields in its output schema', async () => {
+    const { tools } = await freshClient.listTools();
+    const search = tools.find((t) => t.name === 'search')!;
+    const schema = search.outputSchema as { properties: Record<string, unknown> };
+    expect(Object.keys(schema.properties).sort()).toEqual([
+      'corpusCurrentThrough',
+      'corpusNote',
+      'corpusSyncedAt',
+      'results',
+    ]);
+  });
+
+  test('search results survive SDK validation carrying the cutoff', async () => {
+    const res = await freshClient.callTool({ name: 'search', arguments: { query: 'blend' } });
+    expect(res.isError).toBeFalsy();
+    const payload = res.structuredContent as Record<string, unknown>;
+    expect(payload['corpusCurrentThrough']).toBe('2026-07-31');
+    expect(payload['corpusSyncedAt']).toBe('2026-08-02');
+    expect(Array.isArray(payload['results'])).toBe(true);
+  });
+
+  test('content[0].text still parses to exactly structuredContent', async () => {
+    // OpenAI's contract requires the same value in both places. The corpus
+    // fields must not appear in one and be missing from the other.
+    const res = await freshClient.callTool({ name: 'search', arguments: { query: 'blend' } });
+    const content = res.content as Array<{ type: string; text: string }>;
+    expect(JSON.parse(content[0]!.text)).toEqual(res.structuredContent);
+  });
+
+  test('a recency query earns the note; an ordinary one does not', async () => {
+    const recent = await freshClient.callTool({
+      name: 'search',
+      arguments: { query: 'latest rulings on blend time' },
+    });
+    expect((recent.structuredContent as Record<string, unknown>)['corpusNote']).toContain(
+      '2026-07-31',
+    );
+
+    const ordinary = await freshClient.callTool({
+      name: 'search',
+      arguments: { query: 'blend' },
+    });
+    expect((ordinary.structuredContent as Record<string, unknown>)['corpusNote']).toBeUndefined();
+  });
+
+  test('fetch carries the cutoff in metadata, the only channel it has', async () => {
+    const res = await freshClient.callTool({ name: 'fetch', arguments: { id: '101' } });
+    const payload = res.structuredContent as Record<string, unknown>;
+    // The declared top-level shape is unchanged — freshness rides in metadata.
+    expect(Object.keys(payload).sort()).toEqual(['id', 'metadata', 'text', 'title', 'url']);
+    const meta = payload['metadata'] as Record<string, unknown>;
+    expect(meta['corpusCurrentThrough']).toBe('2026-07-31');
+    expect(meta['corpusSyncedAt']).toBe('2026-08-02');
+  });
+
+  test('a miss carries the cutoff too', async () => {
+    // "Not found" is exactly when a model is most tempted to reason about
+    // whether the record is simply too new.
+    const res = await freshClient.callTool({ name: 'fetch', arguments: { id: 'nope' } });
+    const meta = (res.structuredContent as { metadata: Record<string, unknown> }).metadata;
+    expect(meta['found']).toBe(false);
+    expect(meta['corpusCurrentThrough']).toBe('2026-07-31');
+  });
+});

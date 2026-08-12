@@ -3,6 +3,10 @@ import {
   buildGetByIdTool,
   buildListRecentTool,
   buildSearchTool,
+  freshnessFields,
+  impliesRecency,
+  withFreshness,
+  type CorpusFreshness,
   type RepairMCPServer,
   type ToolRegistrar,
 } from '@repairmcp/core';
@@ -78,25 +82,41 @@ Confidence interpretation:
 // is fully custom because of its scoring + breakdown payload.
 // ─────────────────────────────────────────────────────────────────────
 
-export function buildDegSearchInquiriesTool(adapter: DegSource): ToolRegistrar {
-  return buildSearchTool(adapter, { description: DEG_SEARCH_DESCRIPTION });
+export function buildDegSearchInquiriesTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
+  return buildSearchTool(adapter, { description: DEG_SEARCH_DESCRIPTION, freshness });
 }
 
-export function buildDegGetInquiryTool(adapter: DegSource): ToolRegistrar {
-  return buildGetByIdTool(adapter, { description: DEG_GET_DESCRIPTION });
+export function buildDegGetInquiryTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
+  return buildGetByIdTool(adapter, { description: DEG_GET_DESCRIPTION, freshness });
 }
 
-export function buildDegListRecentTool(adapter: DegSource): ToolRegistrar {
-  return buildListRecentTool(adapter, { description: DEG_LIST_RECENT_DESCRIPTION });
+export function buildDegListRecentTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
+  return buildListRecentTool(adapter, { description: DEG_LIST_RECENT_DESCRIPTION, freshness });
 }
 
-export function buildDegFindSupportingTool(adapter: DegSource): ToolRegistrar {
+export function buildDegFindSupportingTool(
+  adapter: DegSource,
+  freshness?: CorpusFreshness,
+): ToolRegistrar {
   return (server) => {
     server.registerTool(
       'deg_find_supporting',
       {
         title: 'Find supporting DEG inquiries',
-        description: DEG_FIND_SUPPORTING_DESCRIPTION,
+        description: withFreshness(
+          DEG_FIND_SUPPORTING_DESCRIPTION,
+          freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           lineItemText: z
             .string()
@@ -150,7 +170,14 @@ export function buildDegFindSupportingTool(adapter: DegSource): ToolRegistrar {
           snippet: r.snippet,
           citation: adapter.formatCitation(r.inquiry),
         }));
-        const payload = { count: hits.length, results: hits };
+        const payload = {
+          count: hits.length,
+          results: hits,
+          ...freshnessFields(freshness, {
+            note: impliesRecency(args.lineItemText, freshness),
+            itemNounPlural: adapter.itemNounPlural,
+          }),
+        };
         return {
           content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
           structuredContent: payload,
@@ -165,10 +192,20 @@ export function buildDegFindSupportingTool(adapter: DegSource): ToolRegistrar {
  * a server. Replaces both the search/get/list_recent baselines (description
  * override only — schema and handler unchanged) and the find_supporting
  * baseline (full custom scoring + breakdown payload).
+ *
+ * Async because freshness is read once here and handed to every builder. Once,
+ * deliberately: the description a model reads before calling and the
+ * `corpusCurrentThrough` it reads afterwards must be the same value, and four
+ * independent reads against a corpus that could be re-imported between them
+ * would not guarantee that.
  */
-export function registerDegTools(server: RepairMCPServer<DEGInquiry>, adapter: DegSource): void {
-  server.registerCustomTool(buildDegSearchInquiriesTool(adapter));
-  server.registerCustomTool(buildDegGetInquiryTool(adapter));
-  server.registerCustomTool(buildDegListRecentTool(adapter));
-  server.registerCustomTool(buildDegFindSupportingTool(adapter));
+export async function registerDegTools(
+  server: RepairMCPServer<DEGInquiry>,
+  adapter: DegSource,
+): Promise<void> {
+  const freshness = (await adapter.corpusMeta()) ?? undefined;
+  server.registerCustomTool(buildDegSearchInquiriesTool(adapter, freshness));
+  server.registerCustomTool(buildDegGetInquiryTool(adapter, freshness));
+  server.registerCustomTool(buildDegListRecentTool(adapter, freshness));
+  server.registerCustomTool(buildDegFindSupportingTool(adapter, freshness));
 }

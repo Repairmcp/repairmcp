@@ -25,6 +25,7 @@
 import { z } from 'zod';
 import type { SourceAdapter } from '../adapter/source-adapter.js';
 import type { BaseItem } from '../adapter/types.js';
+import { freshnessFields, impliesRecency, withFreshness } from '../corpus/freshness.js';
 import type { BuildToolOpts, ToolRegistrar } from './tool-builder.js';
 
 /** What a vertical must supply to turn one of its items into a connector document. */
@@ -77,7 +78,22 @@ const SearchResultShape = z.object({
   url: z.string(),
 });
 
-const SearchOutputShape = { results: z.array(SearchResultShape) };
+/**
+ * `results` is the contract; the three corpus fields are additive and must be
+ * *declared*, not merely attached. The SDK validates `structuredContent` against
+ * this shape, so an undeclared field is stripped or rejected rather than passed
+ * through — which would leave `search` as the one tool that never states the
+ * cutoff, on the client that got the cutoff wrong in the first place.
+ *
+ * Optional rather than required, because a source with no known cutoff sends
+ * neither field. Same additive precedent as `text` inside `SearchResultShape`.
+ */
+const SearchOutputShape = {
+  results: z.array(SearchResultShape),
+  corpusCurrentThrough: z.string().optional(),
+  corpusSyncedAt: z.string().optional(),
+  corpusNote: z.string().optional(),
+};
 
 /**
  * `search` — one string in, `{results: [{id, title, text, url}]}` out.
@@ -105,7 +121,11 @@ OUTPUT: results — an array of { id, title, text, url }. text is a short excerp
       'search',
       {
         title: opts.title ?? `Search ${adapter.sourceShortName}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           query: z.string().describe(`Search query for ${adapter.sourceName}.`),
         },
@@ -123,7 +143,13 @@ OUTPUT: results — an array of { id, title, text, url }. text is a short excerp
             url: hit.item.url,
           };
         });
-        return connectorResult({ results });
+        return connectorResult({
+          results,
+          ...freshnessFields(opts.freshness, {
+            note: impliesRecency(query, opts.freshness),
+            itemNounPlural: adapter.itemNounPlural,
+          }),
+        });
       },
     );
   };
@@ -166,7 +192,11 @@ OUTPUT: { id, title, text, url, metadata }. text is the full record. url is the 
       'fetch',
       {
         title: opts.title ?? `Fetch ${adapter.sourceShortName} ${adapter.itemNoun}`,
-        description: opts.description ?? defaultDescription,
+        description: withFreshness(
+          opts.description ?? defaultDescription,
+          opts.freshness,
+          adapter.itemNounPlural,
+        ),
         inputSchema: {
           // Coerce, do not merely accept. Ids that look like integers get
           // emitted as JSON numbers by more clients than you would hope — the
@@ -185,6 +215,10 @@ OUTPUT: { id, title, text, url, metadata }. text is the full record. url is the 
         annotations: { readOnlyHint: true, openWorldHint: false },
       },
       async ({ id }) => {
+        // ChatGPT never sees a `citation` object and never sees a top-level
+        // corpus field on this tool — `metadata` is the only free-form channel
+        // the fetch contract leaves open, so freshness rides in there.
+        const fresh = freshnessFields(opts.freshness);
         const item = await adapter.getById(id);
         if (!item) {
           return connectorResult({
@@ -192,7 +226,7 @@ OUTPUT: { id, title, text, url, metadata }. text is the full record. url is the 
             title: '',
             text: '',
             url: '',
-            metadata: { found: false, source: adapter.sourceShortName },
+            metadata: { found: false, source: adapter.sourceShortName, ...fresh },
           });
         }
         const doc = opts.toDocument(item);
@@ -201,7 +235,12 @@ OUTPUT: { id, title, text, url, metadata }. text is the full record. url is the 
           title: item.title,
           text: doc.text,
           url: item.url,
-          metadata: { found: true, source: adapter.sourceShortName, ...doc.metadata },
+          metadata: {
+            found: true,
+            source: adapter.sourceShortName,
+            ...doc.metadata,
+            ...fresh,
+          },
         });
       },
     );

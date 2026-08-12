@@ -31,7 +31,17 @@ async function main(): Promise<void> {
   // Register all four DEG tools with shop-floor descriptions. search/get/list_recent
   // delegate to core builders with description overrides; find_supporting carries
   // its own scoring (bigram + unigram + IP/vehicle/operation/recency).
-  registerDegTools(server, adapter);
+  //
+  // Awaited: the tool descriptions embed the corpus cutoff, which is derived from
+  // the JSON just loaded.
+  await registerDegTools(server, adapter);
+
+  const freshness = await adapter.corpusMeta();
+  process.stderr.write(
+    freshness
+      ? `repairmcp-deg: corpus current through ${freshness.currentThrough}, synced ${freshness.syncedAt}\n`
+      : 'repairmcp-deg: corpus freshness unknown — tools will not state a cutoff\n',
+  );
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

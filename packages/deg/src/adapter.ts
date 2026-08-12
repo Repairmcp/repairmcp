@@ -2,11 +2,13 @@ import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 import type {
   Citation,
+  CorpusFreshness,
   ListRecentOpts,
   RefreshResult,
   SearchQuery,
   SearchResult,
 } from '@repairmcp/core';
+import { deriveCorpusMeta } from './freshness.js';
 import { DEG_IDENTITY, formatDegCitation } from './identity.js';
 import { DEGInquirySchema, type DEGInquiry } from './schema.js';
 import { inquiryMatchesFilters, parseFilters } from './filters.js';
@@ -29,6 +31,9 @@ export class DEGAdapter implements DegSource {
   readonly description = DEG_IDENTITY.description;
   readonly itemNoun = DEG_IDENTITY.itemNoun;
   readonly itemNounPlural = DEG_IDENTITY.itemNounPlural;
+
+  /** Derived once on first ask; the corpus is immutable for this adapter's life. */
+  private freshness: CorpusFreshness | null | undefined;
 
   constructor(private readonly inquiries: DEGInquiry[]) {}
 
@@ -95,6 +100,18 @@ export class DEGAdapter implements DegSource {
 
   formatCitation(item: DEGInquiry): Citation {
     return formatDegCitation(item);
+  }
+
+  /**
+   * Freshness derived from the loaded corpus.
+   *
+   * The remote adapter reads the same two values out of D1, where they were
+   * written by this same `deriveCorpusMeta` at import time — so the two servers
+   * state the same cutoff by construction, not by coincidence.
+   */
+  async corpusMeta(): Promise<CorpusFreshness | null> {
+    if (this.freshness === undefined) this.freshness = deriveCorpusMeta(this.inquiries);
+    return this.freshness;
   }
 
   /** In-memory adapter does not refresh from a live source. Returns zero counts. */

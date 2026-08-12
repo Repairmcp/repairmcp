@@ -6,6 +6,7 @@
  * `rowToInquiry` to read it back. If those two ever disagree the served corpus
  * silently diverges from the local one, so they are not allowed to live apart.
  */
+import type { CorpusFreshness } from '@repairmcp/core';
 import type { DEGInquiry, InformationProvider, InquiryStatus } from '../schema.js';
 import { tokenize } from '../scoring.js';
 
@@ -201,4 +202,54 @@ export function buildMatchExpression(text: string): string | null {
       return t.length >= PREFIX_MIN_LENGTH ? `${quoted}*` : quoted;
     })
     .join(' OR ');
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// corpus_meta — the freshness row set
+// ─────────────────────────────────────────────────────────────────────
+
+/**
+ * A key/value table rather than a one-row table with typed columns.
+ *
+ * The set of things a corpus knows about itself will grow (a per-IP cutoff is
+ * the obvious next one), and adding a key to a generated INSERT is a one-line
+ * change where adding a column is a migration against a live database. Nothing
+ * queries these by value, so there is no index to lose.
+ */
+export interface CorpusMetaRow {
+  key: string;
+  value: string;
+}
+
+export const CORPUS_META_KEYS = {
+  currentThrough: 'currentThrough',
+  syncedAt: 'syncedAt',
+  recordCount: 'recordCount',
+} as const;
+
+export const SELECT_CORPUS_META = 'SELECT key, value FROM corpus_meta';
+
+/**
+ * Map the stored rows back into a `CorpusFreshness`.
+ *
+ * Returns null unless every field is present and well-formed. A half-populated
+ * table means the import was interrupted or a key was renamed, and the tools
+ * treat "no freshness" as silence rather than as a guess — reporting a cutoff
+ * with a missing sync date would be stated to the model just as confidently as
+ * a complete one.
+ */
+export function rowsToCorpusMeta(rows: CorpusMetaRow[]): CorpusFreshness | null {
+  const byKey = new Map(rows.map((r) => [r.key, r.value]));
+
+  const currentThrough = byKey.get(CORPUS_META_KEYS.currentThrough);
+  const syncedAt = byKey.get(CORPUS_META_KEYS.syncedAt);
+  const recordCount = Number(byKey.get(CORPUS_META_KEYS.recordCount));
+
+  const isDate = (v: string | undefined): v is string =>
+    typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+  if (!isDate(currentThrough) || !isDate(syncedAt)) return null;
+  if (!Number.isFinite(recordCount) || recordCount <= 0) return null;
+
+  return { currentThrough, syncedAt, recordCount };
 }
