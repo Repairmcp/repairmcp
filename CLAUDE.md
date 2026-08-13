@@ -250,7 +250,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
 | Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
-| Corpus freshness | 🟡 local only | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Verified end to end against local D1. Remote migrations + deploy pending Travis's go-ahead. |
+| Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Deployed 2026-08-12, version `4a848a92`; verified on the wire at `deg.repairmcp.com`. Corpus declares current through 2026-07-31, synced 2026-08-02. |
 
 **Test totals:** 329 passing (76 core + 106 deg + 147 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
