@@ -1,0 +1,141 @@
+import { openDb } from './db.js';
+import {
+  buildHealthReport,
+  appendHealthLogLine,
+  writeAttentionFlag,
+  clearAttentionFlag,
+  runLogPath,
+  DEFAULT_LOG_DIR,
+} from './health.js';
+import { runWeekly } from './weekly.js';
+import type { SpawnResult } from './weekly.js';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const PACKAGE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
+const REPO_ROOT = join(PACKAGE_DIR, '..', '..');
+
+function flagValue(argv: string[], name: string): string | undefined {
+  const idx = argv.indexOf(name);
+  return idx === -1 ? undefined : argv[idx + 1];
+}
+
+async function spawnCapture(cmd: string[], cwd: string): Promise<SpawnResult> {
+  const proc = Bun.spawn(cmd, { cwd, stdout: 'pipe', stderr: 'pipe' });
+  const [stdout, stderr, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]);
+  return { exitCode, stdout, stderr };
+}
+
+/** Fires and forgets. Task Scheduler runs unattended at 3am with no logged-in session, so this often shows nothing; the durable signal is the flag file and health.log. */
+function notifyToastBestEffort(title: string, message: string): void {
+  if (process.platform !== 'win32') return;
+  const script = [
+    'Add-Type -AssemblyName System.Windows.Forms',
+    'Add-Type -AssemblyName System.Drawing',
+    '$notify = New-Object System.Windows.Forms.NotifyIcon',
+    '$notify.Icon = [System.Drawing.SystemIcons]::Warning',
+    '$notify.Visible = $true',
+    `$notify.ShowBalloonTip(10000, ${JSON.stringify(title)}, ${JSON.stringify(message)}, [System.Windows.Forms.ToolTipIcon]::Error)`,
+    'Start-Sleep -Seconds 4',
+    '$notify.Dispose()',
+  ].join('; ');
+  try {
+    Bun.spawn(['powershell', '-NoProfile', '-NonInteractive', '-Command', script], {
+      stdout: 'ignore',
+      stderr: 'ignore',
+    });
+  } catch {
+    /* best effort only */
+  }
+}
+
+async function main(): Promise<void> {
+  const argv = process.argv.slice(2);
+  const dbPath = flagValue(argv, '--db') ?? process.env['DEG_DB_PATH'];
+  const logDir = flagValue(argv, '--log-dir') ?? DEFAULT_LOG_DIR;
+
+  if (dbPath === undefined || dbPath === '') {
+    process.stderr.write('Fatal: --db is required (or set DEG_DB_PATH).\n');
+    process.exit(1);
+  }
+
+  const runDate = new Date().toISOString().slice(0, 10);
+  if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
+  const runLog: string[] = [];
+  const log = (line: string): void => {
+    runLog.push(line);
+    process.stdout.write(line + '\n');
+  };
+
+  log(`=== Weekly DEG sync, ${new Date().toISOString()} ===`);
+  log(`Database: ${dbPath}`);
+
+  const result = await runWeekly({
+    // refresh-window 0 disables the 1000-item trailing sweep sync-cli.ts
+    // otherwise defaults to. That sweep exists to catch silent content edits
+    // with no status/resolution_date change, but running it every week forever
+    // would be ~1000 fetches (~33 min) regardless of what actually changed,
+    // which is not "tens per week, minutes of runtime." New, index-diff-changed,
+    // unresolved, resolved-blank, and suspected-dead cohorts are unaffected.
+    // A manual `bun run sync` catch-up (default window) is still the way to
+    // periodically catch that narrower class of silent edit.
+    // process.execPath is this already-running bun's own absolute path, so the
+    // inner spawn never has to re-resolve 'bun' on PATH (Bun.spawn's handling
+    // of bare command names against Windows .cmd shims is inconsistent).
+    runSync: () =>
+      spawnCapture(
+        [process.execPath, 'run', 'sync', '--db', dbPath, '--drain', '--refresh-window', '0'],
+        PACKAGE_DIR,
+      ),
+    // npx has no equivalent "current process" shortcut, so the platform check
+    // stays here. Only the npx invocation itself needs .cmd on Windows; 'tsx'
+    // is a package name npx resolves internally, not a PATH lookup.
+    runTransform: () =>
+      spawnCapture(
+        [process.platform === 'win32' ? 'npx.cmd' : 'npx', 'tsx', 'scripts/transform-deg-sqlite.ts'],
+        REPO_ROOT,
+      ),
+  });
+
+  log(result.ok ? 'Result: OK' : `Result: FAIL. ${result.reason}`);
+  if (result.drainSummary !== null) {
+    log(
+      `Sync    : new=${result.drainSummary.newCount} written=${result.drainSummary.written} ` +
+        `unchanged=${result.drainSummary.unchanged} skipped=${result.drainSummary.skipped}`,
+    );
+  }
+  if (result.transformOutput !== null) log(`Transform:\n${result.transformOutput}`);
+
+  writeFileSync(runLogPath(logDir, runDate), runLog.join('\n') + '\n', 'utf-8');
+
+  const db = openDb(dbPath);
+  const report = buildHealthReport(db, logDir);
+  db.close();
+
+  appendHealthLogLine(logDir, {
+    date: runDate,
+    newCount: result.drainSummary?.newCount ?? 0,
+    corpusTotal: report.corpusTotal,
+    errors: result.drainSummary?.skipped ?? 0,
+    ok: result.ok,
+  });
+
+  if (result.ok) {
+    clearAttentionFlag(logDir);
+  } else {
+    writeAttentionFlag(logDir, result.reason ?? 'unknown failure');
+    notifyToastBestEffort('DEG Sync FAILED', result.reason ?? 'unknown failure');
+  }
+
+  process.exit(result.ok ? 0 : 1);
+}
+
+main().catch((e: unknown) => {
+  process.stderr.write(`Fatal: ${String(e)}\n`);
+  process.exit(1);
+});
