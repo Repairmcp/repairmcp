@@ -28,6 +28,7 @@ import {
   STATE_MAKES_REPAIRED,
 } from './state.js';
 import type { SyncMode, HighWater } from './state.js';
+import { buildHealthReport, formatHealthReport, DEFAULT_LOG_DIR } from './health.js';
 
 const out = (s: string): void => void process.stdout.write(s);
 const err = (s: string): void => void process.stderr.write(s);
@@ -42,6 +43,8 @@ interface Args {
   indexDiffOnly: boolean;
   create: boolean;
   mode: SyncMode;
+  health: boolean;
+  logDir: string;
 }
 
 function flagValue(argv: string[], name: string): string | undefined {
@@ -68,6 +71,8 @@ function parseArgs(argv: string[]): Args {
     indexDiffOnly: hasFlag(argv, '--index-diff-only'),
     create: hasFlag(argv, '--create'),
     mode: modeRaw === 'nightly' ? 'nightly' : 'catchup',
+    health: hasFlag(argv, '--health'),
+    logDir: flagValue(argv, '--log-dir') ?? DEFAULT_LOG_DIR,
   };
 }
 
@@ -91,6 +96,8 @@ DEG delta sync — catch-up and nightly.
                            when the file does not already hold a corpus; a
                            bare open refuses rather than creating one.
   --mode <catchup|nightly> Recorded on the run. Default catchup.
+  --health                 Print a corpus health report and exit. No network calls.
+  --log-dir <path>         Where health.log / ATTENTION-NEEDED.txt live. Default C:\\degdata\\logs.
 `;
 
 function printPlan(plan: SyncPlan, highWater: HighWater, args: Args): void {
@@ -216,6 +223,13 @@ async function main(): Promise<void> {
   createSchema(db);
   migrateSyncSchema(db);
   out(`Database: ${args.dbPath}\n`);
+
+  if (args.health) {
+    const report = buildHealthReport(db, args.logDir);
+    out(formatHealthReport(report) + '\n');
+    db.close();
+    return;
+  }
 
   // One-time data repair, guarded by sync_state so it runs on the next
   // invocation of any kind and never again. Fixing parseVehicleData only helps
