@@ -256,6 +256,7 @@ async function main(): Promise<void> {
 
   const autoResumeForDrain =
     args.drain && !args.forceNew && open !== null && countQueued(db, open.runId) > 0;
+  const indexFreshlySynced = !(args.resume || autoResumeForDrain);
 
   if (args.resume || autoResumeForDrain) {
     if (open === null) {
@@ -307,6 +308,7 @@ async function main(): Promise<void> {
         printDrainSummary(out, {
           ok: false,
           exitReason: 'sanity-failed',
+          indexSynced: indexFreshlySynced,
           newCount: 0,
           written: 0,
           unchanged: 0,
@@ -377,13 +379,15 @@ async function main(): Promise<void> {
       out('Nothing was lost: the failed items are still queued.\n');
       out(`Retry later with:  bun run sync --db "${args.dbPath}" --resume\n`);
       if (args.drain) {
+        const summary = getRunSummary(db, runId);
         printDrainSummary(out, {
           ok: false,
           exitReason: 'breaker-tripped',
-          newCount: 0,
-          written: 0,
-          unchanged: 0,
-          skipped: 0,
+          indexSynced: indexFreshlySynced,
+          newCount: countTotalByPass(db, runId, 'new'),
+          written: summary.written,
+          unchanged: summary.unchanged,
+          skipped: summary.skipped,
           queued: countQueued(db, runId),
           sanityFailures: [],
         });
@@ -407,13 +411,15 @@ async function main(): Promise<void> {
     out(`Processed ${MAX_DRAIN_BATCHES} batches and ${remaining} items are still queued.\n`);
     out('Something is queuing faster than it drains. Investigate before retrying.\n');
     finishRun(db, runId, 'interrupted');
+    const summary = getRunSummary(db, runId);
     printDrainSummary(out, {
       ok: false,
       exitReason: 'drain-cap-hit',
-      newCount: 0,
-      written: 0,
-      unchanged: 0,
-      skipped: 0,
+      indexSynced: indexFreshlySynced,
+      newCount: countTotalByPass(db, runId, 'new'),
+      written: summary.written,
+      unchanged: summary.unchanged,
+      skipped: summary.skipped,
       queued: remaining,
       sanityFailures: [],
     });
@@ -455,6 +461,7 @@ async function main(): Promise<void> {
     const drainSummary: DrainSummary = {
       ok: true,
       exitReason: 'completed',
+      indexSynced: indexFreshlySynced,
       newCount,
       written: summary.written,
       unchanged: summary.unchanged,

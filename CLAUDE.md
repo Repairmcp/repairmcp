@@ -141,6 +141,33 @@ without re-planning; a crash loses at most the one request in flight. Other
 flags: `--refresh-window N` (trailing sweep, default 1000), `--index-diff-only`,
 `--force-new`, `--mode nightly`.
 
+**Weekly automated sync** (unattended, for Windows Task Scheduler). Runs Tier-1,
+drains Tier-2 to completion, and regenerates the served JSON in one command:
+
+```bash
+cd ingestion/deg-backfill
+bun run weekly --db "C:\degdata\deg.sqlite"           # what the Scheduler runs
+bun run sync --db "C:\degdata\deg.sqlite" --health    # corpus stats, last sync, FAIL flags
+```
+
+Internally this runs `sync --drain --refresh-window 0 --mode nightly`: `--drain`
+loops batches to completion instead of stopping after one and self-resumes an
+interrupted prior run, `--refresh-window 0` skips the 1000-item trailing sweep
+so a normal week stays in the tens of fetches rather than about 33 minutes
+regardless of what changed. Exit codes: `0` clean, `1` fatal or misconfigured,
+`2` circuit breaker tripped, `3` index sanity check failed, `4` did not drain
+within 40 batches.
+
+Logs to `C:\degdata\logs\`: `sync-YYYY-MM-DD.log` (per-run detail, appended if
+run more than once the same day), `health.log` (one CSV line per run: date, new
+count, corpus total, errors, OK or FAIL), and `ATTENTION-NEEDED.txt` (written on
+any FAIL, cleared automatically on the next OK run).
+
+`bun run weekly` only regenerates the local served JSON. It does not do the
+other three steps below (`build-d1-sql.ts`, `CORPUS_VERSION`, the site's record
+count), and prints a "NEXT (manual)" reminder in its log whenever the corpus
+actually grew, since those steps stay manual.
+
 **Regenerate the served corpus** after a sync completes:
 
 ```bash

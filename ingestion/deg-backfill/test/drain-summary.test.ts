@@ -5,6 +5,7 @@ import type { DrainSummary } from '../src/drain-summary.js';
 const SUMMARY: DrainSummary = {
   ok: true,
   exitReason: 'completed',
+  indexSynced: true,
   newCount: 2,
   written: 5,
   unchanged: 10,

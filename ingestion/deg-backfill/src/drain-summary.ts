@@ -5,6 +5,7 @@ export type DrainExitReason = 'completed' | 'sanity-failed' | 'breaker-tripped' 
 export interface DrainSummary {
   ok: boolean;
   exitReason: DrainExitReason;
+  indexSynced: boolean;
   newCount: number;
   written: number;
   unchanged: number;

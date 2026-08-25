@@ -12,6 +12,7 @@ function stdoutWithSummary(summary: DrainSummary): string {
 const COMPLETED: DrainSummary = {
   ok: true,
   exitReason: 'completed',
+  indexSynced: true,
   newCount: 2,
   written: 5,
   unchanged: 90,
@@ -76,7 +77,8 @@ describe('runWeekly', () => {
   });
 
   test('fails when the error rate exceeds 20 percent', async () => {
-    const summary: DrainSummary = { ...COMPLETED, written: 2, unchanged: 3, skipped: 2 }; // 2/7 ~= 28.6%
+    // 6/26 ~= 23.1%, and 26 attempted clears the 25-sample floor.
+    const summary: DrainSummary = { ...COMPLETED, written: 20, unchanged: 0, skipped: 6 };
     const result = await runWeekly({
       runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(summary), stderr: '' }),
       runTransform: async () => ({ exitCode: 0, stdout: '', stderr: '' }),
@@ -86,7 +88,7 @@ describe('runWeekly', () => {
   });
 
   test('does not run the transform when the error rate is too high', async () => {
-    const summary: DrainSummary = { ...COMPLETED, written: 0, unchanged: 0, skipped: 5 };
+    const summary: DrainSummary = { ...COMPLETED, written: 0, unchanged: 0, skipped: 30 };
     let transformCalled = false;
     await runWeekly({
       runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(summary), stderr: '' }),
@@ -96,6 +98,52 @@ describe('runWeekly', () => {
       },
     });
     expect(transformCalled).toBe(false);
+  });
+
+  test('fails without running the transform when the index was never re-synced (auto-resumed drain)', async () => {
+    const summary: DrainSummary = { ...COMPLETED, indexSynced: false };
+    let transformCalled = false;
+    const result = await runWeekly({
+      runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(summary), stderr: '' }),
+      runTransform: async () => {
+        transformCalled = true;
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain('re-syncing');
+    expect(transformCalled).toBe(false);
+  });
+
+  test('a small sample does not trip the error-rate gate even at a high nominal rate', async () => {
+    const summary: DrainSummary = { ...COMPLETED, written: 1, unchanged: 0, skipped: 1 };
+    const result = await runWeekly({
+      runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(summary), stderr: '' }),
+      runTransform: async () => ({ exitCode: 0, stdout: '', stderr: '' }),
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  test('exactly 20 percent error rate passes (strict greater-than)', async () => {
+    const summary: DrainSummary = { ...COMPLETED, written: 80, unchanged: 0, skipped: 20 };
+    const result = await runWeekly({
+      runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(summary), stderr: '' }),
+      runTransform: async () => ({ exitCode: 0, stdout: '', stderr: '' }),
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  test('fails when the transform reports schema validation errors despite exiting 0', async () => {
+    const result = await runWeekly({
+      runSync: async () => ({ exitCode: 0, stdout: stdoutWithSummary(COMPLETED), stderr: '' }),
+      runTransform: async () => ({
+        exitCode: 0,
+        stdout: 'Total raw rows: 100\nSchema validation errors: 3\nSuccessfully transformed: 97',
+        stderr: '',
+      }),
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain('3');
   });
 
   test('fails when the transform itself fails', async () => {
