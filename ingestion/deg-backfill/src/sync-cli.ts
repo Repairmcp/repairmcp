@@ -402,7 +402,7 @@ async function main(): Promise<void> {
   }
 
   const remaining = countQueued(db, runId);
-  if (drainCapHit) {
+  if (drainCapHit && remaining > 0) {
     out(`\n*** DRAIN CAP HIT ***\n`);
     out(`Processed ${MAX_DRAIN_BATCHES} batches and ${remaining} items are still queued.\n`);
     out('Something is queuing faster than it drains. Investigate before retrying.\n');
