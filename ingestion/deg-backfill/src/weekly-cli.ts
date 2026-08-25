@@ -40,7 +40,7 @@ function notifyToastBestEffort(title: string, message: string): void {
     '$notify = New-Object System.Windows.Forms.NotifyIcon',
     '$notify.Icon = [System.Drawing.SystemIcons]::Warning',
     '$notify.Visible = $true',
-    `$notify.ShowBalloonTip(10000, ${JSON.stringify(title)}, ${JSON.stringify(message)}, [System.Windows.Forms.ToolTipIcon]::Error)`,
+    '$notify.ShowBalloonTip(10000, $env:TOAST_TITLE, $env:TOAST_MESSAGE, [System.Windows.Forms.ToolTipIcon]::Error)',
     'Start-Sleep -Seconds 4',
     '$notify.Dispose()',
   ].join('; ');
@@ -48,6 +48,7 @@ function notifyToastBestEffort(title: string, message: string): void {
     Bun.spawn(['powershell', '-NoProfile', '-NonInteractive', '-Command', script], {
       stdout: 'ignore',
       stderr: 'ignore',
+      env: { ...process.env, TOAST_TITLE: title, TOAST_MESSAGE: message },
     });
   } catch {
     /* best effort only */
@@ -113,26 +114,36 @@ async function main(): Promise<void> {
 
   writeFileSync(runLogPath(logDir, runDate), runLog.join('\n') + '\n', 'utf-8');
 
-  const db = openDb(dbPath);
-  const report = buildHealthReport(db, logDir);
-  db.close();
+  let corpusTotal = 0;
+  let healthReadError: string | null = null;
+  try {
+    const db = openDb(dbPath);
+    corpusTotal = buildHealthReport(db, logDir).corpusTotal;
+    db.close();
+  } catch (e) {
+    healthReadError = `could not read corpus for health report: ${String(e)}`;
+    log(healthReadError);
+  }
+
+  const overallOk = result.ok && healthReadError === null;
+  const reason = result.reason ?? healthReadError ?? 'unknown failure';
 
   appendHealthLogLine(logDir, {
     date: runDate,
     newCount: result.drainSummary?.newCount ?? 0,
-    corpusTotal: report.corpusTotal,
+    corpusTotal,
     errors: result.drainSummary?.skipped ?? 0,
-    ok: result.ok,
+    ok: overallOk,
   });
 
-  if (result.ok) {
+  if (overallOk) {
     clearAttentionFlag(logDir);
   } else {
-    writeAttentionFlag(logDir, result.reason ?? 'unknown failure');
-    notifyToastBestEffort('DEG Sync FAILED', result.reason ?? 'unknown failure');
+    writeAttentionFlag(logDir, reason);
+    notifyToastBestEffort('DEG Sync FAILED', reason);
   }
 
-  process.exit(result.ok ? 0 : 1);
+  process.exit(overallOk ? 0 : 1);
 }
 
 main().catch((e: unknown) => {
