@@ -280,6 +280,16 @@ export function countQueued(db: Database, runId: number, pass?: ItemPass): numbe
   return row?.n ?? 0;
 }
 
+/** Every item ever enqueued for this run under `pass`, regardless of current state. */
+export function countTotalByPass(db: Database, runId: number, pass: ItemPass): number {
+  const row = db
+    .prepare<{ n: number }, SQLQueryBindings[]>(
+      `SELECT COUNT(*) AS n FROM sync_item WHERE run_id = ? AND pass = ?`,
+    )
+    .get(runId, pass);
+  return row?.n ?? 0;
+}
+
 /**
  * Terminal outcome for one item. Note there is no 'failed' state: a transient
  * failure deliberately leaves the item 'queued' (only bumping attempts) so the

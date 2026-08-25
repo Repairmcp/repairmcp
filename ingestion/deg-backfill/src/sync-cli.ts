@@ -17,6 +17,7 @@ import {
   getRun,
   getQueuedItems,
   countQueued,
+  countTotalByPass,
   getRunSummary,
   getChangedFieldHistogram,
   getSkippedItems,
@@ -29,6 +30,8 @@ import {
 } from './state.js';
 import type { SyncMode, HighWater } from './state.js';
 import { buildHealthReport, formatHealthReport, DEFAULT_LOG_DIR } from './health.js';
+import { printDrainSummary } from './drain-summary.js';
+import type { DrainSummary } from './drain-summary.js';
 
 const out = (s: string): void => void process.stdout.write(s);
 const err = (s: string): void => void process.stderr.write(s);
@@ -45,6 +48,7 @@ interface Args {
   mode: SyncMode;
   health: boolean;
   logDir: string;
+  drain: boolean;
 }
 
 function flagValue(argv: string[], name: string): string | undefined {
@@ -73,6 +77,7 @@ function parseArgs(argv: string[]): Args {
     mode: modeRaw === 'nightly' ? 'nightly' : 'catchup',
     health: hasFlag(argv, '--health'),
     logDir: flagValue(argv, '--log-dir') ?? DEFAULT_LOG_DIR,
+    drain: hasFlag(argv, '--drain'),
   };
 }
 
@@ -98,6 +103,9 @@ DEG delta sync — catch-up and nightly.
   --mode <catchup|nightly> Recorded on the run. Default catchup.
   --health                 Print a corpus health report and exit. No network calls.
   --log-dir <path>         Where health.log / ATTENTION-NEEDED.txt live. Default C:\\degdata\\logs.
+  --drain                  Loop batches to completion instead of stopping after
+                           one. Self-resumes an open run automatically. For
+                           unattended use (see: bun run weekly).
 `;
 
 function printPlan(plan: SyncPlan, highWater: HighWater, args: Args): void {
@@ -246,14 +254,18 @@ async function main(): Promise<void> {
   const open = getResumableRun(db);
   let runId: number;
 
-  if (args.resume) {
+  const autoResumeForDrain =
+    args.drain && !args.forceNew && open !== null && countQueued(db, open.runId) > 0;
+
+  if (args.resume || autoResumeForDrain) {
     if (open === null) {
       err('Fatal: --resume passed but no open run exists. Drop --resume to plan a new one.\n');
       process.exit(1);
     }
     runId = open.runId;
     const remaining = countQueued(db, runId);
-    out(`Resuming run ${runId} (${open.mode}, started ${open.startedAt}) — ${remaining} queued.\n`);
+    const how = autoResumeForDrain && !args.resume ? 'Drain mode auto-resuming' : 'Resuming';
+    out(`${how} run ${runId} (${open.mode}, started ${open.startedAt}) — ${remaining} queued.\n`);
     if (remaining === 0) {
       out('Nothing queued. Finalizing.\n');
     }
@@ -291,6 +303,18 @@ async function main(): Promise<void> {
       err('Nothing was written. No index upsert, no delisting, no fetches.\n');
       err('Re-check https://degweb.org/grid/get/all by hand before retrying;\n');
       err('proceeding on a partial index would delist most of the corpus.\n');
+      if (args.drain) {
+        printDrainSummary(out, {
+          ok: false,
+          exitReason: 'sanity-failed',
+          newCount: 0,
+          written: 0,
+          unchanged: 0,
+          skipped: 0,
+          queued: 0,
+          sanityFailures: sanity.failures,
+        });
+      }
       db.close();
       process.exit(3);
     }
@@ -319,8 +343,14 @@ async function main(): Promise<void> {
     out(`\nRun ${runId} created and queued.\n`);
   }
 
-  const queuedNow = countQueued(db, runId);
-  if (queuedNow > 0) {
+  const MAX_DRAIN_BATCHES = 40;
+  let drainBatches = 0;
+  let drainCapHit = false;
+
+  for (;;) {
+    const queuedNow = countQueued(db, runId);
+    if (queuedNow === 0) break;
+
     const toProcess = Math.min(args.batchSize, queuedNow);
     out(`\n--- Batch: ${toProcess} of ${queuedNow} queued (2s/request) ---\n`);
 
@@ -346,12 +376,51 @@ async function main(): Promise<void> {
       out('10 consecutive transient failures — degweb.org looks unhealthy.\n');
       out('Nothing was lost: the failed items are still queued.\n');
       out(`Retry later with:  bun run sync --db "${args.dbPath}" --resume\n`);
+      if (args.drain) {
+        printDrainSummary(out, {
+          ok: false,
+          exitReason: 'breaker-tripped',
+          newCount: 0,
+          written: 0,
+          unchanged: 0,
+          skipped: 0,
+          queued: countQueued(db, runId),
+          sanityFailures: [],
+        });
+      }
       db.close();
       process.exit(2);
+    }
+
+    if (!args.drain) break;
+
+    drainBatches++;
+    if (drainBatches >= MAX_DRAIN_BATCHES) {
+      drainCapHit = true;
+      break;
     }
   }
 
   const remaining = countQueued(db, runId);
+  if (drainCapHit) {
+    out(`\n*** DRAIN CAP HIT ***\n`);
+    out(`Processed ${MAX_DRAIN_BATCHES} batches and ${remaining} items are still queued.\n`);
+    out('Something is queuing faster than it drains. Investigate before retrying.\n');
+    finishRun(db, runId, 'interrupted');
+    printDrainSummary(out, {
+      ok: false,
+      exitReason: 'drain-cap-hit',
+      newCount: 0,
+      written: 0,
+      unchanged: 0,
+      skipped: 0,
+      queued: remaining,
+      sanityFailures: [],
+    });
+    db.close();
+    process.exit(4);
+  }
+
   if (remaining > 0) {
     out(`\nBatch complete. ${remaining} items still queued.\n`);
     out(`Approve the next batch with:  bun run sync --db "${args.dbPath}" --resume\n`);
@@ -379,6 +448,23 @@ async function main(): Promise<void> {
   out('\nAll batches complete.\n');
   out('Next: regenerate the served corpus —\n');
   out('  npx tsx scripts/transform-deg-sqlite.ts\n');
+
+  if (args.drain) {
+    const summary = getRunSummary(db, runId);
+    const newCount = countTotalByPass(db, runId, 'new');
+    const drainSummary: DrainSummary = {
+      ok: true,
+      exitReason: 'completed',
+      newCount,
+      written: summary.written,
+      unchanged: summary.unchanged,
+      skipped: summary.skipped,
+      queued: summary.queued,
+      sanityFailures: [],
+    };
+    printDrainSummary(out, drainSummary);
+  }
+
   db.close();
 }
 
