@@ -40,7 +40,7 @@ apps/deg-server/      @repairmcp/deg-server — STDIO entry + Cloudflare Worker
   migrations/0002_data.sql     GENERATED, 25.5 MB, gitignored
   migrations/0003_fts.sql      FTS5 virtual table + rebuild + sync triggers
   data/sample-inquiries.json        50 hand-curated DEG inquiries
-  data/deg-inquiries-full.json      the served corpus — 22,652 records, gitignored
+  data/deg-inquiries-full.json      the served corpus — 22,773 records, gitignored
   dist/stdio.js       The path Claude Desktop spawns
 
 apps/site/            @repairmcp/site — the public site at repairmcp.com
@@ -66,8 +66,15 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
   src/state.ts        sync_state / sync_run / sync_item; high-water; migrations
   src/sync.ts         planSync (pure) + runBatch + checkPlanSanity
   src/cli.ts          original backfill entry
-  src/sync-cli.ts     delta sync entry — the one you want now
-  test/               135 tests
+  src/sync-cli.ts     delta sync entry — the one you want now. Also carries
+                      --drain (unattended, loops to completion) and --health
+                      (corpus report, no network)
+  src/drain-summary.ts  machine-readable JSON line --drain prints at every exit
+  src/health.ts       health report + health.log / ATTENTION-NEEDED.txt primitives
+  src/weekly.ts       runWeekly — decides OK/FAIL from the drain summary and the
+                      transform's own output; injectable subprocess runners
+  src/weekly-cli.ts   `bun run weekly`, the command Task Scheduler runs
+  test/               174 tests
 
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
@@ -75,7 +82,7 @@ docs/ARCHITECTURE.md            The build spec — read first for design questio
 ```
 
 **Two DEG databases exist and only one is real.** The live corpus is
-`C:\degdata\deg.sqlite` (22,662 rows). `ingestion/deg-backfill/deg.sqlite` is a
+`C:\degdata\deg.sqlite` (22,783 rows). `ingestion/deg-backfill/deg.sqlite` is a
 stale partial from 2026-06-26 with 22,122 bodies unfetched — pointing the sync
 at it would re-crawl 22k pages. `sync-cli.ts` requires `--db` explicitly for
 this reason; set `DEG_DB_PATH` to avoid retyping. The stale file should be
@@ -154,9 +161,11 @@ Internally this runs `sync --drain --refresh-window 0 --mode nightly`: `--drain`
 loops batches to completion instead of stopping after one and self-resumes an
 interrupted prior run, `--refresh-window 0` skips the 1000-item trailing sweep
 so a normal week stays in the tens of fetches rather than about 33 minutes
-regardless of what changed. Exit codes: `0` clean, `1` fatal or misconfigured,
-`2` circuit breaker tripped, `3` index sanity check failed, `4` did not drain
-within 40 batches.
+regardless of what changed. `bun run weekly` itself only ever exits `0` (OK) or `1`
+(FAIL, check the attention flag); the inner `sync --drain` it spawns is what carries
+the finer-grained exit codes visible in `sync-YYYY-MM-DD.log`: `0` clean, `1` fatal or
+misconfigured, `2` circuit breaker tripped, `3` index sanity check failed, `4` did not
+drain within 40 batches.
 
 Logs to `C:\degdata\logs\`: `sync-YYYY-MM-DD.log` (per-run detail, appended if
 run more than once the same day), `health.log` (one CSV line per run: date, new
@@ -277,9 +286,10 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
 | Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
-| Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Deployed 2026-08-12, version `4a848a92`; verified on the wire at `deg.repairmcp.com`. Corpus declares current through 2026-07-31, synced 2026-08-02. |
+| Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Deployed 2026-08-12, version `4a848a92`; verified on the wire at `deg.repairmcp.com`. Corpus declares current through 2026-07-31, synced 2026-08-02. D1 has not caught up to the 2026-08-25 local sync yet — see Backlog. |
+| Weekly automated sync | ✅ live | 2026-08-25. `bun run weekly` drains Tier-2 to completion, regenerates the served JSON, and writes health.log / ATTENTION-NEEDED.txt. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated) and proven through the Scheduler itself, not just the command line (`LastTaskResult: 0`). See below. |
 
-**Test totals:** 329 passing (76 core + 106 deg + 147 ingestion). 0 failing.
+**Test totals:** 356 passing (76 core + 106 deg + 174 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Phase 2 — remote MCP server, 2026-08-03
@@ -384,6 +394,52 @@ overnight, so no sync was run.
 **Open:** rebuild + restart Claude Desktop. Until that happens the server is still
 serving the old 22,425 from the previously loaded `dist/stdio.js`.
 
+### Weekly automation live, 2026-08-25
+
+Corpus 22,662 → **22,783** raw rows (max db_id 41745 → 41886); served JSON 22,652 →
+**22,773**. A 23-day-idle catch-up (`--drain`, default refresh window) fetched 1,201
+pages in one supervised run: 119 new inquiries, 135 written, 0 skipped, breaker never
+tripped. Then `bun run weekly` shipped: `--drain` loops the existing batch/plan/sanity
+machinery to completion instead of stopping after one batch and waiting for `--resume`;
+`--health` prints a corpus report and exits before any network call; `weekly-cli.ts`
+wraps both plus the served-JSON transform into one command, writing
+`C:\degdata\logs\health.log` (one CSV line per run), `sync-YYYY-MM-DD.log` (per-run
+detail, appended across same-day runs), and `ATTENTION-NEEDED.txt` (written on FAIL,
+cleared automatically on the next OK). Registered as the Windows Scheduled Task
+"RepairMCP DEG Weekly Sync", Sunday 3am, network-gated, catches up if the machine was
+off, and proven through the Scheduler itself (`Start-ScheduledTask` then
+`LastTaskResult: 0`), not just the command line.
+
+Weekly mode runs with `--refresh-window 0`, deliberately skipping the 1000-item
+trailing sweep the manual catch-up above used. That sweep exists to catch silent
+content edits with no status/resolution_date change; running it every week forever
+would be ~1000 fetches (~33 min) regardless of what actually changed, against a stated
+volume goal of "tens per week, minutes of runtime." New, index-diff-changed,
+unresolved, resolved-blank, and suspected-dead cohorts are unaffected; only that
+narrower class of silent edit still needs an occasional manual `bun run sync` catch-up.
+
+The build's own final review caught a real bug before it shipped: an auto-resumed
+drain (a crash, a Task Scheduler kill, or a machine sleep leaving a prior run
+`interrupted` with items still queued) skipped `fetchIndex` and `checkPlanSanity`
+entirely, then reported full success and cleared the attention flag on a clean drain,
+the monitor silently lying about the one thing it exists to report. Fixed with an
+`indexSynced` field on the drain summary that `runWeekly` treats as an immediate
+failure; the run still marks itself `completed`, so the following week self-heals by
+planning fresh against the live index. Six other Important findings, a toast that
+never actually fired because its child process was killed by `process.exit` two
+statements early, a 20% error-rate threshold with no minimum sample (which the
+`--refresh-window 0` volume cut made trip on noise), hardcoded zeros in the two
+failure-summary paths that matter most, the transform's own schema-validation-error
+count going unchecked, and the served-JSON transform reading a hardcoded path `--db`
+didn't actually control, were caught the same way and fixed in the same pass. See
+commit `cccac17` for the full list.
+
+**`bun run weekly` only performs the first of the four corpus-refresh steps
+documented under Commands** ("A corpus refresh touches four places, not one"), the
+served JSON, not `build-d1-sql.ts`, not `CORPUS_VERSION`, not the site's record count.
+It prints a "NEXT (manual)" reminder in its own log whenever the corpus grows, but the
+D1 push itself stays a human decision, on purpose (see Backlog).
+
 ---
 
 ## Backlog (deferred until called)
@@ -404,10 +460,20 @@ serving the old 22,425 from the previously loaded `dist/stdio.js`.
   consequence: a *subsequent* invocation may abort at planning even though the batch
   before it completed cleanly. That is the guard working, not a regression. Wait and
   re-check the index rather than reaching for a workaround.
-- **Nightly unattended sync.** `--mode nightly` is recorded on the run but the
-  operational design doesn't exist: no scheduling, no failure alerting, no rule for
-  who regenerates the JSON and restarts the server. The script is parametrized and
-  resumable; the surrounding automation is not designed.
+- ~~**Nightly unattended sync.**~~ **Resolved 2026-08-25**: `bun run weekly` runs
+  Tier-1, drains Tier-2 to completion via `--drain --refresh-window 0 --mode nightly`,
+  regenerates the served JSON, and writes health.log / ATTENTION-NEEDED.txt. Registered
+  as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" and verified through the
+  Scheduler itself, not just the command line. See "Weekly automation live" above.
+- **The weekly sync creates ongoing local/D1 drift, on purpose.** `bun run weekly` only
+  touches the local served JSON, step 1 of the four-step corpus refresh; it deliberately
+  never runs `build-d1-sql.ts`, never bumps `CORPUS_VERSION`, and never touches the
+  site's record count, since those are irreversible pushes to a shared remote and
+  shouldn't happen unattended. It prints a "NEXT (manual)" reminder in its own log
+  whenever the corpus grows. As of 2026-08-25 the local corpus is at 22,773 served
+  records (current through 2026-08-25); D1 is still at the 2026-08-02 push (22,652,
+  current through 2026-07-31). There is no rule yet for how often to push D1, or who
+  decides when the drift is worth closing.
 - **Audatex coverage is collapsing.** Zero new Audatex inquiries in the five weeks to
   2026-08-02; the newest in the whole corpus is 41424 (2026-06-18). Audatex is 8.4% of
   the corpus historically but 1.3% of the last 1,000 ids. Kills any plan to balance IP
