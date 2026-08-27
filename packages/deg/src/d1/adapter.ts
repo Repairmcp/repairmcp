@@ -270,7 +270,7 @@ export class D1DEGAdapter implements DegSource {
     const match = buildMatchExpression(opts.lineItemText);
     if (match === null) return [];
 
-    const params = [match, this.candidatePool];
+    const paramsRel = [match, this.candidatePool];
 
     // Arm 1 — bm25's best. Finds records that match the query well.
     const byRelevance =
@@ -278,18 +278,31 @@ export class D1DEGAdapter implements DegSource {
       `FROM inquiry_fts JOIN inquiry i ON i.db_id = inquiry_fts.rowid ` +
       `WHERE inquiry_fts MATCH ? ORDER BY rank ASC LIMIT ?`;
 
-    // Arm 2 — the newest matches, ordered by exactly the date the tie-break
-    // uses. Covers the case bm25 cannot: a query whose scores saturate, where
-    // recency is what actually picks the winner.
+    // Arm 2 — the newest matches as of `now`, ordered by exactly the date the
+    // tie-break uses. Covers the case bm25 cannot: a query whose scores
+    // saturate, where recency is what actually picks the winner.
+    //
+    // The `<= now` cutoff exists because the scorer gives no recency credit to
+    // a record dated after `now`, so on a saturated query the winner is the
+    // newest match AT OR BEFORE `now` — not the newest match outright. With a
+    // live clock the two are the same thing (nothing is dated in the future),
+    // but under a pinned `now` a growing corpus slides the plain newest-500
+    // window forward until the real winner falls out of the pool. The parity
+    // panel caught exactly that on 2026-08-27, when the corpus first grew 500
+    // matching records past its fixed clock. Day granularity on the cutoff
+    // keeps the result-cache key stable within a day; the corpus dates are
+    // day-granular anyway.
+    const nowIso = (opts.now ?? new Date()).toISOString().slice(0, 10);
+    const paramsRec = [match, nowIso, this.candidatePool];
     const byRecency =
       `SELECT ${SELECT_COLUMNS}, 0 AS rank ` +
       `FROM inquiry_fts JOIN inquiry i ON i.db_id = inquiry_fts.rowid ` +
-      `WHERE inquiry_fts MATCH ? ` +
+      `WHERE inquiry_fts MATCH ? AND date(COALESCE(i.resolved_at, i.submitted_at)) <= date(?) ` +
       `ORDER BY COALESCE(i.resolved_at, i.submitted_at) DESC LIMIT ?`;
 
     const [relevant, recent] = await Promise.all([
-      this.rows<RankedRow>(`cand-rel:${JSON.stringify(params)}`, byRelevance, params),
-      this.rows<RankedRow>(`cand-rec:${JSON.stringify(params)}`, byRecency, params),
+      this.rows<RankedRow>(`cand-rel:${JSON.stringify(paramsRel)}`, byRelevance, paramsRel),
+      this.rows<RankedRow>(`cand-rec:${JSON.stringify(paramsRec)}`, byRecency, paramsRec),
     ]);
 
     const byId = new Map<number, RankedRow>();
