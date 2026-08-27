@@ -9,7 +9,7 @@ invocation. Every response header comes from `public/_headers`.
 
 ```
 public/
-  index.html      the whole site: hero, proof, Claude setup, ChatGPT setup, trust, what's next
+  index.html      the whole site: hero, proof, Claude setup, ChatGPT setup, what to ask, trust, what's next
   styles.css      one stylesheet
   404.html
   robots.txt      LAUNCH GATE: currently Disallow: /
