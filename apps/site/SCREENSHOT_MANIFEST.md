@@ -1,8 +1,8 @@
 # Screenshot manifest
 
-**Status: done, except the social card.** Thirteen captures are cropped, placed,
-and live on the preview. This file is now the record of what each one is and how
-it was cropped, so a re-shoot can match.
+**Status: done.** Thirteen captures are cropped, placed, and live on the
+preview, and the social card landed 2026-08-27. This file is now the record of
+what each one is and how it was cropped, so a re-shoot can match.
 
 Raw captures came in at `apps/site/shots-raw/` and were deleted after cropping.
 There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
@@ -34,19 +34,17 @@ The page renders each of these at its **captured size**, capped to the column on
 narrow screens. Nothing is upscaled, because upscaling small interface text
 turns it to mush. That is why the sizes above vary so much and why that is fine.
 
-## Still outstanding
+## `og-image.png`
 
-### `og-image.png`
-**Not a screenshot,** and the only slot still holding a grey placeholder. This is
-the card that appears when the link is pasted into a text, an email, or LinkedIn.
-
-- **Exact size:** 1200 x 630, PNG, under 300 KB
-- **Content:** just words. `RepairMCP` large, then something like
-  `22,652 DEG inquiries, inside Claude and ChatGPT` beneath it
-- **Colours:** ink `#16181d` on off-white `#fbfaf8`, accent `#9a3412`
-
-Not urgent, but do it before the link goes anywhere public. Right now a pasted
-link previews as a grey rectangle.
+**Not a screenshot.** The card that appears when the link is pasted into a
+text, an email, or LinkedIn. Done 2026-08-27: 1200 x 630 PNG, 48 KB, rendered
+from HTML with headless Chrome (`--headless --window-size=1200,630
+--screenshot`). Words only — `RepairMCP` large, accent rule above, then "More
+than 22,000 real DEG inquiries, inside Claude and ChatGPT. Cited by inquiry
+number and date. Free." and `repairmcp.com` beneath. Ink `#16181d` on off-white
+`#fbfaf8`, accent `#9a3412`. It deliberately says "more than 22,000" rather
+than an exact count so the weekly corpus refresh cannot stale it. To re-render,
+rebuild the same layout in a 1200x630 HTML file and screenshot it the same way.
 
 ## If you re-shoot
 

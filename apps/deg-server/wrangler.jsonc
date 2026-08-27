@@ -27,7 +27,7 @@
     // /health reports. Tying the two together means the bump is no longer
     // something to remember: a refresh moves the sync date, the sync date is the
     // key, and /health answers `corpusVersionStale: true` the moment they drift.
-    "CORPUS_VERSION": "2026-08-02"
+    "CORPUS_VERSION": "2026-08-27"
   },
 
   // Hands the Worker its own deployment id at runtime, so /health can answer
