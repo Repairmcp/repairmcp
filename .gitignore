@@ -174,3 +174,6 @@ apps/deg-server/migrations/0002_data.sql
 .worktrees/
 # Docs scratch
 docs/superpowers/
+
+# gstack local reports (security audits etc.) — stay local
+.gstack/
