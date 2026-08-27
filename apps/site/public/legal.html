@@ -41,17 +41,21 @@
 
     <div class="prose">
       <h2>What this service is</h2>
-      <p>RepairMCP lets an AI assistant such as Claude or ChatGPT search a
-      copy of collision repair reference data that is already published free
-      to the public, currently the inquiry database from the Database
+      <p>RepairMCP lets an AI assistant such as Claude or ChatGPT search
+      collision repair reference data that is already published free to the
+      public. Today that is the inquiry database from the Database
       Enhancement Gateway at
-      <a href="https://degweb.org/" rel="noopener">degweb.org</a>. RepairMCP
-      is an independent project. It is not affiliated with, endorsed by, or
-      sponsored by the Database Enhancement Gateway, the Alliance of
-      Automotive Service Providers, the Society of Collision Repair
-      Specialists, CCC, Mitchell, Audatex, or MOTOR. All inquiry content
-      belongs to its original authors. Product names are the trademarks of
-      their owners.</p>
+      <a href="https://degweb.org/" rel="noopener">degweb.org</a>, vehicle
+      recall, complaint, and identification data served live from the
+      National Highway Traffic Safety Administration's public services, and
+      the federal vehicle safety statute from the United States Code.
+      RepairMCP is an independent project. It is not affiliated with,
+      endorsed by, or sponsored by the Database Enhancement Gateway, the
+      Alliance of Automotive Service Providers, the Society of Collision
+      Repair Specialists, CCC, Mitchell, Audatex, or MOTOR, and it is not
+      affiliated with or endorsed by NHTSA or any government agency. All
+      inquiry content belongs to its original authors. Product names are the
+      trademarks of their owners.</p>
 
       <h2>Terms of use</h2>
 
@@ -63,11 +67,13 @@
       source's own errors, typos included, on purpose.</p>
 
       <h3>Not professional advice</h3>
-      <p>Nothing this service returns is legal or professional advice.
-      Estimates, supplements, and negotiations with insurers are your
+      <p>Nothing this service returns is legal or professional advice. That
+      includes statute text: the service quotes the law and cites the
+      section, and what the law means for your situation is a question for a
+      lawyer. Estimates, supplements, and negotiations with insurers are your
       decisions and your responsibility. Check anything that matters against
-      the original inquiry at degweb.org before you rely on it. Every answer
-      carries the number and date so that takes under a minute.</p>
+      the original source before you rely on it. Every answer carries the
+      number and date so that takes under a minute.</p>
 
       <h3>Fair use of the service</h3>
       <p>Rate limits protect the service and stay on. Do not try to overwhelm
@@ -112,6 +118,11 @@
       the search terms your assistant sends it. It never sees your
       conversation, your estimates, your files, or your customer
       information, because it was never given a way to.</p>
+      <p>If you ask for a recall check by VIN, that VIN is passed straight
+      through to the federal government's own vehicle lookup at NHTSA to
+      identify the year, make, and model. It is not stored, it is never used
+      as a cache key, and only its last six characters ever appear in an
+      answer.</p>
 
       <h3>Hosting</h3>
       <p>The service is delivered through Cloudflare, whose systems process

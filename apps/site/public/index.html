@@ -73,6 +73,8 @@
     <h2>Set it up in Claude</h2>
     <p class="prose">
       About two minutes, once. After that it is there in every conversation.
+      The steps below show the DEG connector; every source on this site
+      connects the same way, and only the URL changes.
     </p>
 
     <ol class="steps">
@@ -156,7 +158,9 @@
     <h2>Set it up in ChatGPT</h2>
     <p class="prose">
       Longer than Claude, because ChatGPT keeps custom connectors behind a
-      developer setting. It is worth doing once. Web browser only.
+      developer setting. It is worth doing once. Web browser only. As with
+      Claude, the steps show the DEG connector and every other source
+      connects the same way with its own URL.
     </p>
 
     <div class="callout">
@@ -310,11 +314,12 @@
     <p class="prose">
       Once it is connected, talk to it the way you would talk to another
       estimator. Plain shop language works, with one habit worth building:
-      <strong>name the DEG in the ask</strong>. Without the name, the assistant
-      may answer from its own memory or the open web instead of searching the
-      inquiries. You can tell which one you got: a real search comes back with
-      inquiry numbers and dates, not web links. Every prompt below returns
-      real, citable inquiries today. Steal them.
+      <strong>name the source in the ask</strong>, the DEG or NHTSA. Without
+      the name, the assistant may answer from its own memory or the open web
+      instead of searching the real records. You can tell which one you got: a
+      real search comes back with inquiry numbers, campaign numbers, or
+      section numbers with dates, not web links. Every prompt below returns
+      real, citable records today. Steal them.
     </p>
 
     <div class="prose">
@@ -342,6 +347,16 @@
         after sectioning."</li>
         <li>"Search the DEG: is a seat belt inspection required after a
         collision, and is it a paid operation?"</li>
+      </ul>
+
+      <h3>Checking recalls, complaints, and the law</h3>
+      <ul class="ticks">
+        <li>"Check NHTSA for open recalls on a 2020 Ford Transit before we
+        deliver it."</li>
+        <li>"Search NHTSA complaints for steering issues on a 2020 Ford
+        Transit. How many are there, and were any crashes?"</li>
+        <li>"What does federal law say about a body shop disabling a safety
+        device? Ask NHTSA for the actual statute section."</li>
       </ul>
     </div>
 
@@ -464,12 +479,16 @@
         <p class="card-link"><a href="#claude">Set it up</a></p>
       </article>
 
-      <article class="card card-soon">
-        <p class="tag">Building</p>
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
         <h3>NHTSA</h3>
-        <p>Recalls, complaints, and investigations by year, make, and model.
-        For the open-recall check and for the pattern behind a complaint
-        you have now seen three times.</p>
+        <p>Recalls and complaints by year, make, and model, or straight from a
+        VIN, plus the federal vehicle safety statute with section numbers you
+        can quote. For the open-recall check before delivery, the pattern
+        behind a complaint you have now seen three times, and the law that
+        says a repair business may not disable a safety device.</p>
+        <p class="card-link"><a href="#claude">Set it up</a> the same way, with this URL:</p>
+        <p><code>https://nhtsa.repairmcp.com/mcp</code></p>
       </article>
 
       <article class="card card-soon">
@@ -489,17 +508,25 @@
 <footer class="foot">
   <div class="wrap">
     <p class="foot-urlline">
-      <span>Connector URL</span>
+      <span>DEG connector URL</span>
       <code>https://deg.repairmcp.com/mcp</code>
+    </p>
+    <p class="foot-urlline">
+      <span>NHTSA connector URL</span>
+      <code>https://nhtsa.repairmcp.com/mcp</code>
     </p>
     <p class="foot-dis">
       RepairMCP is an independent project. It is not affiliated with, endorsed
       by, or sponsored by the Database Enhancement Gateway, the Alliance of
       Automotive Service Providers, the Society of Collision Repair Specialists,
-      CCC, Mitchell, Audatex, or MOTOR. All inquiry content belongs to its
+      CCC, Mitchell, Audatex, or MOTOR, and it is not affiliated with or
+      endorsed by the National Highway Traffic Safety Administration or any
+      government agency. All inquiry content belongs to its
       original authors and is published by the Database Enhancement Gateway at
-      <a href="https://degweb.org/" rel="noopener">degweb.org</a>. Product names
-      are the trademarks of their owners.
+      <a href="https://degweb.org/" rel="noopener">degweb.org</a>. Recall,
+      complaint, and vehicle data come from NHTSA's public services, and
+      statute text from the United States Code; both are public records.
+      Product names are the trademarks of their owners.
     </p>
     <p class="foot-meta">
       Built on Model Context Protocol (MCP), the open standard Claude and

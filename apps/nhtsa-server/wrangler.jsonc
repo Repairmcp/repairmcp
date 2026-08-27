@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "repairmcp-nhtsa",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01",
+
+  // Same insurance as deg-server: the web-standard transport should need
+  // nothing from node, but the MCP SDK is a large tree and a missing builtin
+  // surfaces as a cryptic bundling failure.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // No D1, no CORPUS_VERSION. The live data has nothing to invalidate — the
+  // upstream response cache is keyed on SERVER_VERSION in src/worker.ts and a
+  // TTL, and the law corpus ships inside the bundle, so a corpus refresh IS a
+  // deploy.
+
+  // Hands the Worker its own deployment id at runtime, so /health can answer
+  // "did my deploy land?".
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // The only public entrance. Cloudflare creates the DNS record and issues the
+  // certificate on deploy. Before the first deploy, confirm the zone's single
+  // WAF rate-limit rule matches this hostname too (Free allows exactly one
+  // rule; if its expression pins deg.repairmcp.com, widen it to path-only).
+  "routes": [{ "pattern": "nhtsa.repairmcp.com", "custom_domain": true }],
+
+  // Deliberate, and it stays false — same reasoning as deg-server: one
+  // hostname, the one the WAF rule protects. A workers.dev URL would be a
+  // second, unrated door.
+  "workers_dev": false
+}

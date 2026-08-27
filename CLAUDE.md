@@ -43,6 +43,29 @@ apps/deg-server/      @repairmcp/deg-server — STDIO entry + Cloudflare Worker
   data/deg-inquiries-full.json      the served corpus — 22,773 records, gitignored
   dist/stdio.js       The path Claude Desktop spawns
 
+packages/nhtsa/       @repairmcp/nhtsa  — NHTSA vertical (live + law corpus hybrid)
+  src/client.ts       NhtsaClient — recalls/complaints/vPIC over injected fetchImpl,
+                      per-endpoint date parsing, 400→model-vocabulary fallback
+  src/urls.ts         every NHTSA URL builder; src/redact.ts VIN redaction choke point
+  src/schema.ts       Zod records (recall incl. parkIt/parkOutSide/unitsAffected)
+  src/relevance.ts    complaint relevance scorer (keyword/category/severity/recency)
+  src/laws/           49 U.S.C. ch. 301 corpus: schema, OLRC parser, search, LawCorpus
+  src/identity.ts     NHTSA_IDENTITY + all three citation producers + id namespace
+  src/live.ts         live-source freshness: LIVE_SENTENCE, callNhtsa, unavailablePayload
+  src/adapter.ts      NhtsaLiveAdapter — composite SourceAdapter (recall:/complaint:/law:)
+  src/parse-query.ts  connector free-text vehicle parser (known-makes list)
+  src/resolve-vehicle.ts  shared vin-or-YMM input resolution
+  src/tools.ts        the seven nhtsa_* tools; src/openai.ts connector search/fetch
+  data/uscode-title49-ch301.json  the committed law corpus (47 sections, ~163 KB)
+  test/               74 tests
+
+apps/nhtsa-server/    @repairmcp/nhtsa-server — Cloudflare Worker only (no STDIO)
+  src/worker.ts       /mcp (stateless Streamable HTTP), /health (live NHTSA probe
+                      + law corpus meta); law corpus loaded once per isolate
+  src/cache.ts        createCachingFetch — 6h TTL upstream response cache;
+                      vPIC and VIN-bearing URLs never cached
+  wrangler.jsonc      route nhtsa.repairmcp.com, workers_dev false, no D1
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -82,6 +105,8 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
   src/weekly-cli.ts   `bun run weekly`, the command Task Scheduler runs
   test/               193 tests
 
+scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
+                                hard-fails without the currentthrough marker)
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
 docs/ARCHITECTURE.md            The build spec — read first for design questions
@@ -102,12 +127,25 @@ wired (post-demo).
 
 ```bash
 bun install                               # sync workspace deps
-bun run build                             # turbo build all 3 packages → dist/
-cd packages/core        && bun test       # 21 tests (citation TZ invariance + OpenAI contract)
-cd packages/deg         && bun test       # 87 tests (scoring, D1 adapter, local/remote parity)
-cd ingestion/deg-backfill && bun test     # 147 tests (sync, hash, parser, openDb, tier1/2)
+bun run build                             # turbo build all packages → dist/
+cd packages/core        && bun test       # 77 tests (citation TZ invariance + OpenAI contract)
+cd packages/deg         && bun test       # 106 tests (scoring, D1 adapter, local/remote parity)
+cd packages/nhtsa       && bun test       # 74 tests (client, laws, adapter, tools, VIN hygiene)
+cd ingestion/deg-backfill && bun test     # 193 tests (sync, hash, parser, openDb, tier1/2)
 cd ingestion/deg-backfill && bun run typecheck   # tsc --noEmit, clean since 2026-08-03
 bun scripts/seed-sample.ts                # re-scrape DEG into sample-inquiries.json
+```
+
+**NHTSA server** — from `apps/nhtsa-server/`. No corpus machinery: recalls,
+complaints, and VIN decodes are live against NHTSA at request time; the one
+corpus is the law JSON baked into the bundle, so a law refresh IS a deploy.
+
+```bash
+npx tsx ../../scripts/capture-uscode.ts --dry-run   # re-capture 49 U.S.C. ch. 301, report only
+npx tsx ../../scripts/capture-uscode.ts             # writes packages/nhtsa/data JSON
+wrangler dev                                        # http://127.0.0.1:8787 (live NHTSA upstream)
+wrangler deploy                                     # → nhtsa.repairmcp.com
+curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + law corpus meta
 ```
 
 **Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
@@ -305,8 +343,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | Phase 3 public site | ✅ live | Launched 2026-08-27: `https://repairmcp.com` serves the site, indexable, full security headers. `www` 301s to the apex via a zone Redirect Rule; `preview.repairmcp.com` retired. Real screenshots and og-image in place. |
 | Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. As of 2026-08-27 the edge serves 22,786 records, current through 2026-08-27, synced 2026-08-27, `corpusVersionStale: false` — verified on the wire. |
 | Weekly automated sync | ✅ live | 2026-08-25, extended 2026-08-27 with the automated remote push (`push-remote.ts`): a clean weekly run now lands D1 + Worker + site in the same pass and verifies `/health` on the wire. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated), proven through the Scheduler itself (`LastTaskResult: 0`). See below. |
+| NHTSA vertical | ✅ live | 2026-08-27: `https://nhtsa.repairmcp.com/mcp` deployed and verified on the wire (9 recalls for the 2020 Transit, §30122 quoted verbatim, WAF 429s confirmed). Seven `nhtsa_*` tools + connector search/fetch over a composite live+corpus adapter; 49 U.S.C. ch. 301 captured from OLRC (47 sections, current through 2026-04-30 / P.L. 119-87). Site card flipped, /legal updated for VIN passthrough. Built from the May branch (`codex/washington-binding-authority`): client/schema/relevance/tests ported, everything else rewritten to current conventions. Open: connector gates in Claude and ChatGPT clients. |
 
-**Test totals:** 375 passing (76 core + 106 deg + 193 ingestion). 0 failing.
+**Test totals:** 450 passing (77 core + 106 deg + 74 nhtsa + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -571,13 +610,16 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   size the D1 read budget assuming the cache absorbs repeats until real traffic shows
   it does. A `find_supporting` call reads on the order of 1,000 rows against a Free
   ceiling of 5M/day.
-- **NHTSA and Washington state verticals are next — kickoff spec written.**
-  `docs/NEXT-VERTICALS-KICKOFF.md` (2026-08-27) carries the design questions,
-  data sources, build shapes, and demo criteria for both. Start a fresh
-  session in plan mode with "plan the NHTSA vertical" and work that file.
-  NHTSA first (live adapter, no sync machinery), Washington second (tiny
-  hand-curated corpus). The live site already advertises both cards and
-  invites requests at support@bainbridgeai.ai.
+- ~~NHTSA vertical.~~ **Shipped 2026-08-27** — see the Build status row. What remains
+  from that launch: the connector gates (add the URL in Travis's Claude and ChatGPT
+  clients and run the three scenarios), a `git push` so the site's GitHub link shows
+  the code, and the stale worktree prune (elevated shell). The **Washington vertical
+  is next**: `docs/NEXT-VERTICALS-KICKOFF.md` §2 still carries its design questions,
+  and the branch `codex/washington-binding-authority` holds a full May implementation
+  of it (`packages/state-wa` + `apps/state-wa-server` + curated `wa-authority.json`)
+  that predates current conventions — same port-vs-rewrite review the NHTSA build got,
+  and the NHTSA law-corpus modules (laws/schema, laws/search, capture pattern) are the
+  shape state-wa should reuse.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 
@@ -585,6 +627,21 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Known gotchas
 
+- **NHTSA's two APIs disagree about date order.** Recall dates arrive DD/MM/YYYY
+  (`16/12/2021`), complaint dates MM/DD/YYYY (`07/29/2026`) — verified on the wire
+  2026-08-27. `normalizeDateString(value, 'dmy'|'mdy')` in `packages/nhtsa/src/client.ts`
+  is per-endpoint on purpose, and the ambiguous-date tests exist so a future
+  "simplification" to one parser fails loudly instead of silently swapping months.
+- **NHTSA answers an unrecognized make/model with HTTP 400, not an empty 200.**
+  "Transit 250" → 400. That is NHTSA answering, not NHTSA down: the client retries
+  once with the nearest name from NHTSA's own model vocabulary (`products/vehicle/models`,
+  exact > query-is-prefix > name-is-prefix), and a 400 that survives becomes a
+  `vehicleNotRecognized` diagnosis with `knownModels` — never an `unavailable` payload.
+- **govinfo per-section USC URLs soft-404** (redirect to `/error` with HTTP 200), and
+  the govinfo edition lags years behind. The law corpus captures from OLRC
+  (uscode.house.gov), whose chapter view returns the whole chapter in one document and
+  embeds its own `currentthrough:YYYYMMDD_PL` marker — `capture-uscode.ts` hard-fails
+  if that marker is missing rather than writing a corpus that cannot state its currency.
 - **`/health` reads `corpus_meta` uncached, and must keep doing so.** Every other
   D1 read on the Worker goes through the result cache, whose namespace is
   `CORPUS_VERSION`. That is correct for tools and useless for `/health`: the one

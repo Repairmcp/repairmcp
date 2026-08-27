@@ -1,5 +1,15 @@
 # Kickoff spec: NHTSA and Washington state verticals
 
+> **Status 2026-08-27 (evening): §1 NHTSA is SHIPPED** — live at
+> `nhtsa.repairmcp.com/mcp`, site card flipped, CLAUDE.md carries the build
+> row and gotchas. Two additions relative to this spec: 49 U.S.C. ch. 301 was
+> added as a law corpus at Travis's direction (captured from OLRC, not the
+> govinfo edition this spec links — govinfo per-section URLs soft-404 and its
+> edition lags years), and the May branch `codex/washington-binding-authority`
+> turned out to hold a full prior implementation of BOTH verticals, not just
+> research. §2 Washington remains, and that branch's `packages/state-wa` is
+> its starting point.
+
 Written 2026-08-27 at the end of the launch session, as the handoff into a
 fresh planning session. Read `docs/ARCHITECTURE.md` first for the core
 abstractions; this file is what is specific to these two builds. Start the

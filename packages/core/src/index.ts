@@ -24,7 +24,7 @@ export {
 // Citation
 export type { Citation } from './citation/schema.js';
 export type { CitationInput } from './citation/formatter.js';
-export { buildCitation } from './citation/formatter.js';
+export { buildCitation, fmtDateUtc } from './citation/formatter.js';
 
 // Server + tool builders
 export type {

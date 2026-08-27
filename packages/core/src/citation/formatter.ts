@@ -19,7 +19,7 @@ export interface CitationInput {
  * Without this, a 2026-01-01T00:00:00Z published date renders as "12/31/2025"
  * in PT and "1/1/2026" in UTC — same DEG entry, different citation strings.
  */
-function fmtDateUtc(d: Date): string {
+export function fmtDateUtc(d: Date): string {
   return d.toLocaleDateString('en-US', { timeZone: 'UTC' });
 }
 

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import { buildCitation } from '../src/citation/formatter';
+import { buildCitation, fmtDateUtc } from '../src/citation/formatter';
 
 const baseInput = {
   sourceId: 'deg',
@@ -91,6 +91,19 @@ describe('buildCitation — UTC-locked formatting', () => {
       else process.env.TZ = beforeTz;
       if (beforeNodeIcuTz === undefined) delete process.env.NODE_ICU_TZ;
       else process.env.NODE_ICU_TZ = beforeNodeIcuTz;
+    }
+  });
+
+  test('fmtDateUtc (exported for vertical identity modules) is TZ-invariant', () => {
+    const beforeTz = process.env.TZ;
+    try {
+      process.env.TZ = 'America/Los_Angeles';
+      expect(fmtDateUtc(new Date('2021-12-16T00:00:00.000Z'))).toBe('12/16/2021');
+      process.env.TZ = 'Asia/Tokyo';
+      expect(fmtDateUtc(new Date('2021-12-16T00:00:00.000Z'))).toBe('12/16/2021');
+    } finally {
+      if (beforeTz === undefined) delete process.env.TZ;
+      else process.env.TZ = beforeTz;
     }
   });
 
