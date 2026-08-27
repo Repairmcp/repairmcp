@@ -56,9 +56,14 @@ the list and say why in the commit. Do not work around it.
 
 # Launch runbook
 
-**The site is preview-only on purpose.** Two things gate it: Travis's own
-launch prerequisite, and the fact that `repairmcp.com` and `www` still carry
-orphaned Namecheap parking records.
+**Executed 2026-08-27 — the site is live at `https://repairmcp.com`.** Kept as
+the record of what was done and as the template if the DNS surgery ever has to
+be repeated. Deviations from the plan as written: the apex carried a single
+proxied parking A record (192.64.119.247) rather than separate A/AAAA rows, the
+www parking CNAME was repointed at the apex instead of deleted and recreated,
+and the redirect rule came from Cloudflare's "Redirect from WWW to root"
+template. Cloudflare auto-removed the preview DNS record when its route was
+dropped, so step 7's manual deletion was not needed.
 
 Verified state before launch:
 

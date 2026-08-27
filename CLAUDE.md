@@ -299,7 +299,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
-| Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
+| Phase 3 public site | ✅ live | Launched 2026-08-27: `https://repairmcp.com` serves the site, indexable, full security headers. `www` 301s to the apex via a zone Redirect Rule; `preview.repairmcp.com` retired. Real screenshots and og-image in place. |
 | Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. As of 2026-08-27 the edge serves 22,786 records, current through 2026-08-27, synced 2026-08-27, `corpusVersionStale: false` — verified on the wire. |
 | Weekly automated sync | ✅ live | 2026-08-25, extended 2026-08-27 with the automated remote push (`push-remote.ts`): a clean weekly run now lands D1 + Worker + site in the same pass and verifies `/health` on the wire. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated), proven through the Scheduler itself (`LastTaskResult: 0`). See below. |
 
@@ -553,15 +553,15 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   cover is a second door into the same open corpus. If a soft launch on workers.dev is
   ever wanted, the only real mitigation there is Cloudflare's in-Worker rate limiting
   binding (`unsafe.bindings`, type `ratelimit`), roughly 15 lines.
-- **Take `repairmcp.com` live.** The apex and `www` still carry orphaned Namecheap
-  parking records and answer **522** and **525** to the public right now. The site is
-  built and deployed to `preview.repairmcp.com`; attaching the apex is gated on
-  Travis's own launch prerequisite, not on anything in the repo. The full runbook,
-  including which DNS records to delete and which to leave alone, is
-  `apps/site/README.md`. The one that will bite: the five `MX` records to
-  `eforward*.registrar-servers.com` and the `TXT` SPF beside them are live Namecheap
-  **email forwarding**, not parking. They look like leftovers. Deleting them kills
-  every address at the domain and nothing will say so.
+- ~~Take `repairmcp.com` live.~~ **Done 2026-08-27.** Parking A record on the apex
+  deleted, www's parking CNAME repointed at the apex (proxied) plus a zone
+  Redirect Rule (www 301 → apex, path and query preserved), apex custom domain
+  attached, both LAUNCH GATE markers opened (`X-Robots-Tag` removed, robots.txt
+  `Allow: /`), preview retired (Cloudflare auto-removed its DNS record with the
+  route). The five `MX` records and the SPF `TXT` — live Namecheap email
+  forwarding — were left untouched, verified still present after the launch.
+  Verified on the wire: apex 200 + security headers + no x-robots-tag, www 301,
+  `deg` unaffected.
 - **The result cache is thinner on the edge than it looks locally.** Warm/cold was
   64 ms / 247 ms against local D1 but 349 ms / 401 ms against the real edge:
   `caches.default` is per-colo and a preview session never accumulates hits. Do not
