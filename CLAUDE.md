@@ -571,6 +571,13 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   size the D1 read budget assuming the cache absorbs repeats until real traffic shows
   it does. A `find_supporting` call reads on the order of 1,000 rows against a Free
   ceiling of 5M/day.
+- **NHTSA and Washington state verticals are next — kickoff spec written.**
+  `docs/NEXT-VERTICALS-KICKOFF.md` (2026-08-27) carries the design questions,
+  data sources, build shapes, and demo criteria for both. Start a fresh
+  session in plan mode with "plan the NHTSA vertical" and work that file.
+  NHTSA first (live adapter, no sync machinery), Washington second (tiny
+  hand-curated corpus). The live site already advertises both cards and
+  invites requests at support@bainbridgeai.ai.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 
