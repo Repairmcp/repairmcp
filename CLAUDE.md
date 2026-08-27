@@ -610,11 +610,12 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   size the D1 read budget assuming the cache absorbs repeats until real traffic shows
   it does. A `find_supporting` call reads on the order of 1,000 rows against a Free
   ceiling of 5M/day.
-- ~~NHTSA vertical.~~ **Shipped 2026-08-27** — see the Build status row. What remains
-  from that launch: the connector gates (add the URL in Travis's Claude and ChatGPT
-  clients and run the three scenarios), a `git push` so the site's GitHub link shows
-  the code, and the stale worktree prune (elevated shell). The **Washington vertical
-  is next**: `docs/NEXT-VERTICALS-KICKOFF.md` §2 still carries its design questions,
+- ~~NHTSA vertical.~~ **Shipped 2026-08-27** — see the Build status row. Pushed to
+  GitHub and the stale worktree registration pruned the same day (the blocker was a
+  ReadOnly attribute on its `logs`/`refs` dirs, not ACLs — `attrib -r` fixed it, no
+  elevation needed). What remains from that launch: the connector gates (add the URL
+  in Travis's Claude and ChatGPT clients and run the three scenarios). The
+  **Washington vertical is next**: `docs/NEXT-VERTICALS-KICKOFF.md` §2 still carries its design questions,
   and the branch `codex/washington-binding-authority` holds a full May implementation
   of it (`packages/state-wa` + `apps/state-wa-server` + curated `wa-authority.json`)
   that predates current conventions — same port-vs-rewrite review the NHTSA build got,
