@@ -615,12 +615,15 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   ReadOnly attribute on its `logs`/`refs` dirs, not ACLs — `attrib -r` fixed it, no
   elevation needed). What remains from that launch: the connector gates (add the URL
   in Travis's Claude and ChatGPT clients and run the three scenarios). The
-  **Washington vertical is next**: `docs/NEXT-VERTICALS-KICKOFF.md` §2 still carries its design questions,
-  and the branch `codex/washington-binding-authority` holds a full May implementation
-  of it (`packages/state-wa` + `apps/state-wa-server` + curated `wa-authority.json`)
-  that predates current conventions — same port-vs-rewrite review the NHTSA build got,
-  and the NHTSA law-corpus modules (laws/schema, laws/search, capture pattern) are the
-  shape state-wa should reuse.
+  **Washington vertical is next — kickoff written**: `docs/WA-VERTICAL-KICKOFF.md`
+  (2026-08-27) carries the full handoff: the fine-tooth-comb audit of the May branch
+  (verdict: port the scorer/taxonomy/tool descriptions, **replace 100% of the corpus
+  text — it is model-written paraphrase, not captured law**, with legally material
+  drift), verified leg.wa.gov capture mechanics (whole-chapter pages, per-section
+  effective dates in history notes, no site-level currency marker), and Travis's
+  expanded scope: insurance claims practices + repair law + WISHA safety +
+  HR/employment. Start a fresh session in plan mode with "plan the Washington
+  vertical" and work that file.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 

@@ -7,8 +7,11 @@
 > govinfo edition this spec links — govinfo per-section URLs soft-404 and its
 > edition lags years), and the May branch `codex/washington-binding-authority`
 > turned out to hold a full prior implementation of BOTH verticals, not just
-> research. §2 Washington remains, and that branch's `packages/state-wa` is
-> its starting point.
+> research. **§2 Washington is superseded by `docs/WA-VERTICAL-KICKOFF.md`**
+> (2026-08-27, evening): a fine-tooth-comb audit of the branch's state-wa
+> implementation, verified capture mechanics for leg.wa.gov, and Travis's
+> expanded scope (insurance + repair law + WISHA safety + HR/employment).
+> Plan the Washington vertical from that file, not this one.
 
 Written 2026-08-27 at the end of the launch session, as the handoff into a
 fresh planning session. Read `docs/ARCHITECTURE.md` first for the core
