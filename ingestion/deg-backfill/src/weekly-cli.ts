@@ -9,12 +9,17 @@ import {
 } from './health.js';
 import { runWeekly } from './weekly.js';
 import type { SpawnResult } from './weekly.js';
-import { existsSync, mkdirSync, appendFileSync } from 'node:fs';
+import { pushRemote } from './push-remote.js';
+import type { PushRemoteResult } from './push-remote.js';
+import { existsSync, mkdirSync, appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const PACKAGE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_ROOT = join(PACKAGE_DIR, '..', '..');
+const DEG_SERVER_DIR = join(REPO_ROOT, 'apps', 'deg-server');
+const SITE_DIR = join(REPO_ROOT, 'apps', 'site');
+const NPX = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 
 /**
  * scripts/transform-deg-sqlite.ts hardcodes this path; it has no --db flag.
@@ -69,6 +74,10 @@ async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const dbPath = flagValue(argv, '--db') ?? process.env['DEG_DB_PATH'];
   const logDir = flagValue(argv, '--log-dir') ?? DEFAULT_LOG_DIR;
+  // The remote push (D1 + Worker + site) runs by default so the public
+  // server's stated cutoff moves with every database update. --no-push
+  // restores the old local-only behaviour and prints the manual checklist.
+  const noPush = argv.includes('--no-push');
 
   if (dbPath === undefined || dbPath === '') {
     process.stderr.write('Fatal: --db is required (or set DEG_DB_PATH).\n');
@@ -146,13 +155,49 @@ async function main(): Promise<void> {
   if (result.transformOutput !== null) log(`Transform:\n${result.transformOutput}`);
 
   const corpusGrew = (result.drainSummary?.newCount ?? 0) > 0 || (result.drainSummary?.written ?? 0) > 0;
-  if (result.ok && corpusGrew) {
-    log(
-      'NEXT (manual): the local served JSON changed. Regenerate migrations 0002/0005, bump ' +
-        'CORPUS_VERSION in apps/deg-server/wrangler.jsonc, and update the record count in ' +
-        'apps/site/public/index.html when convenient. See CLAUDE.md, "A corpus refresh touches ' +
-        'four places, not one."',
-    );
+  let pushResult: PushRemoteResult | null = null;
+  if (result.ok && noPush) {
+    if (corpusGrew) {
+      log(
+        'NEXT (manual): the local served JSON changed and --no-push skipped the remote push. ' +
+          'Regenerate migrations 0002/0005, bump CORPUS_VERSION in apps/deg-server/wrangler.jsonc, ' +
+          'and update the record count in apps/site/public/index.html when convenient. See ' +
+          'CLAUDE.md, "A corpus refresh touches four places, not one."',
+      );
+    }
+  } else if (result.ok) {
+    pushResult = await pushRemote({
+      runBuildSql: () => spawnCapture([NPX, 'tsx', 'scripts/build-d1-sql.ts'], REPO_ROOT),
+      runD1Migration: (file) =>
+        spawnCapture(
+          [NPX, 'wrangler', 'd1', 'execute', 'repairmcp-deg', '--remote', '-y', `--file=migrations/${file}`],
+          DEG_SERVER_DIR,
+        ),
+      runDeployWorker: () => spawnCapture([NPX, 'wrangler', 'deploy'], DEG_SERVER_DIR),
+      runCopyLint: () => spawnCapture([process.execPath, 'run', 'test'], SITE_DIR),
+      runDeploySite: () => spawnCapture([NPX, 'wrangler', 'deploy'], SITE_DIR),
+      fetchHealth: async () => {
+        const res = await fetch('https://deg.repairmcp.com/health');
+        return res.text();
+      },
+      readFile: (p) => readFileSync(p, 'utf-8'),
+      writeFile: (p, t) => writeFileSync(p, t, 'utf-8'),
+      wranglerJsoncPath: join(DEG_SERVER_DIR, 'wrangler.jsonc'),
+      siteHtmlPath: join(SITE_DIR, 'public', 'index.html'),
+      log,
+    });
+    if (pushResult.ok && pushResult.summary !== null) {
+      log(
+        `Remote push OK: D1, the Worker, and the site now serve ${pushResult.summary.records} ` +
+          `records (current through ${pushResult.summary.currentThrough}, synced ${pushResult.summary.syncedAt}).`,
+      );
+      log(
+        'NOTE: apps/deg-server/wrangler.jsonc and apps/site/public/index.html were updated in the ' +
+          'working tree by this push; commit them when convenient.',
+      );
+    } else {
+      log(`Remote push FAILED: ${pushResult.reason ?? 'unknown'}`);
+    }
   }
 
   let corpusTotal = 0;
@@ -166,8 +211,13 @@ async function main(): Promise<void> {
     log(healthReadError);
   }
 
-  const overallOk = result.ok && healthReadError === null;
-  const reason = result.reason ?? healthReadError ?? 'unknown failure';
+  const pushOk = pushResult === null || pushResult.ok;
+  const overallOk = result.ok && healthReadError === null && pushOk;
+  const reason =
+    result.reason ??
+    (pushOk ? null : `Remote push failed: ${pushResult?.reason ?? 'unknown'}`) ??
+    healthReadError ??
+    'unknown failure';
 
   appendFileSync(runLogPath(logDir, runDate), runLog.join('\n') + '\n', 'utf-8');
 

@@ -153,14 +153,16 @@ leftover `preview` DNS record in the dashboard.
 
 ## Keeping the numbers honest
 
-`index.html` hard-codes the corpus size in three places: the description meta
-tag, the hero, and the stat grid. It is a constant because the site ships no
-scripts, so there is nothing to fetch a live count with.
+Most of the page says "more than 22,000", which does not go stale week to week.
+The one exact pair — the stat-grid count and its "current through <Month Year>"
+line — is a constant because the site ships no scripts, so there is nothing to
+fetch a live count with.
 
-**After every corpus refresh**, bump it in the same pass as `CORPUS_VERSION` in
-`apps/deg-server/wrangler.jsonc`. The current value comes from
-`https://deg.repairmcp.com/health`:
-
-```bash
-curl -s https://deg.repairmcp.com/health
-```
+**Since 2026-08-27 the weekly sync updates that pair automatically**: the
+remote push (`ingestion/deg-backfill/src/push-remote.ts`) rewrites both values,
+runs the copy linter, and redeploys this site in the same pass that refreshes
+D1 and bumps `CORPUS_VERSION`. The edit is anchored to the stat label's own
+copy — if that sentence is ever reworded, update `SITE_FRESHNESS_RE` in
+push-remote.ts in the same commit or the weekly run will fail loudly (which is
+the intended alternative to a silently stale number). Manual checks still come
+from `https://deg.repairmcp.com/health`.

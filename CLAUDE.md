@@ -73,20 +73,22 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
   src/health.ts       health report + health.log / ATTENTION-NEEDED.txt primitives
   src/weekly.ts       runWeekly — decides OK/FAIL from the drain summary and the
                       transform's own output; injectable subprocess runners
+  src/push-remote.ts  the automated remote corpus push: build-d1-sql → remote D1
+                      import → CORPUS_VERSION bump + Worker deploy → /health
+                      readback → site count update + site deploy
   src/weekly-cli.ts   `bun run weekly`, the command Task Scheduler runs
-  test/               174 tests
+  test/               193 tests
 
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
 docs/ARCHITECTURE.md            The build spec — read first for design questions
 ```
 
-**Two DEG databases exist and only one is real.** The live corpus is
-`C:\degdata\deg.sqlite` (22,783 rows). `ingestion/deg-backfill/deg.sqlite` is a
-stale partial from 2026-06-26 with 22,122 bodies unfetched — pointing the sync
-at it would re-crawl 22k pages. `sync-cli.ts` requires `--db` explicitly for
-this reason; set `DEG_DB_PATH` to avoid retyping. The stale file should be
-deleted.
+**The live corpus is `C:\degdata\deg.sqlite`** (22,796 raw rows as of
+2026-08-27). A stale partial copy that used to sit at
+`ingestion/deg-backfill/deg.sqlite` was deleted 2026-08-27; `sync-cli.ts` still
+requires `--db` explicitly so a wrong path is always a conscious act. Set
+`DEG_DB_PATH` to avoid retyping.
 
 `apps/deg-server/migrations/` from §5 still doesn't exist — it lands when D1 is
 wired (post-demo).
@@ -172,10 +174,21 @@ run more than once the same day), `health.log` (one CSV line per run: date, new
 count, corpus total, errors, OK or FAIL), and `ATTENTION-NEEDED.txt` (written on
 any FAIL, cleared automatically on the next OK run).
 
-`bun run weekly` only regenerates the local served JSON. It does not do the
-other three steps below (`build-d1-sql.ts`, `CORPUS_VERSION`, the site's record
-count), and prints a "NEXT (manual)" reminder in its log whenever the corpus
-actually grew, since those steps stay manual.
+Since 2026-08-27, a clean weekly run also performs **the whole remote push**
+(`src/push-remote.ts`): it regenerates migrations 0002/0005, re-imports remote
+D1 (0001 → 0005), bumps `CORPUS_VERSION` in `apps/deg-server/wrangler.jsonc`,
+deploys the Worker, reads `/health` back and refuses to report OK unless the
+edge states the exact records/dates it just pushed, then updates the record
+count and "current through <Month Year>" line in `apps/site/public/index.html`,
+runs the copy linter, and deploys the site. This is what keeps the delivered
+freshness text ("current through 2026-08-27, synced 2026-08-27") moving with
+every database update. The push runs even on a zero-change week because Tier-1
+stamps `lastSeenAt` on every listed record, which moves `syncedAt`. Pass
+`--no-push` to restore the old local-only behaviour; the log then prints the
+manual checklist. The push edits `wrangler.jsonc` and `index.html` in the
+working tree and deliberately does **not** git-commit them — the log reminds
+you to commit when convenient, and an uncommitted value is simply overwritten
+by the next run.
 
 **Regenerate the served corpus** after a sync completes:
 
@@ -186,8 +199,9 @@ npx tsx scripts/transform-deg-sqlite.ts             # writes it
 
 After editing source, **always rebuild before Claude Desktop re-spawns** the server — it loads `dist/stdio.js`, not source. Force a re-spawn by killing all `Claude.exe` and relaunching.
 
-**A corpus refresh touches four places, not one.** Regenerating the JSON is the
-first of them; the rest are easy to forget and all are visible to users:
+**A corpus refresh touches four places, not one — and `bun run weekly` now
+touches all four.** The list below is what the push automates (and the manual
+checklist for a `--no-push` run or a hand-driven catch-up sync):
 
 1. `scripts/transform-deg-sqlite.ts` — the served JSON
 2. `scripts/build-d1-sql.ts` — regenerates `0002_data.sql` **and**
@@ -286,11 +300,39 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
 | Phase 3 public site | 🟡 preview only | `apps/site/`, deployed to `preview.repairmcp.com`. Waiting on screenshots and on Travis's launch prerequisite before the apex route attaches. |
-| Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. Deployed 2026-08-12, version `4a848a92`; verified on the wire at `deg.repairmcp.com`. Corpus declares current through 2026-07-31, synced 2026-08-02. D1 has not caught up to the 2026-08-25 local sync yet — see Backlog. |
-| Weekly automated sync | ✅ live | 2026-08-25. `bun run weekly` drains Tier-2 to completion, regenerates the served JSON, and writes health.log / ATTENTION-NEEDED.txt. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated) and proven through the Scheduler itself, not just the command line (`LastTaskResult: 0`). See below. |
+| Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. As of 2026-08-27 the edge serves 22,786 records, current through 2026-08-27, synced 2026-08-27, `corpusVersionStale: false` — verified on the wire. |
+| Weekly automated sync | ✅ live | 2026-08-25, extended 2026-08-27 with the automated remote push (`push-remote.ts`): a clean weekly run now lands D1 + Worker + site in the same pass and verifies `/health` on the wire. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated), proven through the Scheduler itself (`LastTaskResult: 0`). See below. |
 
-**Test totals:** 356 passing (76 core + 106 deg + 174 ingestion). 0 failing.
+**Test totals:** 375 passing (76 core + 106 deg + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
+
+### Remote push automated + pre-launch audit, 2026-08-27
+
+A catch-up sync brought the corpus to **22,786 served records** (13 new, 18
+refreshed, 0 errors; raw table 22,796, max db_id ~41893), and the whole remote
+push is now automated: `src/push-remote.ts` + 19 tests, wired into
+`bun run weekly` (see Commands). The catch-up was pushed the same day — the edge
+now states "current through 2026-08-27, synced 2026-08-27" in every tool
+description, payload, and `/health`.
+
+The re-import surfaced a real retrieval bug the parity panel was built to
+catch: the D1 recency arm took the newest 500 matches *outright*, but the
+scorer gives no recency credit to records dated after `now`, so on a saturated
+query the true winner is the newest match **at or before** `now`. Identical
+with a live clock; divergent under the panel's pinned 2026-05-07 clock the
+moment the corpus grew 500 matching records past it — which this refresh was
+the first to do. The arm now carries a `<= now` cutoff at day granularity
+(cache-key stable). `d1-parity-full.test.ts` is green again at 20/20 and the
+fix is deployed.
+
+Also that day, from the pre-launch audit: the WAF rate limit verified live on
+the wire (exactly 20 requests pass per 10 s, then 429s), git history clean of
+secret patterns, no tracked env files, the stale
+`ingestion/deg-backfill/deg.sqlite` deleted, and the placeholder
+`og-image.png` replaced with a real 1200x630 card (headless Chrome render,
+48 KB). `bun audit` reports CVEs in `hono`/`fast-uri` — transitive deps of the
+MCP SDK whose affected middleware this Worker never uses; bump with
+`bun update` + full test run when convenient.
 
 ### Phase 2 — remote MCP server, 2026-08-03
 
@@ -465,15 +507,15 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   regenerates the served JSON, and writes health.log / ATTENTION-NEEDED.txt. Registered
   as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" and verified through the
   Scheduler itself, not just the command line. See "Weekly automation live" above.
-- **The weekly sync creates ongoing local/D1 drift, on purpose.** `bun run weekly` only
-  touches the local served JSON, step 1 of the four-step corpus refresh; it deliberately
-  never runs `build-d1-sql.ts`, never bumps `CORPUS_VERSION`, and never touches the
-  site's record count, since those are irreversible pushes to a shared remote and
-  shouldn't happen unattended. It prints a "NEXT (manual)" reminder in its own log
-  whenever the corpus grows. As of 2026-08-25 the local corpus is at 22,773 served
-  records (current through 2026-08-25); D1 is still at the 2026-08-02 push (22,652,
-  current through 2026-07-31). There is no rule yet for how often to push D1, or who
-  decides when the drift is worth closing.
+- ~~The weekly sync creates ongoing local/D1 drift, on purpose.~~ **Resolved
+  2026-08-27**, by reversing the decision at Travis's direction: the delivered
+  freshness text must move with every database update, so a clean weekly run now
+  performs the full remote push (see Commands and `push-remote.ts`). The
+  safeguards that made unattended pushes scary are what made this reversible:
+  the push only runs after the sync itself reports OK, every step failure writes
+  ATTENTION-NEEDED.txt, and the run refuses to report OK unless `/health` on the
+  wire states the exact records/dates it pushed. Local and D1 were reconciled
+  the same day (both at 22,786, current through 2026-08-27).
 - **Audatex coverage is collapsing.** Zero new Audatex inquiries in the five weeks to
   2026-08-02; the newest in the whole corpus is 41424 (2026-06-18). Audatex is 8.4% of
   the corpus historically but 1.3% of the last 1,000 ids. Kills any plan to balance IP
