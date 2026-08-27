@@ -1,11 +1,5 @@
-# LAUNCH GATE: closed while this is preview only.
-# At launch, replace the two lines below with:
-#
-#   User-agent: *
-#   Allow: /
-#   Sitemap: https://repairmcp.com/sitemap.xml   (only if a sitemap is added)
-#
-# See apps/site/README.md.
+# LAUNCH GATE opened 2026-08-27. The site is live and indexable.
+# No sitemap line: there is no sitemap.xml, and one page does not need one.
 
 User-agent: *
-Disallow: /
+Allow: /

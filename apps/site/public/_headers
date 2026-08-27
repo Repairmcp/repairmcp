@@ -20,12 +20,10 @@
   Referrer-Policy: no-referrer
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
   Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
-  X-Robots-Tag: noindex, nofollow
 
-# LAUNCH GATE: delete the X-Robots-Tag line above when the apex route is
-# attached, and open up robots.txt in the same commit. Assets-only mode cannot
-# make that header conditional on hostname, so it is a checklist item rather
-# than something the config handles.
+# LAUNCH GATE opened 2026-08-27: the X-Robots-Tag noindex line that used to sit
+# above was removed when the apex route attached, and robots.txt opened in the
+# same commit.
 #
-# Verify after launch. This must print nothing:
+# Post-launch check. This must print nothing:
 #   curl -sI https://repairmcp.com/ | grep -i x-robots-tag

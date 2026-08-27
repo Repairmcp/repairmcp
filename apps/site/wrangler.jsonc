@@ -15,20 +15,13 @@
     "not_found_handling": "404-page"
   },
 
-  // LAUNCH GATE. Preview only, on purpose.
-  //
-  // repairmcp.com and www still hold Namecheap parking records that answer
-  // 522 and 525. Adding an apex custom_domain here BEFORE those records are
-  // deleted in the dashboard will fail on a DNS conflict, and deleting the
-  // wrong record takes the domain's email forwarding with it. The order and
-  // the exact records are in README.md. Do not uncomment this without
-  // walking that runbook:
-  //
-  //   { "pattern": "repairmcp.com", "custom_domain": true }
-  //
-  // preview.repairmcp.com is served noindex (see public/_headers) so it
-  // cannot be found before launch.
-  "routes": [{ "pattern": "preview.repairmcp.com", "custom_domain": true }],
+  // LAUNCHED 2026-08-27. The apex is the site. The old Namecheap parking
+  // records on @ and www were deleted in the dashboard first (the runbook in
+  // README.md); the domain's MX / SPF email-forwarding records were left
+  // alone. www is a dashboard-side proxied CNAME plus a 301 redirect rule to
+  // the apex, not a route here. preview.repairmcp.com was retired at launch
+  // per the runbook.
+  "routes": [{ "pattern": "repairmcp.com", "custom_domain": true }],
 
   // Same reasoning as apps/deg-server: one public hostname, not two. A
   // workers.dev URL would be a second door that the zone's rules do not
