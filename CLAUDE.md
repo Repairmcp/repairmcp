@@ -47,7 +47,8 @@ apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
                       it" (example prompts, each tested against the live corpus
-                      before publishing), trust, what's next.
+                      before publishing), trust, what's next. Footer links
+                      legal.html (terms + privacy) and support@bainbridgeai.ai.
   public/styles.css   One stylesheet. No scripts, no web fonts, no third-party anything.
   public/_headers     Security headers + the LAUNCH GATE noindex line
   public/robots.txt   LAUNCH GATE: Disallow: / while preview-only

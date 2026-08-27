@@ -10,6 +10,7 @@ invocation. Every response header comes from `public/_headers`.
 ```
 public/
   index.html      the whole site: hero, proof, Claude setup, ChatGPT setup, what to ask, trust, what's next
+  legal.html      terms of use + privacy, plain language, linked from the footer
   styles.css      one stylesheet
   404.html
   robots.txt      LAUNCH GATE: currently Disallow: /
