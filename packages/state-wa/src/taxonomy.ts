@@ -77,6 +77,7 @@ export const CITE_PREFIX_TOPICS: Record<string, readonly WaTopic[]> = {
   '50A.10': ['paid_family_leave'],
   '51.12': ['workers_comp'],
   '51.14': ['workers_comp'],
+  '51.16': ['workers_comp'],
   '296-125': ['minor_workers'],
 };
 

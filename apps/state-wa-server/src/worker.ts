@@ -8,8 +8,8 @@
  *
  * Same stateless design as deg-server and nhtsa-server: every request builds
  * its own server, transport, and adapter, then throws them away. The one
- * module-level value is the corpus — 645 sections plus the annotation layer,
- * parsed and validated once per isolate. That validation includes the
+ * module-level value is the corpus — every captured section plus the
+ * annotation layer, parsed and validated once per isolate. That validation includes the
  * substring guarantee on every quote-safe excerpt, so a paraphrased excerpt
  * cannot even boot, let alone serve.
  *

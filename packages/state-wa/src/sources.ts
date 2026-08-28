@@ -188,7 +188,14 @@ export const WA_CAPTURE_SOURCES: readonly WaCaptureSource[] = [
     chapterTitle: 'Industrial insurance—Self-insurers',
     domain: 'employment',
     filter: { kind: 'chapter' },
-    note: 'Verify at capture whether 51.16 (premiums/payroll) belongs alongside this.',
+  },
+  {
+    code: 'RCW',
+    chapter: '51.16',
+    chapterTitle: 'Industrial insurance—Assessment and collection of premiums',
+    domain: 'employment',
+    filter: { kind: 'chapter' },
+    note: 'Verified at capture 2026-08-27: 25 sections of employer premium and payroll-reporting duties.',
   },
   {
     code: 'WAC',

@@ -83,7 +83,7 @@ packages/state-wa/    @repairmcp/state-wa — Washington state law vertical (pur
                       constructor enforces annotation-key + excerpt-substring
   src/tools.ts        the four wa_* tools; src/openai.ts connector (freshness PASSED
                       to the builders — pure corpus, the opposite of NHTSA)
-  data/wa-law-corpus.json   645 verbatim sections, 1.79 MB, committed
+  data/wa-law-corpus.json   670 verbatim sections, 1.83 MB, committed
   data/wa-annotations.json  hand-maintained topics/useCases/quote-safe excerpts
   test/               94 tests incl. the six kickoff demo criteria as ranking
                       assertions against the real corpus
@@ -178,8 +178,8 @@ wrangler deploy                                     # → nhtsa.repairmcp.com
 curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + law corpus meta
 ```
 
-**Washington server** — from `apps/state-wa-server/`. Pure corpus: all 645
-WAC/RCW sections ship in the bundle (643 KB gzip), so a corpus refresh IS a
+**Washington server** — from `apps/state-wa-server/`. Pure corpus: the whole
+WAC/RCW corpus ships in the bundle (~650 KB gzip), so a corpus refresh IS a
 deploy — re-run the capture, run the tests (the substring and demo-criteria
 suites are the acceptance gate), deploy.
 
@@ -388,7 +388,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | Weekly automated sync | ✅ live | 2026-08-25, extended 2026-08-27 with the automated remote push (`push-remote.ts`): a clean weekly run now lands D1 + Worker + site in the same pass and verifies `/health` on the wire. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated), proven through the Scheduler itself (`LastTaskResult: 0`). See below. |
 | NHTSA vertical | ✅ live | 2026-08-27: `https://nhtsa.repairmcp.com/mcp` deployed and verified on the wire (9 recalls for the 2020 Transit, §30122 quoted verbatim, WAF 429s confirmed). Seven `nhtsa_*` tools + connector search/fetch over a composite live+corpus adapter; 49 U.S.C. ch. 301 captured from OLRC (47 sections, current through 2026-04-30 / P.L. 119-87). Site card flipped, /legal updated for VIN passthrough. Built from the May branch (`codex/washington-binding-authority`): client/schema/relevance/tests ported, everything else rewritten to current conventions. Open: connector gates in Claude and ChatGPT clients. |
 
-| WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 645 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts`; hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
+| WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 670 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts` (645 at launch; RCW 51.16 verified and folded in the same day); hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
 
 **Test totals:** 544 passing (77 core + 106 deg + 74 nhtsa + 94 state-wa + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
