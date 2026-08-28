@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
 /**
- * The topic taxonomy: the May branch's 15 insurance-dispute topics, kept
- * verbatim, grown with safety and employment topics for the expanded scope.
+ * The topic taxonomy: the May branch's insurance-dispute topics, grown with
+ * safety and employment topics for the expanded scope. `photo_estimate` from
+ * the branch is deliberately absent: no captured Washington section covers
+ * photo estimates, and the branch's advertised-but-empty topics were flagged
+ * in the audit as a flaw not to port. A topic exists here only if the corpus
+ * can answer for it.
  * Topics are routing metadata — they act as hard filters and never contribute
  * to a relevance score (the branch's topic score component was dead code in
  * production and is deliberately not ported; see docs/WA-VERTICAL-KICKOFF.md).
@@ -21,7 +25,6 @@ export const WA_TOPICS = [
   'aftermarket_parts',
   'total_loss',
   'valuation_dispute',
-  'photo_estimate',
   'storage_towing',
   'repair_facility_choice',
   // Repair law

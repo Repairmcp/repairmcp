@@ -1,0 +1,364 @@
+{
+ "WAC 284-30-330": {
+  "topics": [
+   "fair_settlement",
+   "claim_denial",
+   "prompt_investigation",
+   "misrepresentation",
+   "short_pay"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "unfair claims settlement practice",
+   "lowball settlement offer",
+   "claim delay tactics",
+   "bad faith claim handling",
+   "refusing to pay without investigation"
+  ],
+  "quoteSafeExcerpts": [
+   "Not attempting in good faith to effectuate prompt, fair and equitable settlements of claims in which liability has become reasonably clear. In particular, this includes an obligation to promptly pay property damage claims to innocent third parties in clear liability situations. If two or more insurers share liability, they should arrange to make appropriate payment, leaving to themselves the burden of apportioning liability.",
+   "Compelling a first party claimant to initiate or submit to litigation, arbitration, or appraisal to recover amounts due under an insurance policy by offering substantially less than the amounts ultimately recovered in such actions or proceedings."
+  ]
+ },
+ "WAC 284-30-350": {
+  "topics": [
+   "misrepresentation",
+   "claim_denial"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "coverage misrepresented",
+   "policy provision misstated"
+  ],
+  "quoteSafeExcerpts": [
+   "No insurer shall fail to fully disclose to first party claimants all pertinent benefits, coverages or other provisions of an insurance policy or insurance contract under which a claim is presented."
+  ]
+ },
+ "WAC 284-30-360": {
+  "topics": [
+   "prompt_investigation"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "adjuster not responding",
+   "insurer ignoring communications",
+   "acknowledgment deadline"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Within ten working days after receiving notification of a claim under an individual insurance policy, or within fifteen working days with respect to claims arising under group insurance contracts, the insurer must acknowledge its receipt of the notice of claim."
+  ]
+ },
+ "WAC 284-30-370": {
+  "topics": [
+   "prompt_investigation"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "claim investigation deadline",
+   "thirty days investigation"
+  ],
+  "quoteSafeExcerpts": [
+   "Every insurer must complete its investigation of a claim within thirty days after notification of claim, unless the investigation cannot reasonably be completed within that time. All persons involved in the investigation of a claim must provide reasonable assistance to the insurer in order to facilitate compliance with this provision."
+  ]
+ },
+ "WAC 284-30-380": {
+  "topics": [
+   "fair_settlement",
+   "short_pay",
+   "claim_denial"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "proof of loss deadline",
+   "payment deadline missed"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Within fifteen working days after receipt by the insurer of fully completed and executed proofs of loss, the insurer must notify the first party claimant whether the claim has been accepted or denied. The insurer must not deny a claim on the grounds of a specific policy provision, condition, or exclusion unless reference to the specific provision, condition, or exclusion is included in the denial. The denial must be given to the claimant in writing and the claim file of the insurer must contain a copy of the denial."
+  ]
+ },
+ "WAC 284-30-390": {
+  "topics": [
+   "estimate_dispute",
+   "labor_rate",
+   "repair_facility_choice",
+   "steering",
+   "short_pay",
+   "supplement_handling",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "steering away from shop of choice",
+   "DRP pressure on customer",
+   "labor rate hourly rate denial",
+   "supplement for hidden damage found during teardown",
+   "short pay on repair estimate",
+   "betterment and depreciation deduction",
+   "insurer refuses posted rate"
+  ],
+  "quoteSafeExcerpts": [
+   "Failing to make a good faith effort to communicate with the repair facility chosen by the claimant.",
+   "A denial of the claimant's estimate for repairs to be completed at the chosen repair facility based solely on the repair facility's hourly rate is considered arbitrary if the rate does not result in a higher overall cost of repairs.",
+   "Failing to consider any additional loss related damage the repair facility discovers during the repairs to the loss vehicle."
+  ]
+ },
+ "WAC 284-30-391": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "total loss settlement value",
+   "comparable vehicle valuation",
+   "actual cash value dispute"
+  ],
+  "quoteSafeExcerpts": [
+   "The insurer must take reasonable steps to ensure that the agreed value is accurate and representative of the actual cash value of a comparable motor vehicle in the principally garaged area."
+  ]
+ },
+ "WAC 284-30-392": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "total loss valuation report contents"
+  ],
+  "quoteSafeExcerpts": [
+   "The insurer's total loss vehicle valuation report must include:"
+  ]
+ },
+ "WAC 284-30-393": {
+  "topics": [
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "deductible recovery in subrogation"
+  ],
+  "quoteSafeExcerpts": [
+   "The insurer must include the insured's deductible, if any, in its subrogation demands. Any recoveries must be allocated first to the insured for any deductible(s) incurred in the loss, less applicable comparable fault. Deductions for expenses must not be made from the deductible recovery unless an outside attorney is retained to collect the recovery. The deduction may then be made only as a pro rata share of the allocated loss adjustment expense. The insurer must keep its insured regularly informed of its efforts related to the progress of subrogation claims. \"Regularly informed\" means that the insurer must contact its insured within sixty days after the start of the subrogation process, and no less frequently than every one hundred eighty days until the insured's interest is resolved."
+  ]
+ },
+ "WAC 284-30-394": {
+  "topics": [
+   "storage_towing",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "insurer denies storage charges",
+   "deny towing bill payment",
+   "storage fees on total loss vehicle"
+  ],
+  "quoteSafeExcerpts": [
+   "Prior to denying storage and towing costs, the insurer must do all of the following:"
+  ]
+ },
+ "RCW 48.30.010": {
+  "topics": [
+   "fair_settlement",
+   "misrepresentation"
+  ],
+  "appliesTo": [
+   "insurers"
+  ],
+  "claimUseCases": [
+   "unfair practice defined by commissioner"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) No person engaged in the business of insurance shall engage in unfair methods of competition or in unfair or deceptive acts or practices in the conduct of such business as such methods, acts, or practices are defined pursuant to subsection (2) of this section."
+  ]
+ },
+ "RCW 48.30.015": {
+  "topics": [
+   "claim_denial",
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "IFCA insurance fair conduct act",
+   "unreasonable denial of claim",
+   "treble damages",
+   "attorney fees against insurer"
+  ],
+  "quoteSafeExcerpts": [
+   "Any first party claimant to a policy of insurance who is unreasonably denied a claim for coverage or payment of benefits by an insurer may bring an action in the superior court of this state to recover the actual damages sustained, together with the costs of the action, including reasonable attorneys' fees and litigation costs, as set forth in subsection (3) of this section.",
+   "(2) The superior court may, after finding that an insurer has acted unreasonably in denying a claim for coverage or payment of benefits or has violated a rule in subsection (5) of this section, increase the total award of damages to an amount not to exceed three times the actual damages."
+  ]
+ },
+ "RCW 19.86.090": {
+  "topics": [
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "consumers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "consumer protection act damages",
+   "CPA private right of action"
+  ],
+  "quoteSafeExcerpts": [
+   "Any person who is injured in his or her business or property by a violation of RCW 19.86.020, 19.86.030, 19.86.040, 19.86.050, or 19.86.060, or any person so injured because he or she refuses to accede to a proposal for an arrangement which, if consummated, wo"
+  ]
+ },
+ "RCW 46.71.011": {
+  "topics": [
+   "aftermarket_parts"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "aftermarket part definition",
+   "non-OEM body part definition"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) An \"aftermarket body part\" or \"nonoriginal equipment manufacturer body part\" is an exterior body panel or nonstructural body component manufactured by someone other than the original equipment manufacturer and supplied through suppliers other than those in the manufacturer's normal distribution channels."
+  ]
+ },
+ "RCW 46.71.015": {
+  "topics": [
+   "aftermarket_parts",
+   "estimate_dispute"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "aftermarket parts disclosure on invoice",
+   "non-OEM parts disclosure",
+   "used or rebuilt parts identified"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) Whether or not a written estimate is required, parts and labor provided by an automotive repair facility shall be clearly and accurately recorded in writing on an invoice and shall include, in addition to the information listed in subsection (1) of this section, the following information: A description of the repair or maintenance services performed on the vehicle; a list of all parts supplied, identified by name and part number, if available, part kit description or recognized package or shop supplies, if any, and an indication whether the parts supplied are rebuilt, or used, if applicable or where collision repair is involved, aftermarket body parts or nonoriginal equipment manufacturer body parts, if applicable; the price per part charged, if any, and the total amount charged for all parts; the total amount charged for all labor, if any; and the total charge. Parts and labor do not need to be separately disclosed if pricing is expressed as an advertised special by the job, a predisclosed written repair menu item, or a routine service package."
+  ]
+ },
+ "RCW 46.71.025": {
+  "topics": [
+   "estimate_dispute"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "written estimate required before repairs",
+   "authorization to exceed estimate",
+   "estimate before repair work begins"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Except as provided in subsections (3) and (4) of this section, a repair facility prior to providing parts or labor shall provide the customer or the customer's designee with a written price estimate of the total cost of the repair, including parts and labor, or where collision repair is involved, aftermarket body parts or nonoriginal equipment manufacturer body parts, if applicable, or offer the following alternatives:"
+  ]
+ },
+ "RCW 46.71.041": {
+  "topics": [
+   "repair_lien"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "repair lien barred",
+   "lien for repair charges"
+  ],
+  "quoteSafeExcerpts": [
+   "A repair facility that fails to comply with RCW 46.71.021, 46.71.025, or 46.71.031 is barred from asserting a possessory or chattel lien for the amount of the unauthorized parts or labor upon the motor vehicle or component."
+  ]
+ },
+ "RCW 60.08.010": {
+  "topics": [
+   "repair_lien"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "chattel lien for repair charges",
+   "hold vehicle until repair bill paid"
+  ],
+  "quoteSafeExcerpts": [
+   "Every person, firm or corporation who shall have performed labor or furnished material in the construction or repair of any chattel at the request of its owner, shall have a lien upon such chattel for such labor performed or material furnished, notwithstanding the fact that such chattel be surrendered to the owner thereof: PROVIDED, HOWEVER, That no such lien shall continue, after the delivery of such chattel to its owner, as against the rights of third persons who, prior to the filing of the lien notice as hereinafter provided for, may have acquired the title to such chattel in good faith, for value and without actual notice of the lien."
+  ]
+ },
+ "WAC 296-126-092": {
+  "topics": [
+   "meal_rest_breaks"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "lunch break rules for painters and techs",
+   "rest break every four hours",
+   "meal period timing",
+   "breaks employees entitled"
+  ],
+  "quoteSafeExcerpts": [
+   "Employees shall be allowed a meal period of at least thirty minutes which commences no less than two hours nor more than five hours from the beginning of the shift. Meal periods shall be on the employer's time when the employee is required by the employer to remain on duty on the premises or at a prescribed work site in the interest of the employer.",
+   "(4) Employees shall be allowed a rest period of not less than ten minutes, on the employer's time, for each four hours of working time. Rest periods shall be scheduled as near as possible to the midpoint of the work period. No employee shall be required to work more than three hours without a rest period."
+  ]
+ },
+ "RCW 49.46.130": {
+  "topics": [
+   "overtime"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "overtime pay time and a half",
+   "forty hour workweek",
+   "overtime exemptions"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Except as otherwise provided in this section, no employer shall employ any of his or her employees for a workweek longer than forty hours unless such employee receives compensation for his or her employment in excess of the hours above specified at a rate not less than one and one-half times the regular rate at which he or she is employed."
+  ]
+ }
+}
