@@ -66,6 +66,33 @@ apps/nhtsa-server/    @repairmcp/nhtsa-server — Cloudflare Worker only (no STD
                       vPIC and VIN-bearing URLs never cached
   wrangler.jsonc      route nhtsa.repairmcp.com, workers_dev false, no D1
 
+packages/state-wa/    @repairmcp/state-wa — Washington state law vertical (pure corpus)
+  src/schema.ts       WaSection/corpus/annotation Zod schemas; four domains
+                      (insurance, repair_law, safety, employment)
+  src/taxonomy.ts     30 topics + cite-prefix baseline map (longest prefix wins)
+  src/sources.ts      the capture manifest + applyFilter (chapter/prefix/sections)
+  src/parse.ts        leg.wa.gov chapter-page parser: anchor split (prelude discard
+                      IS the repealed filter), anchor/number cross-check tripwire,
+                      history-note → effectiveDate (NEWEST effective wins; RCW notes
+                      carry no dates — omission is the normal path)
+  src/search.ts       coverage scorer (ported from nhtsa/laws) + query stoplist
+  src/identity.ts     WA_IDENTITY, wac:/rcw: ids, resolveCitationQuery,
+                      formatWaCitation ("WAC 284-30-330, effective 10/30/2016")
+  src/corpus.ts       WaCorpus — one ranking for search + find_supporting
+                      (0.65 base + 0.25 use-case coverage + 0.1 phrase);
+                      constructor enforces annotation-key + excerpt-substring
+  src/tools.ts        the four wa_* tools; src/openai.ts connector (freshness PASSED
+                      to the builders — pure corpus, the opposite of NHTSA)
+  data/wa-law-corpus.json   645 verbatim sections, 1.79 MB, committed
+  data/wa-annotations.json  hand-maintained topics/useCases/quote-safe excerpts
+  test/               94 tests incl. the six kickoff demo criteria as ranking
+                      assertions against the real corpus
+
+apps/state-wa-server/ @repairmcp/state-wa-server — Cloudflare Worker only
+  src/worker.ts       /mcp (stateless), /health (corpus meta + domain breakdown);
+                      no cache.ts, no upstream — zero outbound requests
+  wrangler.jsonc      route wa.repairmcp.com, workers_dev false, no D1
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -107,6 +134,9 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
+scripts/capture-waleg.ts        leg.wa.gov → packages/state-wa/data JSON (~20 polite
+                                chapter fetches; --dry-run / --save-html / --from-dir /
+                                --only <chapter>, which merges and keeps old meta dates)
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
 docs/ARCHITECTURE.md            The build spec — read first for design questions
@@ -146,6 +176,19 @@ npx tsx ../../scripts/capture-uscode.ts             # writes packages/nhtsa/data
 wrangler dev                                        # http://127.0.0.1:8787 (live NHTSA upstream)
 wrangler deploy                                     # → nhtsa.repairmcp.com
 curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + law corpus meta
+```
+
+**Washington server** — from `apps/state-wa-server/`. Pure corpus: all 645
+WAC/RCW sections ship in the bundle (643 KB gzip), so a corpus refresh IS a
+deploy — re-run the capture, run the tests (the substring and demo-criteria
+suites are the acceptance gate), deploy.
+
+```bash
+npx tsx scripts/capture-waleg.ts --dry-run           # re-capture all chapters, report only
+npx tsx scripts/capture-waleg.ts                     # writes packages/state-wa/data JSON
+wrangler dev                                         # http://127.0.0.1:8787
+wrangler deploy                                      # → wa.repairmcp.com
+curl -s https://wa.repairmcp.com/health              # corpus meta + per-domain counts
 ```
 
 **Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
@@ -345,7 +388,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | Weekly automated sync | ✅ live | 2026-08-25, extended 2026-08-27 with the automated remote push (`push-remote.ts`): a clean weekly run now lands D1 + Worker + site in the same pass and verifies `/health` on the wire. Registered as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" (Sunday 3am, network-gated), proven through the Scheduler itself (`LastTaskResult: 0`). See below. |
 | NHTSA vertical | ✅ live | 2026-08-27: `https://nhtsa.repairmcp.com/mcp` deployed and verified on the wire (9 recalls for the 2020 Transit, §30122 quoted verbatim, WAF 429s confirmed). Seven `nhtsa_*` tools + connector search/fetch over a composite live+corpus adapter; 49 U.S.C. ch. 301 captured from OLRC (47 sections, current through 2026-04-30 / P.L. 119-87). Site card flipped, /legal updated for VIN passthrough. Built from the May branch (`codex/washington-binding-authority`): client/schema/relevance/tests ported, everything else rewritten to current conventions. Open: connector gates in Claude and ChatGPT clients. |
 
-**Test totals:** 450 passing (77 core + 106 deg + 74 nhtsa + 193 ingestion). 0 failing.
+| WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 645 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts`; hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
+
+**Test totals:** 544 passing (77 core + 106 deg + 74 nhtsa + 94 state-wa + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -615,15 +660,20 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   ReadOnly attribute on its `logs`/`refs` dirs, not ACLs — `attrib -r` fixed it, no
   elevation needed). What remains from that launch: the connector gates (add the URL
   in Travis's Claude and ChatGPT clients and run the three scenarios). The
-  **Washington vertical is next — kickoff written**: `docs/WA-VERTICAL-KICKOFF.md`
-  (2026-08-27) carries the full handoff: the fine-tooth-comb audit of the May branch
-  (verdict: port the scorer/taxonomy/tool descriptions, **replace 100% of the corpus
-  text — it is model-written paraphrase, not captured law**, with legally material
-  drift), verified leg.wa.gov capture mechanics (whole-chapter pages, per-section
-  effective dates in history notes, no site-level currency marker), and Travis's
-  expanded scope: insurance claims practices + repair law + WISHA safety +
-  HR/employment. Start a fresh session in plan mode with "plan the Washington
-  vertical" and work that file.
+  **Washington vertical shipped 2026-08-27** (see the build-status row);
+  `docs/WA-VERTICAL-KICKOFF.md` remains the record of the decisions. Two of them the
+  build corrected on live evidence: history notes list amendments NEWEST-first (an
+  effective date is the current text's date — 284-30-330 is 10/30/2016, not the
+  kickoff's 9/1/1978 example), and single-section URLs render without anchors, so
+  ALL capture goes through chapter pages with anchor filters (bare 296-24-370 is an
+  empty part-head; the spray rules are its -37001..-37027 family).
+- **Re-run `capture-waleg` after each WA legislative session, or quarterly.** The
+  corpus states currency as its capture date; leg.wa.gov publishes current law, so
+  the claim decays as Olympia legislates. A re-capture is one command + `bun test`
+  + `wrangler deploy`; the diff report prints added/removed/changed sections, and a
+  removed or renumbered annotated section fails the suite loudly. State #2 folds in
+  here too — the extraction decision (kickoff §4.1) was copy-once-more, extract at
+  state #2.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 
@@ -631,6 +681,11 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Known gotchas
 
+- **leg.wa.gov chapter pages contain empty part-head anchors** (296-24-370,
+  296-901-140, two dozen more): the capture prints the skip LIST every run — a
+  nonempty list is normal, a growing one is the signal. WAC 296-62 is ~3.5 MB and
+  must never be captured whole; its manifest entries are prefix/section filters and
+  a corpus test asserts the parent never leaked in.
 - **NHTSA's two APIs disagree about date order.** Recall dates arrive DD/MM/YYYY
   (`16/12/2021`), complaint dates MM/DD/YYYY (`07/29/2026`) — verified on the wire
   2026-08-27. `normalizeDateString(value, 'dmy'|'mdy')` in `packages/nhtsa/src/client.ts`
