@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RepairMCP: DEG inquiries inside Claude and ChatGPT</title>
-<meta name="description" content="Connect Claude or ChatGPT to more than 22,000 real Database Enhancement Gateway inquiries. Ask in plain shop language, get back the inquiry number, the date, and what the estimating system published. Free.">
+<title>RepairMCP: DEG, NHTSA, and Washington law inside Claude and ChatGPT</title>
+<meta name="description" content="Connect Claude or ChatGPT to three free sources a collision shop can cite: more than 22,000 DEG inquiries, live NHTSA recalls and complaints, and Washington state law quoted word for word. Free, read-only, no sign-in.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="https://repairmcp.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="RepairMCP: DEG inquiries inside Claude and ChatGPT">
-<meta property="og:description" content="More than 22,000 real DEG inquiries, cited by inquiry number and date, inside the AI assistant you already use. Free.">
+<meta property="og:title" content="RepairMCP: DEG, NHTSA, and Washington law inside Claude and ChatGPT">
+<meta property="og:description" content="Three free sources a shop can cite: DEG inquiries, NHTSA recalls and complaints, and Washington law quoted word for word, inside the AI assistant you already use.">
 <meta property="og:url" content="https://repairmcp.com/">
 <meta property="og:image" content="https://repairmcp.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -24,6 +24,7 @@
     <a class="brand" href="/">Repair<span class="brand-b">MCP</span></a>
     <nav aria-label="Sections">
       <ul class="navlist">
+        <li><a href="#sources">The sources</a></li>
         <li><a href="#claude">Claude setup</a></li>
         <li><a href="#chatgpt">ChatGPT setup</a></li>
         <li><a href="#ask">What to ask</a></li>
@@ -39,42 +40,124 @@
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="wrap">
-    <h1><span>Ask your AI.</span> <span>Cite the DEG.</span></h1>
+    <h1><span>Ask your AI.</span> <span>Cite the source.</span></h1>
     <p class="lede">
-      RepairMCP connects Claude or ChatGPT to more than 22,000 real Database
-      Enhancement Gateway inquiries. Ask in plain shop language. Get back the
-      inquiry number, the date, and what CCC, Mitchell, or Audatex actually
-      published.
+      RepairMCP connects Claude or ChatGPT to the reference data collision
+      shops argue from: more than 22,000 real Database Enhancement Gateway
+      inquiries, live NHTSA recalls and complaints, and Washington state law
+      quoted word for word. Ask in plain shop language. Get back the number,
+      the date, and what the source actually published.
     </p>
 
     <div class="urlbox">
-      <p class="urlbox-label">Connector URL</p>
-      <p class="urlbox-url"><code>https://deg.repairmcp.com/mcp</code></p>
-      <p class="urlbox-note">Free. No account. No sign-in. It only reads.</p>
+      <p class="urlbox-label">Three sources, one setup. Only the URL changes.</p>
+      <p class="urlbox-url"><span class="urlbox-src">DEG</span> <code>https://deg.repairmcp.com/mcp</code></p>
+      <p class="urlbox-url"><span class="urlbox-src">NHTSA</span> <code>https://nhtsa.repairmcp.com/mcp</code></p>
+      <p class="urlbox-url"><span class="urlbox-src">Washington</span> <code>https://wa.repairmcp.com/mcp</code></p>
+      <p class="urlbox-note">Free. No account. No sign-in. They only read.</p>
     </div>
 
     <figure class="shot shot-hero">
       <img src="/img/hero-claude-answer.png" alt="Claude answering a question about the labor allowance on a welded Transit side panel extension by citing a DEG inquiry number, its date, and the hours the estimating system published" width="600" height="554" fetchpriority="high">
     </figure>
 
-    <p class="proofline">More than 1,400 resolved inquiries in there record a
-    labor time that went up after a shop asked.</p>
+    <p class="proofline">More than 1,400 resolved DEG inquiries in there record
+    a labor time that went up after a shop asked.</p>
 
     <p class="jump">
-      Set it up in about two minutes:
-      <a href="#claude">Claude</a> or <a href="#chatgpt">ChatGPT</a>.
+      Set one up in about two minutes:
+      <a href="#claude">Claude</a> or <a href="#chatgpt">ChatGPT</a>. The steps
+      are the same for every source.
     </p>
   </div>
 </section>
 
+<!-- ============ SOURCES ============ -->
+<section id="sources" class="band band-alt">
+  <div class="wrap">
+    <h2>Three sources, one setup</h2>
+    <p class="prose">
+      Each source is its own connector with its own URL. The setup is
+      identical, about two minutes each, and the sections below walk it
+      through click by click with screenshots. The only thing that changes
+      from one source to the next is the URL you paste, and what you can ask
+      once it is in.
+    </p>
+
+    <div class="cardgrid">
+
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
+        <h3>Database Enhancement Gateway</h3>
+        <p>More than 22,000 real inquiries on labor times and included
+        operations across CCC, Mitchell, and Audatex. Ask it to:</p>
+        <ul class="ticks">
+          <li>Pull the inquiries that support a supplement or answer a
+          short-pay, cited by inquiry number and date.</li>
+          <li>Check whether an operation is included or a separate line in
+          each estimating system.</li>
+          <li>Find the resolved cases where a published labor time went up
+          after a shop pushed back. There are more than 1,400 of them.</li>
+        </ul>
+        <p class="card-link"><a href="#claude">Set it up</a> with this URL:</p>
+        <p><code>https://deg.repairmcp.com/mcp</code></p>
+      </article>
+
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
+        <h3>NHTSA</h3>
+        <p>Recalls, complaints, and the federal vehicle safety statute,
+        queried live from NHTSA at the moment you ask. Ask it to:</p>
+        <ul class="ticks">
+          <li>Run the open-recall check before delivery, by year, make, and
+          model, or straight from a VIN.</li>
+          <li>Search consumer complaints for the failure you have now seen
+          three times, with crash and fire counts.</li>
+          <li>Quote the federal law that says a repair business may not
+          disable a safety device, by section number.</li>
+        </ul>
+        <p class="card-link"><a href="#claude">Set it up</a> with this URL:</p>
+        <p><code>https://nhtsa.repairmcp.com/mcp</code></p>
+      </article>
+
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
+        <h3>Washington state law</h3>
+        <p>Washington statutes and regulations quoted word for word, with
+        section numbers and the date each rule's current text took effect.
+        Four areas in one connector:</p>
+        <ul class="ticks">
+          <li><strong>Insurance claims.</strong> Steering and shop of choice,
+          short-pays, supplements, total loss valuation, storage and towing
+          denials, and the Insurance Fair Conduct Act.</li>
+          <li><strong>Repair law.</strong> Written estimates, invoice and
+          aftermarket parts disclosure, and repair liens.</li>
+          <li><strong>Shop safety.</strong> Spray booth and spray finishing
+          rules, respirators, hazard communication, and hexavalent
+          chromium.</li>
+          <li><strong>Your crew.</strong> Meal and rest breaks, overtime,
+          paid sick leave, and hiring minors.</li>
+        </ul>
+        <p>Not legal advice: it quotes the law so you can read it
+        yourself.</p>
+        <p class="card-link"><a href="#claude">Set it up</a> with this URL:</p>
+        <p><code>https://wa.repairmcp.com/mcp</code></p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
 <!-- ============ CLAUDE ============ -->
-<section id="claude" class="band band-alt">
+<section id="claude" class="band">
   <div class="wrap">
     <h2>Set it up in Claude</h2>
     <p class="prose">
       About two minutes, once. After that it is there in every conversation.
-      The steps below show the DEG connector; every source on this site
-      connects the same way, and only the URL changes.
+      The screenshots below show the DEG connector; every source connects
+      exactly the same way. The URL you paste in step three is the only
+      difference, so to add NHTSA or Washington, run the same five steps with
+      their URL from the top of the page.
     </p>
 
     <ol class="steps">
@@ -103,7 +186,9 @@
       <li class="step">
         <h3>Name it and paste the URL</h3>
         <p>Give it a name you will recognize later. The screenshots here use
-        <strong>DEG Inquiry Search</strong>. Paste this as the URL:</p>
+        <strong>DEG Inquiry Search</strong>; for the other sources, names like
+        <strong>NHTSA</strong> or <strong>Washington Law</strong> work well.
+        Then paste the URL of the source you are adding. For DEG that is:</p>
         <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
         <p>Open Advanced settings if you want to see them, then leave them
         alone. There is no client ID and no secret to fill in. Click Add.</p>
@@ -144,23 +229,24 @@
     <div class="callout">
       <h3>Which Claude plans this works on</h3>
       <p>Custom connectors work on Claude Free, Pro, Max, Team, and Enterprise.
-      On the Free plan you can have one custom connector at a time, so this
-      would be it. On Team and Enterprise an owner adds it in the organization
-      settings first, then everyone else turns it on from their own connector
+      On the Free plan you can have one custom connector at a time, so pick the
+      source you argue from most; on paid plans the three sit side by side. On
+      Team and Enterprise an owner adds them in the organization settings
+      first, then everyone else turns them on from their own connector
       list.</p>
     </div>
   </div>
 </section>
 
 <!-- ============ CHATGPT ============ -->
-<section id="chatgpt" class="band">
+<section id="chatgpt" class="band band-alt">
   <div class="wrap">
     <h2>Set it up in ChatGPT</h2>
     <p class="prose">
       Longer than Claude, because ChatGPT keeps custom connectors behind a
       developer setting. It is worth doing once. Web browser only. As with
-      Claude, the steps show the DEG connector and every other source
-      connects the same way with its own URL.
+      Claude, the screenshots show the DEG connector, and every other source
+      connects the same way: same steps, its URL from the top of the page.
     </p>
 
     <div class="callout">
@@ -218,8 +304,8 @@
         <h3>Change Authentication to No Auth</h3>
         <p>A form opens. Before anything else, look at
         <strong>Authentication</strong>. It starts on <strong>OAuth</strong>,
-        which is wrong for this one. This connector has no sign-in, so there is
-        no key to paste and nothing to approve. Change it to
+        which is wrong for this one. These connectors have no sign-in, so there
+        is no key to paste and nothing to approve. Change it to
         <strong>No Auth</strong>.</p>
         <p>Get this wrong and it will fail to connect for a reason the error
         message will not make obvious.</p>
@@ -231,8 +317,9 @@
 
       <li class="step">
         <h3>Fill it in, then read the warning</h3>
-        <p>Name it <strong>DEG</strong>. The description is optional. Leave
-        Connection on <strong>Server URL</strong> and paste this:</p>
+        <p>Name it for the source you are adding. The screenshots use
+        <strong>DEG</strong>. The description is optional. Leave Connection on
+        <strong>Server URL</strong> and paste that source's URL. For DEG:</p>
         <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
         <p>Then the warning appears, with a box you have to tick before Create
         will do anything. Do not click past it. The next section quotes it in
@@ -245,7 +332,7 @@
 
       <li class="step">
         <h3>Connect it</h3>
-        <p>ChatGPT shows a card asking whether to add DEG. Click
+        <p>ChatGPT shows a card asking whether to add it. Click
         <strong>Connect</strong>.</p>
         <figure class="shot">
           <img src="/img/chatgpt-06-connect.png" alt="The ChatGPT card headed Add DEG to ChatGPT with a Connect button" loading="lazy" decoding="async" width="584" height="436">
@@ -285,19 +372,20 @@
       OpenAI cannot tell which kind you are adding, so they warn about every one
       of them the same way.</p>
 
-      <p><strong>Why this one sits at the low end of that range.</strong></p>
+      <p><strong>Why these sit at the low end of that range.</strong></p>
       <ul class="ticks">
-        <li>It only reads, and you do not have to take that on faith. Claude
-        files all six tools under a heading that reads Read-only, and ChatGPT
+        <li>They only read, and you do not have to take that on faith. Claude
+        files every tool under a heading that reads Read-only, and ChatGPT
         tags every action READ. Both screenshots above show it.</li>
-        <li>It holds public data. Every inquiry it can reach is already
-        published free at degweb.org.</li>
+        <li>They hold public data: inquiries already published free at
+        degweb.org, NHTSA's public recall and complaint services, and law text
+        published by the government.</li>
         <li>There is no sign-in and no token, which is why you set
-        Authentication to No Auth. It has no route to your account, your files,
-        your estimates, or your management system, because it was never handed
-        one.</li>
-        <li>What it can do is fixed and published at the URL. Six operations,
-        all of them looking up inquiries.</li>
+        Authentication to No Auth. They have no route to your account, your
+        files, your estimates, or your management system, because they were
+        never handed one.</li>
+        <li>What each one can do is fixed and published at its URL, and every
+        operation is a lookup.</li>
       </ul>
 
       <p><strong>You still have to tick the box.</strong> That is by design.
@@ -308,18 +396,18 @@
 </section>
 
 <!-- ============ ASK ============ -->
-<section id="ask" class="band band-alt">
+<section id="ask" class="band">
   <div class="wrap">
     <h2>What to ask it</h2>
     <p class="prose">
-      Once it is connected, talk to it the way you would talk to another
+      Once a source is connected, talk to it the way you would talk to another
       estimator. Plain shop language works, with one habit worth building:
-      <strong>name the source in the ask</strong>, the DEG or NHTSA. Without
-      the name, the assistant may answer from its own memory or the open web
-      instead of searching the real records. You can tell which one you got: a
-      real search comes back with inquiry numbers, campaign numbers, or
-      section numbers with dates, not web links. Every prompt below returns
-      real, citable records today. Steal them.
+      <strong>name the source in the ask</strong>, the DEG, NHTSA, or
+      Washington. Without the name, the assistant may answer from its own
+      memory or the open web instead of searching the real records. You can
+      tell which one you got: a real search comes back with inquiry numbers,
+      campaign numbers, or section numbers with dates, not web links. Every
+      prompt below returns real, citable records today. Steal them.
     </p>
 
     <div class="prose">
@@ -349,7 +437,7 @@
         collision, and is it a paid operation?"</li>
       </ul>
 
-      <h3>Checking recalls, complaints, and the law</h3>
+      <h3>Checking recalls, complaints, and federal law</h3>
       <ul class="ticks">
         <li>"Check NHTSA for open recalls on a 2020 Ford Transit before we
         deliver it."</li>
@@ -357,6 +445,16 @@
         Transit. How many are there, and were any crashes?"</li>
         <li>"What does federal law say about a body shop disabling a safety
         device? Ask NHTSA for the actual statute section."</li>
+      </ul>
+
+      <h3>Quoting Washington law</h3>
+      <ul class="ticks">
+        <li>"Ask Washington law: is the insurer allowed to deny storage
+        charges?"</li>
+        <li>"Search Washington law: can the insurer steer my customer away
+        from our shop?"</li>
+        <li>"Ask Washington law: what meal and rest breaks do my painters
+        get?"</li>
       </ul>
     </div>
 
@@ -366,30 +464,34 @@
       usual cause is simpler than it looks: the connector is not actually
       installed on the account you are asking from. It is easy to set it up
       on one account and ask from another. Open Settings, then Plugins, and
-      confirm DEG is there and connected; if it is not, the steps above take
-      about two minutes. Then name it, the way every prompt above does. When
-      the connector answers, you get a Called tool note and inquiry numbers
+      confirm the source is there and connected; if it is not, the steps above
+      take about two minutes. Then name it, the way every prompt above does.
+      When the connector answers, you get a Called tool note and numbers
       with dates; web links mean it did not.</p>
     </div>
 
     <div class="callout">
       <h3>Then put the number in writing</h3>
-      <p>Every answer carries the inquiry number and the date. That citation is
+      <p>Every answer carries its citation: an inquiry number, a recall
+      campaign number, or a law section number, with the date. That citation is
       the point: paste it into your estimate notes or your supplement so the
       reviewer can open the same page you did. The answer in the screenshot at
       the top of this page is one of these, a welded side panel extension where
       the published time moved from 1.0 hours to 3.5 after the shop documented
       the factory spot welds.</p>
       <p>And when the answer is not in there, it says so rather than guessing.
-      Every reply states how current the data is.</p>
+      Every reply states how current its data is.</p>
     </div>
   </div>
 </section>
 
 <!-- ============ INSIDE ============ -->
-<section id="inside" class="band">
+<section id="inside" class="band band-alt">
   <div class="wrap">
     <h2>What's inside, and what it is not</h2>
+
+    <p class="prose">The deepest of the three sets is the DEG. By the
+    numbers:</p>
 
     <div class="statgrid">
       <div class="stat">
@@ -412,8 +514,8 @@
 
     <div class="prose">
       <h3>Where the data comes from</h3>
-      <p>All of it comes from the Database Enhancement Gateway at degweb.org,
-      which publishes every one of these inquiries free to anyone. This is a
+      <p>The inquiries come from the Database Enhancement Gateway at
+      degweb.org, which publishes every one of them free to anyone. This is a
       copy that an AI assistant can search quickly, kept current and cited back
       to the original. Every answer carries the inquiry number and the date so
       you can open the real page and read it yourself.</p>
@@ -423,6 +525,14 @@
       spellings, and vehicle names are left exactly as the source has them,
       typos included, because a citation that quietly cleans things up is not a
       citation.</p>
+
+      <p>NHTSA answers come straight from the agency's public services at the
+      moment you ask, so recall and complaint data is as current as NHTSA
+      itself, and the federal safety statute is captured from the United
+      States Code with its own currency stated. Washington law is captured
+      word for word from the state legislature's site at leg.wa.gov, and every
+      section carries the date its current text took effect, straight from the
+      rule's own history note.</p>
 
       <h3>How it behaves</h3>
       <ul class="ticks">
@@ -453,13 +563,13 @@
 </section>
 
 <!-- ============ NEXT ============ -->
-<section id="next" class="band band-alt">
+<section id="next" class="band">
   <div class="wrap">
     <h2>What's next</h2>
     <p class="prose">
-      Same idea, different sources. These are being built. There is no date and
-      nothing to sign up for. When one is ready it will show up here with a URL,
-      the same way DEG did.
+      Same idea, more sources. There is no date and nothing to sign up for.
+      When one is ready it joins the list at the top of this page with a URL,
+      the same way the first three did.
     </p>
     <p class="prose">
       All of this is built in free time, so there are no promised dates and no
@@ -471,43 +581,11 @@
 
     <div class="cardgrid">
 
-      <article class="card card-live">
-        <p class="tag tag-live">Live now</p>
-        <h3>Database Enhancement Gateway</h3>
-        <p>Labor times, included and not-included operations, and how they
-        were resolved across CCC, Mitchell, and Audatex.</p>
-        <p class="card-link"><a href="#claude">Set it up</a></p>
-      </article>
-
-      <article class="card card-live">
-        <p class="tag tag-live">Live now</p>
-        <h3>NHTSA</h3>
-        <p>Recalls and complaints by year, make, and model, or straight from a
-        VIN, plus the federal vehicle safety statute with section numbers you
-        can quote. For the open-recall check before delivery, the pattern
-        behind a complaint you have now seen three times, and the law that
-        says a repair business may not disable a safety device.</p>
-        <p class="card-link"><a href="#claude">Set it up</a> the same way, with this URL:</p>
-        <p><code>https://nhtsa.repairmcp.com/mcp</code></p>
-      </article>
-
-      <article class="card card-live">
-        <p class="tag tag-live">Live now</p>
-        <h3>Washington state law</h3>
-        <p>What the rules actually say, quoted word for word with section
-        numbers and effective dates. Claims handling and steering, written
-        estimates and aftermarket parts disclosure, storage denials, spray
-        booth and respirator rules, breaks and overtime. Not legal advice;
-        it quotes the law so you can read it yourself.</p>
-        <p class="card-link"><a href="#claude">Set it up</a> the same way, with this URL:</p>
-        <p><code>https://wa.repairmcp.com/mcp</code></p>
-      </article>
-
       <article class="card card-soon">
         <p class="tag">Building</p>
         <h3>More states</h3>
-        <p>The same treatment for other states, one at a time. Ask for yours
-        and it jumps the line.</p>
+        <p>The same treatment Washington got, for other states, one at a time.
+        Ask for yours and it jumps the line.</p>
       </article>
 
     </div>

@@ -120,6 +120,11 @@ code {
 }
 .urlbox-url { margin-bottom: .4em; }
 .urlbox-url code { font-size: 1.06rem; font-weight: 600; color: var(--ink); }
+.urlbox-src {
+  display: inline-block; min-width: 104px;
+  font-size: .73rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-3);
+}
 .urlbox-note { font-size: .9rem; color: var(--ink-2); margin: 0; }
 
 .proofline {
@@ -153,6 +158,8 @@ code {
   display: flex; flex-direction: column;
 }
 .card h3 { margin-bottom: .55em; }
+.card .ticks { font-size: .93rem; }
+.card .ticks li { margin-bottom: .5em; }
 .card-link { margin: auto 0 0; padding-top: 14px; font-size: .9rem; }
 
 .statgrid {
