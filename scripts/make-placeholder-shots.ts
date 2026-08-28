@@ -55,6 +55,7 @@ const SHOTS: Shot[] = [
   { file: "claude-03-url-entered.png", w: 446, h: 430 },
   { file: "claude-04-connect.png", w: 617, h: 438 },
   { file: "claude-05-connected.png", w: 782, h: 596 },
+  { file: "claude-06-always-allow.png", w: 782, h: 479 },
   { file: "chatgpt-01-developer-mode.png", w: 690, h: 610 },
   { file: "chatgpt-02-plugins-developer-mode.png", w: 690, h: 610 },
   { file: "chatgpt-03-new-plugin.png", w: 800, h: 345 },

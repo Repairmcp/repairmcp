@@ -181,9 +181,9 @@
     <h2>Set it up in Claude</h2>
     <p class="prose">
       About two minutes, once. After that it is there in every conversation.
-      The screenshots below show the DEG connector; every source connects
-      exactly the same way. The URL you paste in step three is the only
-      difference, so to add NHTSA or Washington, run the same five steps with
+      Most of the screenshots below show the DEG connector; every source
+      connects exactly the same way. The URL you paste in step three is the
+      only difference, so to add NHTSA or a state, run the same six steps with
       their URL from the top of the page.
     </p>
 
@@ -243,11 +243,27 @@
         own label for what the connector offers, not ours.</p>
         <p>One more thing to expect: the first time it actually searches,
         Claude asks permission right in the chat. Choose
-        <strong>Always allow</strong> and it will not ask again. Now go ask it
-        about a job you argued over last week.</p>
+        <strong>Always allow</strong> there and it will not ask again. Or
+        settle it up front in settings, which is the last step.</p>
         <figure class="shot">
           <img src="/img/claude-05-connected.png" alt="The connected DEG Inquiry Search connector in Claude, listing its six tools under a heading that reads Read-only tools" loading="lazy" decoding="async" width="782" height="596">
           <figcaption>Connected. Claude sorts all six tools under Read-only.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Set the whole list to Always allow</h3>
+        <p>Open the connector from your Connectors list and find
+        <strong>Tool permissions</strong>. The dropdown next to
+        <strong>Read-only tools</strong> sets every tool at once. Set it to
+        <strong>Always allow</strong> and Claude uses the source mid-answer
+        instead of stopping to ask. Every tool on every source here only
+        reads, so the most any of them can ever do is look something up.</p>
+        <p>This shot shows the Montana connector; the page looks the same for
+        each source. Now go ask it about a job you argued over last week.</p>
+        <figure class="shot">
+          <img src="/img/claude-06-always-allow.png" alt="The MT State Law connector's Tool permissions page in Claude, with the dropdown beside the Read-only tools heading set to Always allow" loading="lazy" decoding="async" width="782" height="479">
+          <figcaption>One dropdown covers all six tools.</figcaption>
         </figure>
       </li>
 

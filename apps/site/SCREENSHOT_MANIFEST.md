@@ -1,11 +1,13 @@
 # Screenshot manifest
 
-**Status: done.** Thirteen captures are cropped, placed, and live on the
-preview, and the social card landed 2026-08-27. This file is now the record of
-what each one is and how it was cropped, so a re-shoot can match.
+**Status: done.** Fourteen captures are cropped, placed, and live, and the
+social card landed 2026-08-27. This file is now the record of what each one is
+and how it was cropped, so a re-shoot can match.
 
 Raw captures came in at `apps/site/shots-raw/` and were deleted after cropping.
 There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
+(Exception: `claude-06-always-allow.png` was cut 2026-08-28 from a capture in
+Travis's OneDrive screenshots folder, which may still hold the raw.)
 
 ## What is on the page
 
@@ -17,6 +19,7 @@ There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
 | `claude-03-url-entered.png` | Add custom connector | the modal only | 446 x 430 |
 | `claude-04-connect.png` | not-connected state | right pane only | 617 x 438 |
 | `claude-05-connected.png` | connected state | dialog only, six tools visible | 782 x 596 |
+| `claude-06-always-allow.png` | MT Tool permissions page, group set to Always allow | left icon rail and space below the list trimmed, scaled from a 2x capture | 782 x 479 |
 | `chatgpt-01-developer-mode.png` | Security and login | settings dialog only | 690 x 610 |
 | `chatgpt-02-plugins-developer-mode.png` | Plugins settings | settings dialog only | 690 x 610 |
 | `chatgpt-03-new-plugin.png` | plugins page | heading, search box, plus button | 800 x 345 |
