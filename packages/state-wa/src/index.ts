@@ -2,6 +2,7 @@ export * from './schema.js';
 export * from './taxonomy.js';
 export * from './sources.js';
 export * from './parse.js';
+export * from './capture.js';
 export * from './search.js';
 export * from './identity.js';
 export * from './corpus.js';

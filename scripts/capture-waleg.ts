@@ -28,19 +28,19 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { parseLegChapterHtml } from '../packages/state-wa/src/parse.js';
+import {
+  assembleSections,
+  chapterKey,
+  groupByChapter,
+  type ChapterFetchGroup,
+} from '../packages/state-wa/src/capture.js';
+import { parseLegChapterHtml, type ParsedWaChapter } from '../packages/state-wa/src/parse.js';
 import {
   WaCorpusFileSchema,
   type WaCorpusFile,
   type WaSection,
 } from '../packages/state-wa/src/schema.js';
-import {
-  WA_CAPTURE_SOURCES,
-  applyFilter,
-  chapterUrl,
-  sectionUrl,
-  type WaCaptureSource,
-} from '../packages/state-wa/src/sources.js';
+import { WA_CAPTURE_SOURCES, chapterUrl } from '../packages/state-wa/src/sources.js';
 
 const OUT_PATH = resolve(import.meta.dirname, '../packages/state-wa/data/wa-law-corpus.json');
 const USER_AGENT = 'RepairMCP-Bot/1.0 (+https://repairmcp.com)';
@@ -59,25 +59,8 @@ function htmlFileName(code: string, chapter: string): string {
 
 const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
-interface FetchGroup {
-  code: WaCaptureSource['code'];
-  chapter: string;
-  sources: WaCaptureSource[];
-}
-
-function groupByChapter(sources: readonly WaCaptureSource[]): FetchGroup[] {
-  const groups = new Map<string, FetchGroup>();
-  for (const source of sources) {
-    const key = `${source.code} ${source.chapter}`;
-    const group = groups.get(key) ?? { code: source.code, chapter: source.chapter, sources: [] };
-    group.sources.push(source);
-    groups.set(key, group);
-  }
-  return [...groups.values()];
-}
-
 async function loadChapterHtml(
-  group: FetchGroup,
+  group: ChapterFetchGroup,
   opts: { fromDir?: string; saveDir?: string; isFirstFetch: boolean },
 ): Promise<string> {
   const fileName = htmlFileName(group.code, group.chapter);
@@ -118,7 +101,7 @@ async function main(): Promise<void> {
     if (groups.length === 0) throw new Error(`--only ${only} matches no manifest chapter.`);
   }
 
-  const byKey = new Map<string, WaSection>();
+  const parsedByChapter = new Map<string, ParsedWaChapter>();
   let isFirstFetch = true;
 
   for (const group of groups) {
@@ -126,6 +109,7 @@ async function main(): Promise<void> {
     isFirstFetch = false;
 
     const parsed = parseLegChapterHtml(html, { code: group.code, chapter: group.chapter });
+    parsedByChapter.set(chapterKey(group), parsed);
     const withDates = parsed.sections.filter((s) => s.effectiveDate).length;
     console.log(
       `  ${group.code} ${group.chapter}: ${parsed.sections.length} sections, ` +
@@ -138,30 +122,9 @@ async function main(): Promise<void> {
       console.log(`    duplicate anchors (first kept): ${parsed.duplicates.join(', ')}`);
     }
     for (const warning of parsed.warnings) console.log(`    warning: ${warning}`);
-
-    for (const source of group.sources) {
-      for (const section of applyFilter(parsed.sections, source.filter)) {
-        const key = `${source.code}:${section.cite}`;
-        if (byKey.has(key)) {
-          throw new Error(`Manifest overlap: ${key} captured by more than one entry.`);
-        }
-        byKey.set(key, {
-          cite: section.cite,
-          code: source.code,
-          chapter: source.chapter,
-          chapterTitle: source.chapterTitle,
-          heading: section.heading,
-          text: section.text,
-          ...(section.effectiveDate ? { effectiveDate: section.effectiveDate } : {}),
-          ...(section.historyNote ? { historyNote: section.historyNote } : {}),
-          domain: source.domain,
-          sourceUrl: sectionUrl(source.code, section.cite),
-        });
-      }
-    }
   }
 
-  let sections = [...byKey.values()];
+  let sections = assembleSections(parsedByChapter, groups);
   let meta: WaCorpusFile['meta'] = {
     state: 'WA',
     capturedAt: today(),

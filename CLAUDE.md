@@ -83,6 +83,9 @@ packages/state-wa/    @repairmcp/state-wa — Washington state law vertical (pur
                       constructor enforces annotation-key + excerpt-substring
   src/tools.ts        the four wa_* tools; src/openai.ts connector (freshness PASSED
                       to the builders — pure corpus, the opposite of NHTSA)
+  src/capture.ts      the pure half of capture: groupByChapter, assembleSections,
+                      diffCorpus — shared by capture-waleg AND check-waleg so the
+                      writer and the drift checker cannot disagree about "changed"
   data/wa-law-corpus.json   670 verbatim sections, 1.83 MB, committed
   data/wa-annotations.json  hand-maintained topics/useCases/quote-safe excerpts
   test/               94 tests incl. the six kickoff demo criteria as ranking
@@ -137,6 +140,10 @@ scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, 
 scripts/capture-waleg.ts        leg.wa.gov → packages/state-wa/data JSON (~20 polite
                                 chapter fetches; --dry-run / --save-html / --from-dir /
                                 --only <chapter>, which merges and keeps old meta dates)
+scripts/check-waleg.ts          unattended WA drift checker (Scheduled Task "RepairMCP
+                                WA Law Check", every 4 weeks) — diffs leg.wa.gov against
+                                the served corpus, writes C:\degdata\logs\wa-check.log
+                                and WA-LAW-ATTENTION.txt on drift; never writes corpus
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
 docs/ARCHITECTURE.md            The build spec — read first for design questions
@@ -186,10 +193,24 @@ suites are the acceptance gate), deploy.
 ```bash
 npx tsx scripts/capture-waleg.ts --dry-run           # re-capture all chapters, report only
 npx tsx scripts/capture-waleg.ts                     # writes packages/state-wa/data JSON
+bun scripts/check-waleg.ts                           # drift check (what the Scheduler runs)
 wrangler dev                                         # http://127.0.0.1:8787
 wrangler deploy                                      # → wa.repairmcp.com
 curl -s https://wa.repairmcp.com/health              # corpus meta + per-domain counts
 ```
+
+**WA drift checking is automated, refresh is not.** The Windows Scheduled Task
+"RepairMCP WA Law Check" (every 4 weeks, Sunday 4am, network-gated, proven via
+`Start-ScheduledTask` → `LastTaskResult: 0`) runs `check-waleg.ts`: ~20 polite
+fetches, parse, diff against the served corpus. Clean → one CSV line in
+`C:\degdata\logs\wa-check.log` and any stale attention flag cleared. Drift or
+failure → `C:\degdata\WA-LAW-ATTENTION.txt` with the changed cites and the
+refresh checklist (exit 2 drift, 1 failure). The refresh itself stays a human
+action ON PURPOSE: changed law text can renumber annotated sections or shift
+demo rankings, and the test suite is the gate that needs eyes. No per-state
+legislative calendars anywhere — the checker polls cheaply instead of modeling
+when Olympia (or any future state's capitol) meets. Graduate it to
+auto-refresh only the way the DEG push earned it: after months of boring flags.
 
 **Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
 after any corpus change; the migrations are the corpus on the remote side.
@@ -390,7 +411,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 670 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts` (645 at launch; RCW 51.16 verified and folded in the same day); hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
 
-**Test totals:** 544 passing (77 core + 106 deg + 74 nhtsa + 94 state-wa + 193 ingestion). 0 failing.
+**Test totals:** 551 passing (77 core + 106 deg + 74 nhtsa + 101 state-wa + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -667,13 +688,14 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   kickoff's 9/1/1978 example), and single-section URLs render without anchors, so
   ALL capture goes through chapter pages with anchor filters (bare 296-24-370 is an
   empty part-head; the spray rules are its -37001..-37027 family).
-- **Re-run `capture-waleg` after each WA legislative session, or quarterly.** The
-  corpus states currency as its capture date; leg.wa.gov publishes current law, so
-  the claim decays as Olympia legislates. A re-capture is one command + `bun test`
-  + `wrangler deploy`; the diff report prints added/removed/changed sections, and a
-  removed or renumbered annotated section fails the suite loudly. State #2 folds in
-  here too — the extraction decision (kickoff §4.1) was copy-once-more, extract at
-  state #2.
+- ~~Re-run `capture-waleg` after each WA legislative session, or quarterly.~~
+  **Automated 2026-08-27** as the Scheduled Task "RepairMCP WA Law Check" — see the
+  Washington server section under Commands. The check is automated; the refresh
+  stays human (capture + tests + deploy, the checklist is in the attention file).
+  When a check flags drift, treat the test suite as the gate: a renumbered or
+  reworded annotated section fails loudly and needs judgment, not automation.
+  State #2 folds in here too — the extraction decision (kickoff §4.1) was
+  copy-once-more, extract at state #2.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 
