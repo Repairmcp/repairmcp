@@ -5,9 +5,13 @@
  * can never disagree about what "changed" means — the same one-producer rule
  * as everything else in this repo.
  */
+import { diffCorpus, isCleanDiff, type CorpusDiff } from '@repairmcp/state-law';
 import type { ParsedWaChapter } from './parse.js';
 import type { WaSection } from './schema.js';
 import { applyFilter, sectionUrl, type WaCaptureSource } from './sources.js';
+
+export { diffCorpus, isCleanDiff };
+export type { CorpusDiff };
 
 export interface ChapterFetchGroup {
   code: WaCaptureSource['code'];
@@ -71,29 +75,3 @@ export function assembleSections(
   return [...byKey.values()];
 }
 
-export interface CorpusDiff {
-  added: string[];
-  removed: string[];
-  changedText: string[];
-}
-
-/** Keys are `CODE:cite`, e.g. `WAC:284-30-330`. Text comparison is exact. */
-export function diffCorpus(
-  prev: readonly WaSection[],
-  next: readonly WaSection[],
-): CorpusDiff {
-  const key = (s: WaSection): string => `${s.code}:${s.cite}`;
-  const prevByKey = new Map(prev.map((s) => [key(s), s]));
-  const nextByKey = new Map(next.map((s) => [key(s), s]));
-  return {
-    added: [...nextByKey.keys()].filter((k) => !prevByKey.has(k)),
-    removed: [...prevByKey.keys()].filter((k) => !nextByKey.has(k)),
-    changedText: [...nextByKey.entries()]
-      .filter(([k, s]) => prevByKey.has(k) && prevByKey.get(k)!.text !== s.text)
-      .map(([k]) => k),
-  };
-}
-
-export function isCleanDiff(diff: CorpusDiff): boolean {
-  return diff.added.length === 0 && diff.removed.length === 0 && diff.changedText.length === 0;
-}

@@ -1,3 +1,4 @@
+import { makePrefixTopicResolver } from '@repairmcp/state-law';
 import { z } from 'zod';
 
 /**
@@ -82,14 +83,6 @@ export const CITE_PREFIX_TOPICS: Record<string, readonly WaTopic[]> = {
 };
 
 /** Baseline topics for a cite, by longest matching prefix. Empty when none match. */
-export function baselineTopics(cite: string): readonly WaTopic[] {
-  let best: readonly WaTopic[] = [];
-  let bestLen = -1;
-  for (const [prefix, topics] of Object.entries(CITE_PREFIX_TOPICS)) {
-    if (cite.startsWith(prefix) && prefix.length > bestLen) {
-      best = topics;
-      bestLen = prefix.length;
-    }
-  }
-  return best;
-}
+export const baselineTopics = makePrefixTopicResolver(CITE_PREFIX_TOPICS) as (
+  cite: string,
+) => readonly WaTopic[];

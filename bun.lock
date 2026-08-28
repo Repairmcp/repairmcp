@@ -102,11 +102,23 @@
         "bun-types": "^1.3.13",
       },
     },
+    "packages/state-law": {
+      "name": "@repairmcp/state-law",
+      "version": "0.0.0",
+      "dependencies": {
+        "@repairmcp/core": "workspace:*",
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "bun-types": "^1.3.13",
+      },
+    },
     "packages/state-wa": {
       "name": "@repairmcp/state-wa",
       "version": "0.0.0",
       "dependencies": {
         "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-law": "workspace:*",
         "zod": "^4.4.3",
       },
       "devDependencies": {
@@ -270,6 +282,8 @@
     "@repairmcp/nhtsa-server": ["@repairmcp/nhtsa-server@workspace:apps/nhtsa-server"],
 
     "@repairmcp/site": ["@repairmcp/site@workspace:apps/site"],
+
+    "@repairmcp/state-law": ["@repairmcp/state-law@workspace:packages/state-law"],
 
     "@repairmcp/state-wa": ["@repairmcp/state-wa@workspace:packages/state-wa"],
 

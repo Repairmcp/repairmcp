@@ -1,22 +1,16 @@
 /**
- * The WA ChatGPT connector surface: `search` and `fetch`.
- *
- * Unlike NHTSA (mixed live/corpus, which deliberately passes no freshness),
- * this is a PURE corpus source, so `freshness` goes to the core builders and
- * every connector payload states the capture cutoff — the same discipline as
- * DEG. ChatGPT never sees a `citation` object, so citation.shortForm rides in
- * fetch metadata and the description says to use it verbatim.
+ * Washington's ChatGPT connector surface: the two descriptions plus the WA
+ * wiring of the shared connector registration (@repairmcp/state-law), with
+ * `freshness` passed — pure corpus source. The document text template is
+ * shared so states cannot drift.
  */
-import {
-  buildOpenAiFetchTool,
-  buildOpenAiSearchTool,
-  type ConnectorDocument,
-  type RepairMCPServer,
-} from '@repairmcp/core';
+import type { ConnectorDocument, RepairMCPServer } from '@repairmcp/core';
+import { makeStateItemToDocument, registerStateConnectorTools } from '@repairmcp/state-law';
 import type { WaAdapter, WaItem } from './adapter.js';
 import type { WaCorpus } from './corpus.js';
-import { displayCite, formatWaCitation } from './identity.js';
+import { waStateIdentity } from './identity.js';
 import { LEGAL_ADVICE_NOTE } from './notes.js';
+import type { WaSection } from './schema.js';
 
 const WA_CONNECTOR_SEARCH_DESCRIPTION = `Search Washington state law for collision repair facilities: insurance claims handling (WAC 284-30 unfair claims settlement practices, RCW 48.30 including the Insurance Fair Conduct Act), auto repair law (RCW 46.71 written estimates and aftermarket-parts disclosure, repair liens), WISHA workplace safety (spray finishing, respirators, hazard communication, hexavalent chromium), and employment rules (meal and rest breaks, overtime, paid sick leave, minors).
 
@@ -39,33 +33,10 @@ OUTPUT: { id, title, text, url, metadata }. text is the section verbatim, subsec
 
 CITATION DISCIPLINE: metadata.citation carries the correct short form, e.g. "WAC 284-30-330, effective 10/30/2016". Use it verbatim — never reformat the date, never drop the cite.`;
 
-function joinSections(parts: Array<string | null>): string {
-  return parts.filter((p): p is string => p !== null).join('\n\n');
-}
-
-export function waItemToDocument(item: WaItem): ConnectorDocument {
-  const section = item.metadata.record;
-  const citation = formatWaCitation(section);
-  return {
-    text: joinSections([
-      `${displayCite(section)} — ${section.heading}`,
-      `Chapter ${section.chapter} ${section.code} (${section.chapterTitle}); domain: ${section.domain}`,
-      section.text,
-      `Citation: ${citation.shortForm}`,
-      LEGAL_ADVICE_NOTE,
-    ]),
-    metadata: {
-      citation: citation.shortForm,
-      citationLong: citation.longForm,
-      kind: 'law',
-      cite: displayCite(section),
-      heading: section.heading,
-      domain: section.domain,
-      ...(section.effectiveDate ? { effectiveDate: section.effectiveDate } : {}),
-      retrievedAt: new Date().toISOString(),
-    },
-  };
-}
+export const waItemToDocument: (item: WaItem) => ConnectorDocument = makeStateItemToDocument<
+  WaSection,
+  WaItem
+>(waStateIdentity, LEGAL_ADVICE_NOTE);
 
 /** Register the two OpenAI connector tools. Pair with registerWaTools. */
 export function registerWaConnectorTools(
@@ -73,21 +44,11 @@ export function registerWaConnectorTools(
   adapter: WaAdapter,
   corpus: WaCorpus,
 ): void {
-  const freshness = corpus.freshness();
-  server.registerCustomTool(
-    buildOpenAiSearchTool(adapter, {
-      description: WA_CONNECTOR_SEARCH_DESCRIPTION,
-      title: 'Search Washington law',
-      toDocument: waItemToDocument,
-      freshness,
-    }),
-  );
-  server.registerCustomTool(
-    buildOpenAiFetchTool(adapter, {
-      description: WA_CONNECTOR_FETCH_DESCRIPTION,
-      title: 'Fetch Washington law section',
-      toDocument: waItemToDocument,
-      freshness,
-    }),
-  );
+  registerStateConnectorTools(server, adapter, corpus, waStateIdentity, {
+    searchDescription: WA_CONNECTOR_SEARCH_DESCRIPTION,
+    fetchDescription: WA_CONNECTOR_FETCH_DESCRIPTION,
+    searchTitle: 'Search Washington law',
+    fetchTitle: 'Fetch Washington law section',
+    legalAdviceNote: LEGAL_ADVICE_NOTE,
+  });
 }

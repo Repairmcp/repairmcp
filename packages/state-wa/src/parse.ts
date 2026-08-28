@@ -22,6 +22,7 @@
  * purpose — machine-generated markup from a single producer, not the open web.
  */
 
+import { decodeEntities } from '@repairmcp/state-law';
 import type { WaCode } from './schema.js';
 
 export interface ParsedWaSection {
@@ -49,35 +50,9 @@ export class WaParseError extends Error {
   }
 }
 
-// Same map as packages/nhtsa/src/laws/parse.ts — copied, not shared, per the
-// copy-once-more decision in the WA kickoff (extract at state #2).
-const ENTITY_MAP: Record<string, string> = {
-  '&sect;': '§',
-  '&#167;': '§',
-  '&mdash;': '—',
-  '&#8212;': '—',
-  '&ndash;': '–',
-  '&ldquo;': '“',
-  '&rdquo;': '”',
-  '&lsquo;': '‘',
-  '&rsquo;': '’',
-  '&quot;': '"',
-  '&#160;': ' ',
-  '&nbsp;': ' ',
-  '&lt;': '<',
-  '&gt;': '>',
-};
-
-export function decodeEntities(value: string): string {
-  let out = value;
-  for (const [entity, replacement] of Object.entries(ENTITY_MAP)) {
-    out = out.replaceAll(entity, replacement);
-  }
-  out = out.replace(/&#(\d+);/g, (_, code: string) =>
-    String.fromCodePoint(Number.parseInt(code, 10)),
-  );
-  return out.replaceAll('&amp;', '&');
-}
+// Entity decoding moved to @repairmcp/state-law at the extraction (Montana's
+// MCA parser needs the same job); re-exported here under its original name.
+export { decodeEntities };
 
 /** Strip tags from one fragment and normalize whitespace, keeping link text. */
 function stripToText(html: string): string {

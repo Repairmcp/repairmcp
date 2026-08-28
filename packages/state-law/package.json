@@ -1,7 +1,7 @@
 {
-  "name": "@repairmcp/state-wa",
+  "name": "@repairmcp/state-law",
   "version": "0.0.0",
-  "description": "Washington state law vertical for RepairMCP: insurance claims practices, auto repair law, WISHA safety, and employment rules captured verbatim from leg.wa.gov.",
+  "description": "State-agnostic machinery for RepairMCP state-law verticals: schemas, search, corpus, citation factories, tool builders, and capture contracts. Per-state packages supply profiles, parsers, and data.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,12 +10,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./data/*": "./data/*"
+    }
   },
   "files": [
-    "dist",
-    "data"
+    "dist"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -24,7 +22,6 @@
   },
   "dependencies": {
     "@repairmcp/core": "workspace:*",
-    "@repairmcp/state-law": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
