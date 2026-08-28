@@ -96,6 +96,39 @@ apps/state-wa-server/ @repairmcp/state-wa-server — Cloudflare Worker only
                       no cache.ts, no upstream — zero outbound requests
   wrangler.jsonc      route wa.repairmcp.com, workers_dev false, no D1
 
+packages/state-law/   @repairmcp/state-law — the shared state-vertical machinery
+                      (extracted at state #2, proven byte-identical to pre-
+                      extraction WA via the golden panel + wire diffs): generic
+                      schemas, the base scorer with parameterized stopwords, the
+                      citation identity FACTORY (bare-cite inference is config:
+                      hyphens=WAC in WA, hyphens=MCA in MT), StateLawCorpus over
+                      a CorpusProfile, the four generic tool builders (field
+                      order is wire-visible and preserved), StateLawAdapter,
+                      connector registration with freshness, corpus diff, and
+                      the CaptureIo/StateCaptureProfile contract the scripts
+                      consume. State packages are profile + parsers + data.
+
+packages/state-mt/    @repairmcp/state-mt — Montana vertical (pure corpus)
+  src/parse-mca.ts    mca.legmt.gov section-page parser: edition-marker
+                      tripwire ("Montana Code Annotated 2025" — the currency
+                      analog of OLRC currentthrough), citation-span cross-check
+  src/capture-mca.ts  two-tier crawl (part sections_index.html resolves slot
+                      URLs that are NOT derivable from cites, then per-section)
+  src/capture-arm.ts  ARM via the SOS public JSON API at rules.mt.gov (the
+                      website is a JS SPA; the API is the capture surface):
+                      tree walk by sectionId, per-rule ISO effective dates,
+                      SHA-256 contentHash recomputed over the fetched document
+  src/identity.ts     MCA cites carry the EDITION ("MCA 33-18-224, 2025
+                      edition" — statutes state no per-section dates); ARM
+                      cites carry real effective dates; MCA_EDITION pin test
+                      makes the yearly rollover fail loudly at re-capture
+  data/               mt-law-corpus.json (119 sections, 260 KB) + annotations
+  test/               59 tests incl. the ten demo criteria and a structural
+                      no-dead-topic test (every topic reaches a section)
+
+apps/state-mt-server/ @repairmcp/state-mt-server — Worker, mt.repairmcp.com,
+                      same shape as state-wa-server; /health adds mcaEdition
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -137,13 +170,17 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/capture-waleg.ts        leg.wa.gov → packages/state-wa/data JSON (~20 polite
-                                chapter fetches; --dry-run / --save-html / --from-dir /
-                                --only <chapter>, which merges and keeps old meta dates)
-scripts/check-waleg.ts          unattended WA drift checker (Scheduled Task "RepairMCP
-                                WA Law Check", every 4 weeks) — diffs leg.wa.gov against
-                                the served corpus, writes C:\degdata\logs\wa-check.log
-                                and WA-LAW-ATTENTION.txt on drift; never writes corpus
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt) the two scripts drive
+scripts/capture-state.ts        capture one state from its official publisher(s):
+                                --state wa|mt, --dry-run / --save-raw / --from-dir /
+                                --only <chapter> (WA only; merge keeps old meta dates)
+scripts/check-state.ts          unattended drift checker for EVERY registered state
+                                (Scheduled Task "RepairMCP State Law Check", every 4
+                                weeks) — one CSV line per state in
+                                C:\degdata\logs\state-law-check.log, per-state
+                                <ST>-LAW-ATTENTION.txt on drift; never writes corpus
+scripts/capture-waleg.ts        transitional shims delegating to the generic scripts
+scripts/check-waleg.ts          with --state wa; delete after one scheduled cycle
 scripts/seed-sample.ts          Polite scraper that produces sample-inquiries.json
 scripts/transform-deg-sqlite.ts SQLite -> deg-inquiries-full.json, with --dry-run
 docs/ARCHITECTURE.md            The build spec — read first for design questions
@@ -185,32 +222,36 @@ wrangler deploy                                     # → nhtsa.repairmcp.com
 curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + law corpus meta
 ```
 
-**Washington server** — from `apps/state-wa-server/`. Pure corpus: the whole
-WAC/RCW corpus ships in the bundle (~650 KB gzip), so a corpus refresh IS a
-deploy — re-run the capture, run the tests (the substring and demo-criteria
-suites are the acceptance gate), deploy.
+**State law servers** — Washington (`apps/state-wa-server/`, 670 WAC/RCW
+sections) and Montana (`apps/state-mt-server/`, 119 MCA/ARM sections). Pure
+corpus: the data ships in each bundle, so a corpus refresh IS a deploy —
+re-run the capture, run the tests (the substring, demo-criteria, and for MT
+the edition-pin suites are the acceptance gate), deploy from the state's app.
 
 ```bash
-npx tsx scripts/capture-waleg.ts --dry-run           # re-capture all chapters, report only
-npx tsx scripts/capture-waleg.ts                     # writes packages/state-wa/data JSON
-bun scripts/check-waleg.ts                           # drift check (what the Scheduler runs)
-wrangler dev                                         # http://127.0.0.1:8787
-wrangler deploy                                      # → wa.repairmcp.com
-curl -s https://wa.repairmcp.com/health              # corpus meta + per-domain counts
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt)
+bun scripts/capture-state.ts --state mt              # writes packages/state-mt/data JSON
+bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
+wrangler dev                                         # from the state's app dir
+wrangler deploy                                      # → wa.repairmcp.com / mt.repairmcp.com
+curl -s https://mt.repairmcp.com/health              # corpus meta + domains (+ mcaEdition)
 ```
 
-**WA drift checking is automated, refresh is not.** The Windows Scheduled Task
-"RepairMCP WA Law Check" (every 4 weeks, Sunday 4am, network-gated, proven via
-`Start-ScheduledTask` → `LastTaskResult: 0`) runs `check-waleg.ts`: ~20 polite
-fetches, parse, diff against the served corpus. Clean → one CSV line in
-`C:\degdata\logs\wa-check.log` and any stale attention flag cleared. Drift or
-failure → `C:\degdata\WA-LAW-ATTENTION.txt` with the changed cites and the
-refresh checklist (exit 2 drift, 1 failure). The refresh itself stays a human
-action ON PURPOSE: changed law text can renumber annotated sections or shift
-demo rankings, and the test suite is the gate that needs eyes. No per-state
-legislative calendars anywhere — the checker polls cheaply instead of modeling
-when Olympia (or any future state's capitol) meets. Graduate it to
-auto-refresh only the way the DEG push earned it: after months of boring flags.
+**Drift checking is automated, refresh is not.** The Windows Scheduled Task
+"RepairMCP State Law Check" (every 4 weeks, Sunday 4am, network-gated, proven
+via Start-ScheduledTask then LastTaskResult 0) runs `check-state.ts` over
+every registered state, each in its own try/catch so one state's failure
+cannot hide another's drift. Clean → one CSV line per state in
+`C:\degdata\logs\state-law-check.log` (the older wa-check.log is frozen
+history) and stale flags cleared. Drift or failure →
+`C:\degdata\<ST>-LAW-ATTENTION.txt` with the changed cites and that state's
+refresh checklist (exit 1 any failure, else 2 any drift). ARM checks ride the
+API's own SHA-256 content hashes and skip unchanged documents; MCA re-fetches
+its ~110 pages (~5 min, fine at this cadence). The refresh stays a human
+action ON PURPOSE: changed law can renumber annotated sections or shift demo
+rankings, and the per-state test suite is the gate that needs eyes. No
+legislative calendars are modeled anywhere — Montana's biennial sessions and
+year-round agency rulemaking get the same answer: poll cheaply, flag loudly.
 
 **Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
 after any corpus change; the migrations are the corpus on the remote side.
@@ -411,7 +452,10 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 670 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts` (645 at launch; RCW 51.16 verified and folded in the same day); hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
 
-**Test totals:** 551 passing (77 core + 106 deg + 74 nhtsa + 101 state-wa + 193 ingestion). 0 failing.
+| state-law extraction | ✅ | 2026-08-27: the shared machinery extracted from state-wa into `packages/state-law` at state #2, per the standing decision. Parity proven, not asserted: zero edits to the 101 pre-existing WA tests, a golden-ranking panel (pinned scores/breakdowns + one byte-exact payload) green throughout, the WA worker compiled with zero changes, and all four saved wire responses byte-identical after the refactor. Deployed to wa.repairmcp.com before Montana began. |
+| MT vertical | ✅ live | 2026-08-27: `https://mt.repairmcp.com/mcp` deployed and verified on the wire (killer demo: "adjuster is deleting operations from the estimating system we both use" → MCA 33-18-224 first, whose (iii) clause prohibits exactly that; WDEA → 39-2-904; WAF 429s at exactly 20). 119 verbatim sections from TWO publishers — MCA (two-tier slot-URL crawl, edition-marker tripwire) and ARM (SOS public JSON API, ISO effective dates, SHA-256 content hashes). Honest absences stated in tool descriptions (no aftermarket-disclosure law, no adult break statute, federal-OSHA safety). Site sells four sources, one setup. Open: connector gates in Travis's clients. |
+
+**Test totals:** 627 passing (77 core + 106 deg + 74 nhtsa + 6 state-law + 112 state-wa + 59 state-mt + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27

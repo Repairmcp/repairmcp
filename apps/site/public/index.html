@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RepairMCP: DEG, NHTSA, and Washington law inside Claude and ChatGPT</title>
-<meta name="description" content="Connect Claude or ChatGPT to three free sources a collision shop can cite: more than 22,000 DEG inquiries, live NHTSA recalls and complaints, and Washington state law quoted word for word. Free, read-only, no sign-in.">
+<title>RepairMCP: DEG, NHTSA, and state law inside Claude and ChatGPT</title>
+<meta name="description" content="Connect Claude or ChatGPT to four free sources a collision shop can cite: more than 22,000 DEG inquiries, live NHTSA recalls and complaints, and Washington and Montana law quoted word for word. Free, read-only, no sign-in.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="https://repairmcp.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="RepairMCP: DEG, NHTSA, and Washington law inside Claude and ChatGPT">
-<meta property="og:description" content="Three free sources a shop can cite: DEG inquiries, NHTSA recalls and complaints, and Washington law quoted word for word, inside the AI assistant you already use.">
+<meta property="og:title" content="RepairMCP: DEG, NHTSA, and state law inside Claude and ChatGPT">
+<meta property="og:description" content="Four free sources a shop can cite: DEG inquiries, NHTSA recalls and complaints, and Washington and Montana law quoted word for word, inside the AI assistant you already use.">
 <meta property="og:url" content="https://repairmcp.com/">
 <meta property="og:image" content="https://repairmcp.com/img/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -44,16 +44,17 @@
     <p class="lede">
       RepairMCP connects Claude or ChatGPT to the reference data collision
       shops argue from: more than 22,000 real Database Enhancement Gateway
-      inquiries, live NHTSA recalls and complaints, and Washington state law
-      quoted word for word. Ask in plain shop language. Get back the number,
+      inquiries, live NHTSA recalls and complaints, and Washington and Montana
+      state law quoted word for word. Ask in plain shop language. Get back the number,
       the date, and what the source actually published.
     </p>
 
     <div class="urlbox">
-      <p class="urlbox-label">Three sources, one setup. Only the URL changes.</p>
+      <p class="urlbox-label">Four sources, one setup. Only the URL changes.</p>
       <p class="urlbox-url"><span class="urlbox-src">DEG</span> <code>https://deg.repairmcp.com/mcp</code></p>
       <p class="urlbox-url"><span class="urlbox-src">NHTSA</span> <code>https://nhtsa.repairmcp.com/mcp</code></p>
       <p class="urlbox-url"><span class="urlbox-src">Washington</span> <code>https://wa.repairmcp.com/mcp</code></p>
+      <p class="urlbox-url"><span class="urlbox-src">Montana</span> <code>https://mt.repairmcp.com/mcp</code></p>
       <p class="urlbox-note">Free. No account. No sign-in. They only read.</p>
     </div>
 
@@ -75,7 +76,7 @@
 <!-- ============ SOURCES ============ -->
 <section id="sources" class="band band-alt">
   <div class="wrap">
-    <h2>Three sources, one setup</h2>
+    <h2>Four sources, one setup</h2>
     <p class="prose">
       Each source is its own connector with its own URL. The setup is
       identical, about two minutes each, and the sections below walk it
@@ -142,6 +143,32 @@
         yourself.</p>
         <p class="card-link"><a href="#claude">Set it up</a> with this URL:</p>
         <p><code>https://wa.repairmcp.com/mcp</code></p>
+      </article>
+
+      <article class="card card-live">
+        <p class="tag tag-live">Live now</p>
+        <h3>Montana state law</h3>
+        <p>Montana statutes and rules quoted word for word with section
+        numbers. Some of the strongest shop law in the country:</p>
+        <ul class="ticks">
+          <li><strong>Insurance claims.</strong> The steering statute says the
+          insurer may not require a particular body shop, and may not
+          unilaterally disregard a repair operation identified by an
+          estimating system both sides agreed to use. Plus the independent
+          cause of action, prompt payment, and total loss at actual
+          replacement value, never book value.</li>
+          <li><strong>Repair law.</strong> Estimate and invoice rules,
+          unauthorized-repair prohibitions, repair liens, towing and salvage
+          titles.</li>
+          <li><strong>Your crew.</strong> The Wrongful Discharge From
+          Employment Act, the only one in the nation, plus final paychecks,
+          overtime, minors, and the safety program every employer must
+          run.</li>
+        </ul>
+        <p>It also answers honestly about what Montana law does not contain.
+        Not legal advice: it quotes the law so you can read it yourself.</p>
+        <p class="card-link"><a href="#claude">Set it up</a> with this URL:</p>
+        <p><code>https://mt.repairmcp.com/mcp</code></p>
       </article>
 
     </div>
@@ -402,8 +429,8 @@
     <p class="prose">
       Once a source is connected, talk to it the way you would talk to another
       estimator. Plain shop language works, with one habit worth building:
-      <strong>name the source in the ask</strong>, the DEG, NHTSA, or
-      Washington. Without the name, the assistant may answer from its own
+      <strong>name the source in the ask</strong>, the DEG, NHTSA, Washington,
+      or Montana. Without the name, the assistant may answer from its own
       memory or the open web instead of searching the real records. You can
       tell which one you got: a real search comes back with inquiry numbers,
       campaign numbers, or section numbers with dates, not web links. Every
@@ -455,6 +482,16 @@
         from our shop?"</li>
         <li>"Ask Washington law: what meal and rest breaks do my painters
         get?"</li>
+      </ul>
+
+      <h3>Quoting Montana law</h3>
+      <ul class="ticks">
+        <li>"Ask Montana law: can the insurer make me use their body
+        shop?"</li>
+        <li>"Search Montana law: the adjuster deleted operations that are in
+        the estimating system we both agreed to use."</li>
+        <li>"Ask Montana law: what does the Wrongful Discharge Act say about
+        probation?"</li>
       </ul>
     </div>
 
@@ -608,19 +645,23 @@
       <span>Washington connector URL</span>
       <code>https://wa.repairmcp.com/mcp</code>
     </p>
+    <p class="foot-urlline">
+      <span>Montana connector URL</span>
+      <code>https://mt.repairmcp.com/mcp</code>
+    </p>
     <p class="foot-dis">
       RepairMCP is an independent project. It is not affiliated with, endorsed
       by, or sponsored by the Database Enhancement Gateway, the Alliance of
       Automotive Service Providers, the Society of Collision Repair Specialists,
       CCC, Mitchell, Audatex, or MOTOR, and it is not affiliated with or
       endorsed by the National Highway Traffic Safety Administration, the
-      State of Washington, or any
+      State of Washington, the State of Montana, or any
       government agency. All inquiry content belongs to its
       original authors and is published by the Database Enhancement Gateway at
       <a href="https://degweb.org/" rel="noopener">degweb.org</a>. Recall,
       complaint, and vehicle data come from NHTSA's public services, federal
-      statute text from the United States Code, and Washington statute and
-      regulation text from the state legislature's public website; all are
+      statute text from the United States Code, and Washington and Montana statute and
+      regulation text from those states' official publications; all are
       public records.
       Product names are the trademarks of their owners.
     </p>
