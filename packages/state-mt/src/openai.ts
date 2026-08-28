@@ -42,8 +42,8 @@ export function registerMtConnectorTools(
   registerStateConnectorTools(server, adapter, corpus, mtStateIdentity, {
     searchDescription: MT_CONNECTOR_SEARCH_DESCRIPTION,
     fetchDescription: MT_CONNECTOR_FETCH_DESCRIPTION,
-    searchTitle: 'Search Montana law',
-    fetchTitle: 'Fetch Montana law section',
+    searchTitle: 'Search Montana law documents',
+    fetchTitle: 'Fetch a Montana law document',
     legalAdviceNote: LEGAL_ADVICE_NOTE,
   });
 }

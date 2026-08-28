@@ -47,8 +47,8 @@ export function registerWaConnectorTools(
   registerStateConnectorTools(server, adapter, corpus, waStateIdentity, {
     searchDescription: WA_CONNECTOR_SEARCH_DESCRIPTION,
     fetchDescription: WA_CONNECTOR_FETCH_DESCRIPTION,
-    searchTitle: 'Search Washington law',
-    fetchTitle: 'Fetch Washington law section',
+    searchTitle: 'Search Washington law documents',
+    fetchTitle: 'Fetch a Washington law document',
     legalAdviceNote: LEGAL_ADVICE_NOTE,
   });
 }
