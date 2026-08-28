@@ -1,0 +1,108 @@
+{
+  "count": 2,
+  "domainsAvailable": [
+    "insurance",
+    "repair_law",
+    "safety",
+    "employment"
+  ],
+  "topicsAvailable": [
+    "short_pay",
+    "fair_settlement",
+    "labor_rate",
+    "steering",
+    "estimate_dispute",
+    "supplement_handling",
+    "prompt_investigation",
+    "claim_denial",
+    "misrepresentation",
+    "aftermarket_parts",
+    "total_loss",
+    "valuation_dispute",
+    "storage_towing",
+    "repair_facility_choice",
+    "repair_lien",
+    "spray_booth",
+    "respiratory_protection",
+    "hazcom",
+    "hexavalent_chromium",
+    "ppe",
+    "safety_program",
+    "meal_rest_breaks",
+    "overtime",
+    "minimum_wage",
+    "paid_sick_leave",
+    "paid_family_leave",
+    "discrimination",
+    "workers_comp",
+    "minor_workers"
+  ],
+  "results": [
+    {
+      "cite": "WAC 284-30-394",
+      "heading": "Denial of storage and towing costs.",
+      "chapter": "chapter 284-30 WAC",
+      "chapterTitle": "Trade practices",
+      "domain": "insurance",
+      "score": 0.588,
+      "breakdown": {
+        "citation": 0,
+        "text": 0.26,
+        "heading": 0.065,
+        "density": 0.013,
+        "useCase": 0.25,
+        "phrase": 0
+      },
+      "snippet": "Prior to denying storage and towing costs, the insurer must do all of the following:\n(1) Advise the first party claimant by phone or in writing before it stops payment for storage of the loss vehicle. This communication must be documented i…",
+      "topics": [
+        "fair_settlement",
+        "storage_towing"
+      ],
+      "effectiveDate": "2009-08-21",
+      "quoteSafeExcerpts": [
+        "Prior to denying storage and towing costs, the insurer must do all of the following:"
+      ],
+      "appliesTo": [
+        "insurers",
+        "repairers",
+        "claimants"
+      ],
+      "citation": {
+        "shortForm": "WAC 284-30-394, effective 8/21/2009",
+        "longForm": "Washington Administrative Code 284-30-394 (Denial of storage and towing costs.), chapter 284-30 WAC (Trade practices), effective 8/21/2009, https://app.leg.wa.gov/WAC/default.aspx?cite=284-30-394",
+        "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=284-30-394"
+      },
+      "sourceUrl": "https://app.leg.wa.gov/WAC/default.aspx?cite=284-30-394"
+    },
+    {
+      "cite": "RCW 46.55.120",
+      "heading": "Redemption of vehicles—Sale of unredeemed property—Improper impoundment. (Effective until July 1, 2027.)",
+      "chapter": "chapter 46.55 RCW",
+      "chapterTitle": "Towing and impoundment",
+      "domain": "repair_law",
+      "score": 0.455,
+      "breakdown": {
+        "citation": 0,
+        "text": 0.39,
+        "heading": 0,
+        "density": 0.065,
+        "useCase": 0,
+        "phrase": 0
+      },
+      "snippet": "…this subsection, including paying all towing, removal, and storage fees, notwithstanding the fact that the hold was ordered by a government agency. If the department's records show that the operator has been convicted of a violation of RCW…",
+      "topics": [
+        "storage_towing"
+      ],
+      "citation": {
+        "shortForm": "RCW 46.55.120",
+        "longForm": "Revised Code of Washington 46.55.120 (Redemption of vehicles—Sale of unredeemed property—Improper impoundment. (Effective until July 1, 2027.)), chapter 46.55 RCW (Towing and impoundment), https://app.leg.wa.gov/RCW/default.aspx?cite=46.55.120",
+        "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.55.120"
+      },
+      "sourceUrl": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.55.120"
+    }
+  ],
+  "caveat": "Educational information only. Verify the official source and review legal strategy with qualified counsel before making legal claims.",
+  "legalNote": "This quotes Washington law and cites the section. It is not legal advice.",
+  "corpusCurrentThrough": "2026-08-28",
+  "corpusSyncedAt": "2026-08-28"
+}
