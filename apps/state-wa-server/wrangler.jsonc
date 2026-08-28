@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "repairmcp-state-wa",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01",
+
+  // Same insurance as deg-server and nhtsa-server: the web-standard transport
+  // should need nothing from node, but the MCP SDK is a large tree and a
+  // missing builtin surfaces as a cryptic bundling failure.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // No D1, no CORPUS_VERSION, no upstream cache. The whole corpus ships inside
+  // the bundle (validated once per isolate), so a corpus refresh IS a deploy —
+  // re-run scripts/capture-waleg.ts, then wrangler deploy.
+
+  // Hands the Worker its own deployment id at runtime, so /health can answer
+  // "did my deploy land?".
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // The only public entrance. Cloudflare creates the DNS record and issues the
+  // certificate on deploy. The zone's single WAF rate-limit rule matches path
+  // /mcp without pinning a hostname (verified empirically at the NHTSA
+  // launch) — burst-test after deploy anyway.
+  "routes": [{ "pattern": "wa.repairmcp.com", "custom_domain": true }],
+
+  // Deliberate, and it stays false — one hostname, the one the WAF rule
+  // protects. A workers.dev URL would be a second, unrated door.
+  "workers_dev": false
+}

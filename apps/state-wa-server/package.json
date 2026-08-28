@@ -1,0 +1,25 @@
+{
+  "name": "@repairmcp/state-wa-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cloudflare Worker hosting the Washington state law MCP server (verbatim WAC/RCW corpus).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.worker.json",
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "test": "echo \"(no tests yet)\" && exit 0",
+    "lint": "echo \"(no lint yet)\" && exit 0",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-wa": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260730.1",
+    "wrangler": "^4.118.0"
+  }
+}

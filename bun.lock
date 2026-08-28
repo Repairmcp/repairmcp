@@ -45,6 +45,19 @@
         "wrangler": "^4.118.0",
       },
     },
+    "apps/state-wa-server": {
+      "name": "@repairmcp/state-wa-server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-wa": "workspace:*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260730.1",
+        "wrangler": "^4.118.0",
+      },
+    },
     "ingestion/deg-backfill": {
       "name": "@repairmcp/deg-backfill",
       "version": "0.0.0",
@@ -259,6 +272,8 @@
     "@repairmcp/site": ["@repairmcp/site@workspace:apps/site"],
 
     "@repairmcp/state-wa": ["@repairmcp/state-wa@workspace:packages/state-wa"],
+
+    "@repairmcp/state-wa-server": ["@repairmcp/state-wa-server@workspace:apps/state-wa-server"],
 
     "@sindresorhus/is": ["@sindresorhus/is@7.2.0", "", {}, "sha512-P1Cz1dWaFfR4IR+U13mqqiGsLFf1KbayybWwdd2vfctdV6hDpUkgCY0nKOLLTMSoRd/jJNjtbqzf13K8DCCXQw=="],
 
