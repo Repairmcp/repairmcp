@@ -1,0 +1,33 @@
+{
+  "name": "@repairmcp/state-mt",
+  "version": "0.0.0",
+  "description": "Montana state law vertical for RepairMCP: insurance claims practices (UTPA), auto repair law, the Safety Culture Act, and employment rules including the WDEA, captured verbatim from the MCA and ARM.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./data/*": "./data/*"
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.13"
+  }
+}

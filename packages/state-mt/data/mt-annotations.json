@@ -1,0 +1,349 @@
+{
+ "MCA 33-18-201": {
+  "topics": [
+   "fair_settlement",
+   "claim_denial",
+   "prompt_investigation",
+   "misrepresentation",
+   "short_pay"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "unfair claim settlement practice",
+   "lowball settlement offer",
+   "claim delay tactics",
+   "refusing to pay without investigation",
+   "compel litigation by offering less"
+  ],
+  "quoteSafeExcerpts": [
+   "refuse to pay claims without conducting a reasonable investigation based on all available information;",
+   "neglect to attempt in good faith to effectuate prompt, fair, and equitable settlements of claims in which liability has become reasonably clear;"
+  ]
+ },
+ "MCA 33-18-221": {
+  "topics": [
+   "glass_steering",
+   "steering"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "glass shop steering",
+   "windshield replacement shop of choice"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) require that a person insured under the policy use a particular company or location for providing automobile glass replacement, glass repair services, or glass products insured in whole or part by the policy; or"
+  ]
+ },
+ "MCA 33-18-224": {
+  "topics": [
+   "steering",
+   "repair_facility_choice",
+   "estimating_system_integrity",
+   "estimate_dispute",
+   "short_pay",
+   "supplement_handling"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "steering away from shop of choice",
+   "DRP pressure on customer",
+   "insurer requires their preferred body shop",
+   "adjuster deleted operations from the estimating system",
+   "line items removed from agreed estimating system",
+   "estimate written in the system both sides use"
+  ],
+  "quoteSafeExcerpts": [
+   "(i) require that a claimant under the policy use a particular automobile body repair business or location for an estimate or a repair;",
+   "(ii) engage in any act or practice that intimidates, coerces, or threatens a claimant or that provides an incentive or inducement for a claimant to use a particular automobile body repair business or location; or",
+   "(iii) unilaterally disregard a repair operation or cost identified by an estimating system that the insurer and an automobile body repair business or location have agreed to utilize in determining the cost of repair."
+  ]
+ },
+ "MCA 33-18-242": {
+  "topics": [
+   "utpa_private_action",
+   "claim_denial",
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "sue the insurer",
+   "unreasonable denial lawsuit",
+   "bad faith claim handling",
+   "independent cause of action"
+  ],
+  "quoteSafeExcerpts": [
+   "An insured or a third-party claimant has an independent cause of action against an insurer for actual damages caused by the insurer's violation of 33-18-201(1), (4), (5), (6), (9), or (13)."
+  ]
+ },
+ "MCA 33-18-245": {
+  "topics": [
+   "prompt_payment",
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "slow payment on approved claim",
+   "thirty working days to pay",
+   "waiting on payment"
+  ],
+  "quoteSafeExcerpts": [
+   "33-18-245. Prompt payment of motor vehicle damage claims. (1) Except for providers who are prepaid or agree to a different payment schedule, an insurer shall make an offer to pay or shall pay all approved claims for covered services or damages that solely involve the recovery of property damages in an amount of $2,500 or less arising out of the ownership, maintenance, or use of a motor vehicle within 30 working days of receipt of a proof of loss that is correctly completed and submitted to the insurer."
+  ]
+ },
+ "MCA 33-23-202": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "total loss paid at book value",
+   "actual replacement value",
+   "total loss settlement too low"
+  ],
+  "quoteSafeExcerpts": [
+   "33-23-202. Reimbursement for total loss of motor vehicle based on actual replacement value. Each motor vehicle insurance policy issued to residents of this state that provides that reimbursement for total loss of a motor vehicle be based on a \"book\" value rather than on the actual replacement value is void as to that provision, and reimbursement must be made for actual replacement value except as provided in 27-1-306."
+  ]
+ },
+ "MCA 27-1-306": {
+  "topics": [
+   "valuation_dispute",
+   "total_loss"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "book value dispute",
+   "vehicle valuation guide"
+  ],
+  "quoteSafeExcerpts": [
+   "27-1-306. When replacement value to be allowed. The measure of damages in a case in which the cost of repairing a motor vehicle exceeds its value is the actual replacement value of the motor vehicle rather than its \"book\" value unless, after the damages arise, the parties agree to use the \"book\" value. \"Book\" value must be determined by referring to the most recent used car value and pricing information published by an organization nationally recognized for providing information related to used car value and pricing. Actual replacement value is the actual cash value of the motor vehicle immediately prior to the damage. \"Book\" value may be used to assist in determining the actual replacement value of the motor vehicle."
+  ]
+ },
+ "ARM 23.19.202": {
+  "topics": [
+   "estimate_dispute",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "written estimate before repairs",
+   "estimate and invoice contents",
+   "repair order disclosure"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) accept a motor vehicle for repair without furnishing the customer, upon request, a written estimate for repairs, maintenance or service on a motor vehicle in excess of $50. A reasonable charge, which shall be disclosed on the written estimate, may be made for labor and diagnostic work actually performed in arriving at the estimate."
+  ]
+ },
+ "ARM 23.19.203": {
+  "topics": [
+   "estimate_dispute",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "unauthorized repairs charged",
+   "failing to honor a written estimate",
+   "charging for work not authorized"
+  ],
+  "quoteSafeExcerpts": [
+   "It shall be an unfair or deceptive act or practice for a motor vehicle repair business to:"
+  ]
+ },
+ "MCA 71-3-1201": {
+  "topics": [
+   "repair_lien",
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "hold the vehicle until the repair bill is paid",
+   "lien for repair towing storage charges"
+  ],
+  "quoteSafeExcerpts": [
+   "71-3-1201. Liens for service -- towing and storage lien -- extension of lien to certain personal property contained in motor vehicle that is subject to lien -- nonpossessory special liens. (1) If there is an express or implied contract for collecting, processing, packaging, or storing embryos or semen from livestock, a reproductive technology business to whom embryos or semen is entrusted and who still has possession has a lien upon the embryos or semen for the amount due for collecting, processing, packaging, or storing the embryos or semen and may retain possession of the embryos or semen until the sum due is paid."
+  ]
+ },
+ "MCA 61-12-403": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "reclaim a stored vehicle",
+   "storage charges cap"
+  ],
+  "quoteSafeExcerpts": [
+   "61-12-403. Reclaiming vehicle. The owner, lienholder, or person entitled to possession of the vehicle may reclaim it at any time after it is taken into custody and before it is sold. The owner, lienholder, or person entitled to possession of the vehicle shall present to the sheriff of the county or the city police of the city where the vehicle is being stored satisfactory proof of ownership or right to possession and shall pay the costs and expenses incurred in the removal, storage, and custody of the vehicle. The person reclaiming the vehicle may not be required to pay storage charges for a period longer than 90 days."
+  ]
+ },
+ "MCA 61-3-223": {
+  "topics": [
+   "salvage_title",
+   "total_loss"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "salvage title threshold",
+   "uneconomical to repair branding"
+  ],
+  "quoteSafeExcerpts": [
+   "61-3-223. Salvage vehicles. (1) A salvage vehicle for which a certificate of title is sought must be inspected for the vehicle identification number to authenticate the identity of the motor vehicle before an electronic record of title can be created or a certificate of title can be issued. The inspection does not attest to the roadworthiness or safety condition of the motor vehicle and must be performed by an authorized employee or an authorized agent of the department or by a peace officer designated by the department."
+  ]
+ },
+ "MCA 39-2-904": {
+  "topics": [
+   "wrongful_discharge"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "fired a tech without good cause",
+   "wrongful termination after probation",
+   "discharge violated personnel policy"
+  ],
+  "quoteSafeExcerpts": [
+   "39-2-904. Elements of wrongful discharge. (1) A discharge is wrongful only if:"
+  ]
+ },
+ "MCA 39-2-910": {
+  "topics": [
+   "wrongful_discharge"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "probationary period length",
+   "default probation twelve months"
+  ],
+  "quoteSafeExcerpts": [
+   "39-2-910. Probationary period. (1) If an employer does not establish a specific probationary period or provide that there is no probationary period prior to or at the time the employee begins work, there is a probationary period of 12 months commencing on the date the employee begins work."
+  ]
+ },
+ "MCA 39-3-205": {
+  "topics": [
+   "final_paycheck"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "final paycheck due when terminated",
+   "when are last wages due",
+   "laid off employee pay timing"
+  ],
+  "quoteSafeExcerpts": [
+   "39-3-205. Payment of wages when employee separated from employment prior to payday -- exceptions. (1) Except as provided in subsection (2) or (3), when an employee separates from the employ of any employer, all the unpaid wages of the employee are due and payable on the next regular payday for the pay period during which the employee was separated from employment or 15 days from the date of separation from employment, whichever occurs first, either through the regular pay channels or by mail if requested by the employee."
+  ]
+ },
+ "MCA 39-3-405": {
+  "topics": [
+   "overtime"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "overtime time and a half",
+   "forty hour workweek"
+  ],
+  "quoteSafeExcerpts": [
+   "39-3-405. Overtime compensation. (1) An employer may not employ any employee for a workweek longer than 40 hours unless the employee receives compensation for employment in excess of 40 hours in a workweek at a rate of not less than 1 1/2 times the hourly wage rate at which the employee is employed."
+  ]
+ },
+ "MCA 41-2-107": {
+  "topics": [
+   "minor_workers"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "minors on lifts and hoists",
+   "apprentice age rules",
+   "hiring a seventeen year old"
+  ],
+  "quoteSafeExcerpts": [
+   "(3) the operation of power-driven woodworking machines;"
+  ]
+ },
+ "MCA 39-71-401": {
+  "topics": [
+   "workers_comp"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "workers comp required coverage",
+   "compensation plan election"
+  ],
+  "quoteSafeExcerpts": [
+   "xemptions -- elections -- notice. (1) Except as provided in subsection (2), the Workers' Compensation Act applies to all employers and to all employees. An employer who has any employee in service under any appointment or con"
+  ]
+ },
+ "MCA 39-71-1504": {
+  "topics": [
+   "safety_program"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "safety program required",
+   "safety committee rules"
+  ],
+  "quoteSafeExcerpts": [
+   "39-71-1504. Safety programs -- educational activities. (1) To promote health and safety in places of employment in this state:"
+  ]
+ }
+}

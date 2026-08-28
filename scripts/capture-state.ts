@@ -66,6 +66,7 @@ export async function runCapture(args: string[]): Promise<void> {
   });
 
   const outcome = await profile.captureAll(io, { previous, only });
+  for (const warning of outcome.report.warnings) console.log(`  warning: ${warning}`);
   const file = profile.corpusFileSchema.parse(outcome.file);
 
   const domainCounts = new Map<string, number>();

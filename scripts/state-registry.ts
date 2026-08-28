@@ -5,8 +5,10 @@
  * postal codes the --state flag takes.
  */
 import type { StateCaptureProfile } from '../packages/state-law/src/capture.js';
+import { MT_CAPTURE_PROFILE } from '../packages/state-mt/src/capture.js';
 import { WA_CAPTURE_PROFILE } from '../packages/state-wa/src/capture-profile.js';
 
 export const STATE_PROFILES: Record<string, StateCaptureProfile> = {
   wa: WA_CAPTURE_PROFILE,
+  mt: MT_CAPTURE_PROFILE,
 };

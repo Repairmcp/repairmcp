@@ -45,6 +45,19 @@
         "wrangler": "^4.118.0",
       },
     },
+    "apps/state-mt-server": {
+      "name": "@repairmcp/state-mt-server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-mt": "workspace:*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260730.1",
+        "wrangler": "^4.118.0",
+      },
+    },
     "apps/state-wa-server": {
       "name": "@repairmcp/state-wa-server",
       "version": "0.0.0",
@@ -107,6 +120,18 @@
       "version": "0.0.0",
       "dependencies": {
         "@repairmcp/core": "workspace:*",
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "bun-types": "^1.3.13",
+      },
+    },
+    "packages/state-mt": {
+      "name": "@repairmcp/state-mt",
+      "version": "0.0.0",
+      "dependencies": {
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-law": "workspace:*",
         "zod": "^4.4.3",
       },
       "devDependencies": {
@@ -284,6 +309,10 @@
     "@repairmcp/site": ["@repairmcp/site@workspace:apps/site"],
 
     "@repairmcp/state-law": ["@repairmcp/state-law@workspace:packages/state-law"],
+
+    "@repairmcp/state-mt": ["@repairmcp/state-mt@workspace:packages/state-mt"],
+
+    "@repairmcp/state-mt-server": ["@repairmcp/state-mt-server@workspace:apps/state-mt-server"],
 
     "@repairmcp/state-wa": ["@repairmcp/state-wa@workspace:packages/state-wa"],
 
