@@ -12,14 +12,40 @@ import type { StateCorpusFile, StateCorpusMeta, StateSection } from './schema.js
 export type FetchLike = (
   url: string,
   init?: { headers?: Record<string, string> },
-) => Promise<{ ok: boolean; status: number; text(): Promise<string> }>;
+) => Promise<{
+  ok: boolean;
+  status: number;
+  text(): Promise<string>;
+  /** Present on real fetch; binary capture requires it. */
+  arrayBuffer?(): Promise<ArrayBuffer>;
+}>;
 
 export interface CaptureIo {
   /** Fetch a text page (or read it from --from-dir when rawName is known there). */
   fetchText(url: string, opts?: { rawName?: string; accept?: string }): Promise<string>;
   /** Fetch a JSON endpoint; same raw-replay behavior via rawName. */
   fetchJson<T = unknown>(url: string, opts?: { rawName?: string }): Promise<T>;
+  /**
+   * Fetch raw bytes (DOCX, PDF). Optional so existing structural fakes stay
+   * valid; makeCaptureIo always provides it. Raw replay stores base64 under
+   * the rawName through the same saveRaw/readRaw as text.
+   */
+  fetchBinary?(url: string, opts?: { rawName?: string; accept?: string }): Promise<Uint8Array>;
   log(line: string): void;
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
+}
+function base64ToBytes(b64: string): Uint8Array {
+  const binary = atob(b64);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  return out;
 }
 
 export function makeCaptureIo(opts: {
@@ -64,6 +90,31 @@ export function makeCaptureIo(opts: {
   return {
     fetchText: (url, o) => fetchRaw(url, o?.accept ?? 'text/html', o?.rawName),
     fetchJson: async (url, o) => JSON.parse(await fetchRaw(url, 'application/json', o?.rawName)),
+    fetchBinary: async (url, o) => {
+      const rawName = o?.rawName;
+      if (rawName && opts.readRaw) {
+        const saved = opts.readRaw(rawName);
+        if (saved !== undefined) {
+          log(`reading ${rawName}`);
+          return base64ToBytes(saved);
+        }
+      }
+      if (fetchedOnce) await sleep(delayMs);
+      fetchedOnce = true;
+      log(`fetching ${url}`);
+      const res = await fetchImpl(url, {
+        headers: { 'user-agent': opts.userAgent, accept: o?.accept ?? 'application/octet-stream' },
+      });
+      if (!res.ok) {
+        throw new Error(`${new URL(url).host} responded ${res.status} for ${url} — not capturing.`);
+      }
+      if (!res.arrayBuffer) {
+        throw new Error('This FetchLike has no arrayBuffer() — binary capture needs one.');
+      }
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      if (rawName && opts.saveRaw) opts.saveRaw(rawName, bytesToBase64(bytes));
+      return bytes;
+    },
     log,
   };
 }
