@@ -73,6 +73,7 @@ describe('display and citation forms', () => {
   test('ids round-trip, including space-bearing codes', () => {
     expect(parseCoId(coStateIdentity.id('3 CCR', '702-5-1-14'))).toEqual({ code: '3 CCR', cite: '702-5-1-14' });
     expect(parseCoId('crs:10-4-120')).toEqual({ code: 'CRS', cite: '10-4-120' });
+    expect(parseCoId(coStateIdentity.id('Colorado DOI Bulletin', 'B-5.04'))).toEqual({ code: 'Colorado DOI Bulletin', cite: 'B-5.04' });
   });
   test('the edition pin exists for the rollover tripwire', () => {
     expect(CRS_EDITION).toBe('Colorado Revised Statutes 2026');

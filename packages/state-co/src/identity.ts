@@ -14,6 +14,7 @@
  */
 import { fmtDateUtc, type Citation } from '@repairmcp/core';
 import { makeStateIdentity, type CitationQuery, type StateIdentity } from '@repairmcp/state-law';
+import { CO_CODES } from './schema.js';
 import type { CoCode, CoSection } from './schema.js';
 
 export const CRS_EDITION = 'Colorado Revised Statutes 2026';
@@ -138,7 +139,16 @@ export function coId(code: CoCode, cite: string): string {
   return coStateIdentity.id(code, cite);
 }
 export function parseCoId(id: string): { code: CoCode; cite: string } | null {
-  return coStateIdentity.parseId(id) as { code: CoCode; cite: string } | null;
+  const parsed = coStateIdentity.parseId(id);
+  if (!parsed) return null;
+  // The factory's parseId reconstructs the code via .toUpperCase(), which
+  // only round-trips codes that are already all-caps (CRS, the CCR titles).
+  // 'Colorado DOI Bulletin' does not survive that, so re-derive the
+  // correctly-cased CoCode literal by matching case-insensitively against
+  // CO_CODES; a match found elsewhere but not here is a foreign id — null.
+  const code = CO_CODES.find((c) => c.toUpperCase() === parsed.code.toUpperCase());
+  if (!code) return null;
+  return { code, cite: parsed.cite };
 }
 /** "CRS 10-4-120" / "3 CCR 702-5-1-14" — the display cite everything renders. */
 export function displayCite(section: Pick<CoSection, 'code' | 'cite'>): string {
