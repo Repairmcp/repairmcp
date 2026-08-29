@@ -14,6 +14,28 @@ import {
 import type { CoSection } from './schema.js';
 import { CCR_BASE, type CcrCaptureSource } from './sources-ccr.js';
 
+/**
+ * Second half of the shortcut gate: an unchanged ruleVersionId is not
+ * sufficient — the previous cite set must still be what the CURRENT
+ * manifest filter would select, or a manifest edit (regCite added/removed,
+ * citePrefix narrowed/widened) between captures would silently ship the
+ * stale set with no signal. 'regs' requires an exact set match; 'prefix'
+ * requires every previous cite to still satisfy the current prefix (a
+ * WIDENED prefix can't be detected this way — see the shortcut's log line).
+ */
+function previousMatchesCurrentFilter(
+  source: CcrCaptureSource,
+  previous: readonly CoSection[],
+): boolean {
+  const { filter } = source;
+  if (filter.kind === 'regs') {
+    if (previous.length !== filter.regCites.length) return false;
+    const previousCites = new Set(previous.map((s) => s.cite));
+    return filter.regCites.every((cite) => previousCites.has(cite));
+  }
+  return previous.every((s) => s.cite.startsWith(filter.citePrefix));
+}
+
 export function regNumberToCite(source: CcrCaptureSource, regNumber: string): string {
   if (source.headerKind === 'regulation') {
     // DOI regs print "5-1-14"; the leading series digit is already the
@@ -58,8 +80,15 @@ export async function captureCcr(
     const previous = (opts.previousSections ?? []).filter(
       (s) => s.code === source.code && s.chapter === source.chapterKey,
     );
-    if (previous.length > 0 && previous.every((s) => s.ccrRuleVersionId === version.ruleVersionId)) {
-      io.log(`  ${source.seriesNum}: version ${version.ruleVersionId} unchanged — document fetch skipped.`);
+    if (
+      previous.length > 0 &&
+      previous.every((s) => s.ccrRuleVersionId === version.ruleVersionId) &&
+      previousMatchesCurrentFilter(source, previous)
+    ) {
+      const residualNote = source.filter.kind === 'prefix'
+        ? ` (prefix ${source.filter.citePrefix} — a WIDENED prefix can't be detected without the document; force a refetch if it changed)`
+        : '';
+      io.log(`  ${source.seriesNum}: version ${version.ruleVersionId} unchanged — document fetch skipped${residualNote}.`);
       sections.push(...previous);
       continue;
     }

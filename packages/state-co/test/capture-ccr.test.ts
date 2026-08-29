@@ -231,6 +231,83 @@ describe('captureCcr', () => {
     expect(result.sections).toEqual(previousSections);
   });
 
+  test('5a. regs kind: previous shares the ruleVersionId but is missing a current filter.regCite — shortcut declines, fetchBinary is called', async () => {
+    // Same ruleVersionId as DOI_PAGES states, but the manifest's DOI_SOURCE
+    // now asks for 702-5-2-12 too — a regCite added since this stale set was
+    // captured. The version alone must not be enough to short-circuit.
+    const staleButIncompletePrevious: CoSection[] = [
+      {
+        cite: '702-5-1-14',
+        code: '3 CCR',
+        chapter: '702-5',
+        chapterTitle: 'Property and Casualty',
+        heading: 'PENALTIES FOR FAILURE TO PROMPTLY ADDRESS PROPERTY AND CASUALTY FIRST PARTY CLAIMS',
+        text: 'previously-captured verbatim text for 5-1-14',
+        effectiveDate: '2025-12-30',
+        domain: 'insurance',
+        sourceUrl: DOI_RULE_INFO_URL,
+        ccrRuleVersionId: DOI_RULE_VERSION_ID,
+      },
+    ];
+    const { io, fetchBinaryLog } = fakeIo({ pages: DOI_PAGES, binaries: DOI_BINARIES });
+    const result = await captureCcr(io, [DOI_SOURCE], { previousSections: staleButIncompletePrevious });
+    expect(fetchBinaryLog.length).toBeGreaterThan(0);
+    expect(result.sections.map((s) => s.cite)).toEqual(['702-5-1-14', '702-5-2-12']);
+  });
+
+  test('5b. prefix kind: previous contains a cite that no longer matches the current prefix — shortcut declines, fetchBinary is called', async () => {
+    // Same ruleVersionId as COMPS_PAGES states, but 1103-1-2.4.1 does not
+    // satisfy COMPS_SOURCE's citePrefix '1103-1-5' — as if the prefix was
+    // narrowed (or the stale set predates a narrowing) since this set was
+    // captured. The version alone must not be enough to short-circuit.
+    const staleOutOfScopePrevious: CoSection[] = [
+      {
+        cite: '1103-1-2.4.1',
+        code: '7 CCR',
+        chapter: '1103-1',
+        chapterTitle: 'Colorado Overtime and Minimum Pay Standards Order',
+        heading: 'Exemption for certain salespersons and mechanics',
+        text: 'previously-captured verbatim text for 2.4.1',
+        effectiveDate: '2026-01-01',
+        domain: 'employment',
+        sourceUrl: COMPS_RULE_INFO_URL,
+        ccrRuleVersionId: COMPS_RULE_VERSION_ID,
+      },
+    ];
+    const { io, fetchBinaryLog } = fakeIo({ pages: COMPS_PAGES, binaries: COMPS_BINARIES });
+    const result = await captureCcr(io, [COMPS_SOURCE], { previousSections: staleOutOfScopePrevious });
+    expect(fetchBinaryLog.length).toBeGreaterThan(0);
+    expect(result.sections.map((s) => s.cite)).toEqual(['1103-1-5.2']);
+  });
+
+  test('5c. prefix kind: shortcut fires when every previous cite still satisfies the current prefix, and the log carries the widened-prefix caveat', async () => {
+    const logLines: string[] = [];
+    const previousSections: CoSection[] = [
+      {
+        cite: '1103-1-5.2',
+        code: '7 CCR',
+        chapter: '1103-1',
+        chapterTitle: 'Colorado Overtime and Minimum Pay Standards Order',
+        heading: 'Rest Periods',
+        text: 'previously-captured verbatim text for 5.2',
+        effectiveDate: '2026-01-01',
+        domain: 'employment',
+        sourceUrl: COMPS_RULE_INFO_URL,
+        ccrRuleVersionId: COMPS_RULE_VERSION_ID,
+      },
+    ];
+    const { io, fetchBinaryLog } = fakeIo({
+      pages: COMPS_PAGES,
+      binaries: COMPS_BINARIES,
+      log: (l) => logLines.push(l),
+    });
+    const result = await captureCcr(io, [COMPS_SOURCE], { previousSections });
+    expect(fetchBinaryLog).toHaveLength(0);
+    expect(result.sections).toEqual(previousSections);
+    expect(logLines).toHaveLength(1);
+    expect(logLines[0]).toMatch(/WIDENED prefix/i);
+  });
+
   test('6. a fake io with no fetchBinary member throws a clear error naming fetchBinary', async () => {
     const { io } = fakeIo({ pages: DOI_PAGES, binaries: DOI_BINARIES, withFetchBinary: false });
     await expect(captureCcr(io, [DOI_SOURCE])).rejects.toThrow(/fetchBinary/);
