@@ -7,7 +7,7 @@ follows. Start the next session in plan mode with "plan the Washington
 vertical" and work this file. This supersedes §2 of
 `docs/NEXT-VERTICALS-KICKOFF.md`.
 
-**Travis's scope directive (2026-08-27, verbatim intent):** not just insurance
+**Scope directive (2026-08-27, verbatim intent):** not just insurance
 claims practices. "Pretty much anything that would be of interest to a
 collision repair facility, from the law about repairs / insurance relations /
 consumer rights, to safety requirements, what is required of each shop,

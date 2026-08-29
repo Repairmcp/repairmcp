@@ -16,7 +16,7 @@ public/
   robots.txt      LAUNCH GATE: currently Disallow: /
   _headers        security headers + LAUNCH GATE: X-Robots-Tag noindex
   favicon.svg
-  img/            screenshots. Placeholders until Travis shoots them
+  img/            screenshots. Placeholders until real screenshots are shot
 ```
 
 ## Commands
@@ -75,7 +75,7 @@ Verified state before launch:
 | `deg.repairmcp.com` | 200, the live MCP endpoint. Do not touch |
 | `preview.repairmcp.com` | 200, this site, served `noindex` |
 
-## Step 1. DNS, in the Cloudflare dashboard (Travis, by hand)
+## Step 1. DNS, in the Cloudflare dashboard (by hand)
 
 Wrangler will not delete a record that is in its way. It has to be cleared first
 or the apex custom domain fails to provision.

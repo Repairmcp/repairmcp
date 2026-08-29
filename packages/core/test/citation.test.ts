@@ -109,7 +109,7 @@ describe('buildCitation — UTC-locked formatting', () => {
 
   test('non-UTC-midnight date still renders consistently in UTC', () => {
     // 2026-04-08T19:14:58Z — this is the actual submittedAt for inquiry 40990.
-    // UTC date is 4/8/2026; CDT (Travis's local TZ in April) is also 4/8/2026.
+    // UTC date is 4/8/2026; CDT (the dev machine's local TZ in April) is also 4/8/2026.
     // Should render as 4/8/2026 in both contexts.
     const date = new Date('2026-04-08T19:14:58.000Z');
     const c = buildCitation({ ...baseInput, publishedAt: date });

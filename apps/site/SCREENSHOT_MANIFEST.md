@@ -7,7 +7,7 @@ and how it was cropped, so a re-shoot can match.
 Raw captures came in at `apps/site/shots-raw/` and were deleted after cropping.
 There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
 (Exception: `claude-06-always-allow.png` was cut 2026-08-28 from a capture in
-Travis's OneDrive screenshots folder, which may still hold the raw.)
+the owner's OneDrive screenshots folder, which may still hold the raw.)
 
 ## What is on the page
 

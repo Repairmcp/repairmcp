@@ -512,7 +512,7 @@ export function repairTruncatedMakes(db: Database, makes: readonly string[]): Ma
  * Distinct from delisting: `delisted_at` means DEG dropped the inquiry from
  * its index, which is directly observable and trusted on sight. This is the
  * opposite case — the index still advertises the record but the detail page
- * redirects to /deg-database/. Confirmed instances: 38943 (Travis 2026-06-30)
+ * redirects to /deg-database/. Confirmed instances: 38943 (verified by hand 2026-06-30)
  * and 41179 (found in run 1 batch 2). Both were previously handled by a
  * hardcoded EXCLUDED_IDS entry in the transform, which does not scale.
  *

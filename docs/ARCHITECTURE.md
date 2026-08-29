@@ -105,7 +105,7 @@ This document is the build specification. It is intended to be executed against 
 
 | Layer | Choice | Rationale |
 |---|---|---|
-| Language | TypeScript (strict) | Type safety, ecosystem, Travis's existing stack |
+| Language | TypeScript (strict) | Type safety, ecosystem, the owner's existing stack |
 | Runtime (dev) | Bun | Fast, modern, matches `cyanheads/mcp-ts-template` defaults |
 | Runtime (prod) | Cloudflare Workers | Edge, free tier, built-in cron + D1 + KV |
 | Base template | [`cyanheads/mcp-ts-template`](https://github.com/cyanheads/mcp-ts-template) | Apache 2.0, production-grade, recently updated |
@@ -822,9 +822,9 @@ No secrets required for v1 — all data is public read-only. (When inquiry submi
 | **Hour 5: Tool descriptions** | Rewrite each tool description with explicit "USE THIS WHEN:" guidance. Include input examples in description. | Claude correctly routes between tools without explicit hints from user |
 | **Hour 6: End-to-end test** | Walk through 3 real supplement-writing scenarios in Claude Desktop. Note any rough edges. Fix the worst ones. | All 3 scenarios produce usable supplement narratives with valid citations |
 | **Hour 7: Demo recording** | Record 90-second Loom: open Claude → start writing supplement → AI calls DEG MCP → cites real inquiry → drops it into output. Clean visuals, minimal narration. | Loom renders cleanly, total length ≤ 90s, no awkward pauses |
-| **Hour 8: Outreach package** | One-page summary PDF + Loom link + GitHub repo link. Update Danny email draft with Loom link. Ready to send. | Email + Loom + repo link all queued in send-ready state |
+| **Hour 8: Outreach package** | One-page summary PDF + Loom link + GitHub repo link. Update the outreach email draft with Loom link. Ready to send. | Email + Loom + repo link all queued in send-ready state |
 
-**End of Day 2 deliverable:** Demo asset that closes the meeting with Danny on the spot.
+**End of Day 2 deliverable:** Demo asset that closes the outreach meeting on the spot.
 
 ---
 
@@ -863,7 +863,7 @@ This is the section that proves RepairMCP is a protocol, not a project. Document
 | Vector / semantic search | v2 | Keyword search adequate for demo; Vectorize adds cost + complexity |
 | Inquiry submission via MCP | v3 | Requires OAuth + write authorization from DEG |
 | Multi-source unified search | v2 | Wait until 2+ verticals live |
-| Public dashboard / analytics | v2 | Not needed for demo or Danny conversation |
+| Public dashboard / analytics | v2 | Not needed for demo or the outreach conversation |
 | Authentication / rate limiting | v2 | Public read-only data, no auth needed yet |
 | OEM bulletin / I-CAR adapters | Phase 2 | After DEG launches and proves core architecture |
 | Web UI for browsing | v2 | MCP-first; web browsing isn't the unique value |
@@ -988,7 +988,7 @@ The v1 ships when all of these are true:
 - [ ] All tests pass (target: 1 test per public function in `core`, 1 test per tool in `deg`)
 - [ ] 90-second demo Loom recorded and uploaded
 - [ ] Repository visible at `github.com/Repairmcp/repairmcp` with proper README, LICENSE, ARCHITECTURE.md
-- [ ] Outreach email to Danny finalized and queued
+- [ ] Outreach email finalized and queued
 
 ---
 

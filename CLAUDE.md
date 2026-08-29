@@ -138,7 +138,7 @@ apps/site/            @repairmcp/site — the public site at repairmcp.com
   public/styles.css   One stylesheet. No scripts, no web fonts, no third-party anything.
   public/_headers     Security headers + the LAUNCH GATE noindex line
   public/robots.txt   LAUNCH GATE: Disallow: / while preview-only
-  public/img/         Screenshots. Placeholders until Travis shoots them
+  public/img/         Screenshots. Placeholders until real screenshots are shot
   SCREENSHOT_MANIFEST.md  What to capture and how to crop it
   README.md           Deploy notes + the launch runbook, including the DNS surgery
 
@@ -443,7 +443,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | Catch-up delta sync | ✅ | 2026-08-02. See below. |
 | D2 h6 End-to-end test | ⏳ next | 3 supplement-writing scenarios in Claude Desktop |
 | D2 h7 Demo recording | ⏳ | 90-sec Loom |
-| D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + email to Danny |
+| D2 h8 Outreach package | ⏳ | One-page PDF + Loom link + outreach email |
 | Phase 2 remote server | ✅ live | Zone active. `https://deg.repairmcp.com/mcp` verified on the wire; both the Claude and ChatGPT connector gates passed with real supplement scenarios. |
 | Phase 3 public site | ✅ live | Launched 2026-08-27: `https://repairmcp.com` serves the site, indexable, full security headers. `www` 301s to the apex via a zone Redirect Rule; `preview.repairmcp.com` retired. Real screenshots and og-image in place. |
 | Corpus freshness | ✅ live | `corpus_meta` in D1 (0004 + 0005), stated in all six tool descriptions, every payload, and `/health`. As of 2026-08-27 the edge serves 22,786 records, current through 2026-08-27, synced 2026-08-27, `corpusVersionStale: false` — verified on the wire. |
@@ -453,7 +453,7 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | WA vertical | ✅ live | 2026-08-27: `https://wa.repairmcp.com/mcp` deployed and verified on the wire (steering → WAC 284-30-390 with the verbatim good-faith excerpt, painter breaks → 296-126-092, storage denial → 284-30-394, WAF 429s confirmed on the new hostname). 670 verbatim sections across four domains captured from leg.wa.gov by `scripts/capture-waleg.ts` (645 at launch; RCW 51.16 verified and folded in the same day); hand-annotation layer with test-enforced substring excerpts; four `wa_*` tools + connector search/fetch with freshness passed. Site card flipped, /legal updated. Kickoff decisions held except two live-probe corrections (newest-effective-wins; chapter-page-only capture). Open: connector gates in Claude and ChatGPT clients. |
 
 | state-law extraction | ✅ | 2026-08-27: the shared machinery extracted from state-wa into `packages/state-law` at state #2, per the standing decision. Parity proven, not asserted: zero edits to the 101 pre-existing WA tests, a golden-ranking panel (pinned scores/breakdowns + one byte-exact payload) green throughout, the WA worker compiled with zero changes, and all four saved wire responses byte-identical after the refactor. Deployed to wa.repairmcp.com before Montana began. |
-| MT vertical | ✅ live | 2026-08-27: `https://mt.repairmcp.com/mcp` deployed and verified on the wire (killer demo: "adjuster is deleting operations from the estimating system we both use" → MCA 33-18-224 first, whose (iii) clause prohibits exactly that; WDEA → 39-2-904; WAF 429s at exactly 20). 119 verbatim sections from TWO publishers — MCA (two-tier slot-URL crawl, edition-marker tripwire) and ARM (SOS public JSON API, ISO effective dates, SHA-256 content hashes). Honest absences stated in tool descriptions (no aftermarket-disclosure law, no adult break statute, federal-OSHA safety). Site sells four sources, one setup. Open: connector gates in Travis's clients. |
+| MT vertical | ✅ live | 2026-08-27: `https://mt.repairmcp.com/mcp` deployed and verified on the wire (killer demo: "adjuster is deleting operations from the estimating system we both use" → MCA 33-18-224 first, whose (iii) clause prohibits exactly that; WDEA → 39-2-904; WAF 429s at exactly 20). 119 verbatim sections from TWO publishers — MCA (two-tier slot-URL crawl, edition-marker tripwire) and ARM (SOS public JSON API, ISO effective dates, SHA-256 content hashes). Honest absences stated in tool descriptions (no aftermarket-disclosure law, no adult break statute, federal-OSHA safety). Site sells four sources, one setup. Open: connector gates in the project owner's clients. |
 
 **Test totals:** 627 passing (77 core + 106 deg + 74 nhtsa + 6 state-law + 112 state-wa + 59 state-mt + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
@@ -660,7 +660,7 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   as the Windows Scheduled Task "RepairMCP DEG Weekly Sync" and verified through the
   Scheduler itself, not just the command line. See "Weekly automation live" above.
 - ~~The weekly sync creates ongoing local/D1 drift, on purpose.~~ **Resolved
-  2026-08-27**, by reversing the decision at Travis's direction: the delivered
+  2026-08-27**, by reversing the decision at the project owner's direction: the delivered
   freshness text must move with every database update, so a clean weekly run now
   performs the full remote push (see Commands and `push-remote.ts`). The
   safeguards that made unattended pushes scary are what made this reversible:
@@ -724,7 +724,7 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   GitHub and the stale worktree registration pruned the same day (the blocker was a
   ReadOnly attribute on its `logs`/`refs` dirs, not ACLs — `attrib -r` fixed it, no
   elevation needed). What remains from that launch: the connector gates (add the URL
-  in Travis's Claude and ChatGPT clients and run the three scenarios). The
+  in the project owner's Claude and ChatGPT clients and run the three scenarios). The
   **Washington vertical shipped 2026-08-27** (see the build-status row);
   `docs/WA-VERTICAL-KICKOFF.md` remains the record of the decisions. Two of them the
   build corrected on live evidence: history notes list amendments NEWEST-first (an
@@ -842,7 +842,7 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 - **What's broken / what changed:** `git log --oneline` — every commit is one hour-block of work. PRs aren't used yet; main is the working branch.
 - **What's running on Claude Desktop:** `apps/deg-server/dist/stdio.js`. Restart Claude Desktop after rebuilds.
 - **What "good" looks like for a tool description:** `packages/deg/src/tools.ts` constants — those are the gold standard.
-- **What "good" looks like for a test:** `packages/core/test/citation.test.ts` — first proves the platform divergence exists, then proves the function is invariant. Pattern Travis explicitly endorsed.
+- **What "good" looks like for a test:** `packages/core/test/citation.test.ts` — first proves the platform divergence exists, then proves the function is invariant. Pattern the project owner explicitly endorsed.
 - **What the sync actually did:** `sync_run` and `sync_item` in `C:\degdata\deg.sqlite`.
   Every item carries its outcome, HTTP status, and which fields changed. Faster than
   re-reading logs.
