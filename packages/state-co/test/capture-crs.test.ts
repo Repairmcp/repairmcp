@@ -8,11 +8,15 @@ import { CRS_INDEX_URL, type CrsCaptureSource } from '../src/sources-crs.js';
 /**
  * Fixtures mirror the OLLS download-index + whole-title HTML shape verified
  * in parse-crs.test.ts. TITLE_42 is that same fixture (42-9-104 live,
- * 42-9-105 repealed, 42-9-108.5 a point-five live section) so the article
- * filter has a repealed sibling to skip. TITLE_10 adds the 10-4-120 page the
- * brief calls for, plus a sibling section that a 'sections' filter must NOT
- * pull in by accident. INDEX lists titles 10 and 42 only — title 8 is
+ * 42-9-105 repealed, 42-9-108.5 a point-five live section) plus a 42-3-*
+ * pair that is entirely repealed, for the all-repealed-article hard-fail.
+ * TITLE_10 adds the 10-4-120 page the brief calls for, plus a sibling
+ * section that a 'sections' filter must NOT pull in by accident. TITLE_6
+ * exists only to be linked with a relative href, to lock in the join
+ * behavior in captureCrs. INDEX lists titles 10 and 42 only — title 8 is
  * deliberately absent, which is what drives the missing-title-8 assertion.
+ * INDEX_RELATIVE_SLASH / INDEX_RELATIVE_BARE add title 6 with, respectively,
+ * a leading-slash and a bare relative href.
  */
 const TITLE_42_URL = 'https://olls.info/crs/crs2026-title-42.htm';
 const TITLE_10_URL = 'https://olls.info/crs/crs2026-title-10.htm';
@@ -29,6 +33,17 @@ const TITLE_42 = `
 <p><b>42-9-108.5.  Completion of repairs - warranty work.</b></p>
 <p>Text of the point five section.</p>
 <p>Source: L. 91: Entire section added.</p>
+<p><b>42-3-101.  (Repealed)</b></p>
+<p>Source: L. 90: Entire section repealed.</p>
+<p><b>42-3-102.  (Repealed)</b></p>
+<p>Source: L. 90: Entire section repealed.</p>
+</body></html>`;
+
+const TITLE_6 = `
+<html><body>
+<p><b>6-1-105.  Deceptive trade practice.</b></p>
+<p>(1) A person engages in a deceptive trade practice when, in the course of business, the person does any of the following.</p>
+<p>Source: L. 69: Entire article added.</p>
 </body></html>`;
 
 const TITLE_10 = `
@@ -60,12 +75,41 @@ Regular Session in 2027.</p>
 <a href="${TITLE_42_URL}">Title 42</a>
 </body></html>`;
 
-function fakeIo(indexHtml: string = INDEX): { io: CaptureIo; fetchLog: string[] } {
+/** The absolute URL a correctly-joined relative href must resolve to. */
+const TITLE_6_URL = 'https://olls.info/crs/crs2026-title-6.htm';
+
+/** Title 6 linked with a leading-slash relative href, e.g. "/crs/crs2026-title-6.htm". */
+const INDEX_RELATIVE_SLASH = `
+<html><body>
+<p>The statutes are current with the changes made by amendments, additions, and repeals
+to Colorado Revised Statutes by the Seventy-fifth General Assembly at its Second
+Regular Session in 2026.</p>
+<a href="${TITLE_10_URL}">Title 10</a>
+<a href="${TITLE_42_URL}">Title 42</a>
+<a href="/crs/crs2026-title-6.htm">Title 6</a>
+</body></html>`;
+
+/** Title 6 linked with a bare relative href, e.g. "crs/crs2026-title-6.htm" (no leading slash). */
+const INDEX_RELATIVE_BARE = `
+<html><body>
+<p>The statutes are current with the changes made by amendments, additions, and repeals
+to Colorado Revised Statutes by the Seventy-fifth General Assembly at its Second
+Regular Session in 2026.</p>
+<a href="${TITLE_10_URL}">Title 10</a>
+<a href="${TITLE_42_URL}">Title 42</a>
+<a href="crs/crs2026-title-6.htm">Title 6</a>
+</body></html>`;
+
+function fakeIo(
+  indexHtml: string = INDEX,
+  extraPages: Record<string, string> = {},
+): { io: CaptureIo; fetchLog: string[] } {
   const fetchLog: string[] = [];
   const pages = new Map<string, string>([
     [CRS_INDEX_URL, indexHtml],
     [TITLE_42_URL, TITLE_42],
     [TITLE_10_URL, TITLE_10],
+    ...Object.entries(extraPages),
   ]);
   const io: CaptureIo = {
     async fetchText(url) {
@@ -98,6 +142,25 @@ const SECTION_10_4_120: CrsCaptureSource = {
   chapterTitle: 'Property and Casualty Insurance',
   domain: 'insurance',
   filter: { kind: 'sections', cites: ['10-4-120'] },
+};
+
+/** Every 42-3-* section in TITLE_42 is repealed — the article filter must hard-fail, not return an empty corpus. */
+const ALL_REPEALED_ARTICLE: CrsCaptureSource = {
+  code: 'CRS',
+  title: 42,
+  chapterKey: '42-3',
+  chapterTitle: 'An Entirely Repealed Article',
+  domain: 'repair_law',
+  filter: { kind: 'article' },
+};
+
+const SECTION_6_1_105: CrsCaptureSource = {
+  code: 'CRS',
+  title: 6,
+  chapterKey: '6-1',
+  chapterTitle: 'Colorado Consumer Protection Act',
+  domain: 'repair_law',
+  filter: { kind: 'sections', cites: ['6-1-105'] },
 };
 
 describe('captureCrs', () => {
@@ -187,5 +250,26 @@ describe('captureCrs', () => {
     expect(fetchLog.filter((u) => u === CRS_INDEX_URL)).toHaveLength(1);
     expect(fetchLog.filter((u) => u === TITLE_42_URL)).toHaveLength(1);
     expect(fetchLog.filter((u) => u === TITLE_10_URL)).toHaveLength(1);
+  });
+
+  test('an article filter whose entire chapter is repealed hard-fails rather than returning an empty corpus', async () => {
+    await expect(captureCrs(fakeIo().io, [ALL_REPEALED_ARTICLE])).rejects.toThrow(/no live sections/);
+    await expect(captureCrs(fakeIo().io, [ALL_REPEALED_ARTICLE])).rejects.toThrow(/42-3/);
+  });
+
+  test('a relative href on the index joins onto https://olls.info correctly, both leading-slash and bare forms', async () => {
+    const slashCase = await captureCrs(
+      fakeIo(INDEX_RELATIVE_SLASH, { [TITLE_6_URL]: TITLE_6 }).io,
+      [SECTION_6_1_105],
+    );
+    expect(slashCase.sections).toHaveLength(1);
+    expect(slashCase.sections[0]!.sourceUrl).toBe(TITLE_6_URL);
+
+    const bareCase = await captureCrs(
+      fakeIo(INDEX_RELATIVE_BARE, { [TITLE_6_URL]: TITLE_6 }).io,
+      [SECTION_6_1_105],
+    );
+    expect(bareCase.sections).toHaveLength(1);
+    expect(bareCase.sections[0]!.sourceUrl).toBe(TITLE_6_URL);
   });
 });
