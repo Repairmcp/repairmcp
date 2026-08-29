@@ -1,0 +1,27 @@
+{
+  "name": "@repairmcp/state-co",
+  "version": "0.0.0",
+  "description": "Colorado state law vertical for RepairMCP: insurance claims practices (CRS 10-4-120 anti-steering and payment duties, unfair claims practices, the Model Quality Replacement Parts Act), the Motor Vehicle Repair Act, DOI regulations and Bulletin B-5.04, towing rules, and employment rules (Wage Act, COMPS Order), captured verbatim from the CRS and the Code of Colorado Regulations.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "fflate": "^0.8.2",
+    "unpdf": "^1.3.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}
