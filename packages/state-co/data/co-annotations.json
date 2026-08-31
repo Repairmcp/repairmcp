@@ -1,1 +1,507 @@
-{}
+{
+ "CRS 10-4-120": {
+  "topics": [
+   "steering",
+   "repair_facility_choice",
+   "short_pay",
+   "fair_settlement",
+   "estimate_dispute",
+   "supplement_handling"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "adjuster steering the customer to a network shop",
+   "insurer requires a particular repair business",
+   "DRP network pressure on the customer",
+   "customer told to use the carrier's preferred shop",
+   "shop of choice denied",
+   "disincentive used to discourage our shop",
+   "referral fee or kickback for sending work to a repair business",
+   "unreasonable travel distance to an approved shop",
+   "insurer refuses to pay for an OEM repair procedure",
+   "short paying the repair bill",
+   "short pay on OEM procedures",
+   "reasonable costs sufficient to pay for the repair including materials or parts",
+   "copy of the estimate the settlement is based on",
+   "prevailing competitive price dispute",
+   "note: subsection (2) is the prohibition list — (2)(a) requiring a specified repair business, (2)(e) using disincentives, (2)(f) referral fees, (2)(g) unreasonable travel distance; subsection (3) is the duty list — (3)(d) disclose free choice of shop, (3)(e) assume all reasonable costs sufficient to pay for the repairs including materials or parts"
+  ],
+  "quoteSafeExcerpts": [
+   "(e) Assume all reasonable costs sufficient to pay for the beneficiary's or claimant's repairs including materials or parts, less any applicable deductible or reduction for comparative negligence;",
+   "(a) Directly or indirectly require that appraisals or repairs to the property be made or not be made by a specified repair business;",
+   "(c) Intimidate, coerce, threaten, or induce by incentive a beneficiary or claimant to use a particular repair business for repairs; except that an inducement by incentive does not include warranty or guaranty repairs;",
+   "(e) Use disincentives to discourage a beneficiary or claimant from using a particular repair business; except that a disincentive does not include warranty or guaranty repairs;",
+   "(g) Require the beneficiary or claimant to travel an unreasonable distance to choose a repair facility;",
+   "(d) Orally or in writing disclose to a beneficiary or claimant that the beneficiary or claimant may freely choose any repair business;",
+   "(b) Require that any estimate prepared by or for the insurer covering damages that are visible or evident at the time of inspection is adequate to restore the property within a reasonable time to its condition before the loss, in accordance with applicable policy provisions;"
+  ]
+ },
+ "CRS 10-3-1104": {
+  "topics": [
+   "fair_settlement",
+   "prompt_investigation",
+   "claim_denial",
+   "short_pay",
+   "misrepresentation"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "unfair claim settlement practice",
+   "lowball offer",
+   "no reasonable investigation",
+   "DOI complaint",
+   "compelling the insured to institute litigation to recover what was owed",
+   "no explanation given for the denial",
+   "the market conduct standard the Division of Insurance enforces",
+   "note: this is the (1)(h) unfair-claim-settlement-practices catalog, enforced by the Division of Insurance; nothing in its own text gives a claimant a lawsuit — for a first-party money remedy see 10-3-1115 and 10-3-1116",
+   "note: (1)(h) requires a willful violation or conduct frequent enough to indicate a general business practice, so one badly handled file is not by itself a violation"
+  ],
+  "quoteSafeExcerpts": [
+   "(h) Unfair claim settlement practices: Committing or performing, either in willful violation of this part 11 or with such frequency as to indicate a tendency to engage in a general business practice, any of the following:",
+   "(IV) Refusing to pay claims without conducting a reasonable investigation based upon all available information; or",
+   "(VI) Not attempting in good faith to effectuate prompt, fair, and equitable settlements of claims in which liability has become reasonably clear; or",
+   "(VII) Compelling insureds to institute litigation to recover amounts due under an insurance policy by offering substantially less than the amounts ultimately recovered in actions brought by such insureds; or",
+   "(XIV) Failing to promptly provide a reasonable explanation of the basis in the insurance policy in relation to the facts or applicable law for denial of a claim or for the offer of a compromise settlement; or"
+  ]
+ },
+ "CRS 10-3-1115": {
+  "topics": [
+   "claim_denial",
+   "short_pay",
+   "fair_settlement",
+   "prompt_payment"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "sue the insurer",
+   "unreasonably delaying payment of a claim",
+   "denied without a reasonable basis",
+   "unreasonable delay or denial of a covered benefit",
+   "first-party claim delayed",
+   "short pay lawsuit"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) (a) A person engaged in the business of insurance shall not unreasonably delay or deny payment of a claim for benefits owed to or on behalf of any first-party claimant.",
+   "(2) Notwithstanding section 10-3-1113 (3), for the purposes of an action brought pursuant to this section and section 10-3-1116, an insurer's delay or denial was unreasonable if the insurer delayed or denied authorizing payment of a covered benefit without a reasonable basis for that action."
+  ]
+ },
+ "CRS 10-3-1116": {
+  "topics": [
+   "claim_denial",
+   "short_pay",
+   "fair_settlement",
+   "prompt_payment"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "sue the insurer",
+   "unreasonably delaying payment of a claim",
+   "two times the covered benefit and attorney fees",
+   "action in district court for unreasonable delay or denial",
+   "short pay lawsuit",
+   "note: the remedy runs to the first-party claimant, not to the repair facility, unless the claim has been assigned"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) A first-party claimant as defined in section 10-3-1115 whose claim for payment of benefits has been unreasonably delayed or denied may bring an action in a district court to recover reasonable attorney fees and court costs and two times the covered benefit."
+  ]
+ },
+ "CRS 10-3-1305": {
+  "topics": [
+   "aftermarket_parts",
+   "consumer_protection",
+   "misrepresentation",
+   "written_estimate",
+   "estimate_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "consumers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "aftermarket parts on the estimate",
+   "customer was never told the parts are aftermarket",
+   "nobody disclosed the non-OEM crash parts",
+   "written estimate must identify each aftermarket crash part",
+   "imitation crash parts written into the estimate",
+   "aftermarket parts disclosure document attached to the customer copy",
+   "no disclosure of nonoriginal equipment replacement crash parts"
+  ],
+  "quoteSafeExcerpts": [
+   "No insurer shall specify the use of nonoriginal equipment replacement crash parts in the repair of an insured's motor vehicle without disclosing the intended use of such parts to the insured.",
+   "the written estimate shall clearly identify each such part as being a nonoriginal equipment replacement crash part"
+  ]
+ },
+ "CRS 10-4-639": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute",
+   "storage_towing",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "total loss sales tax and title fees",
+   "they will not pay the registration fee on a total loss",
+   "transfer fee owed on a totaled vehicle",
+   "towing and storage benefits must be disclosed",
+   "excess towing and storage charges the customer may owe",
+   "total loss valuation method and credible source"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) An insurer shall pay title fees, sales tax, and any other transfer or registration fee associated with the total loss of a motor vehicle.",
+   "(2) An insurer shall clearly disclose to an insured or inform a third-party claimant what benefits are provided related to towing and storage of a motor vehicle that sustains property damage and shall specifically advise an insured or third-party claimant concerning excess charges that may be incurred related to towing and storage of a motor vehicle for which the insured or third-party claimant may be responsible.",
+   "An insurer may not use different credible sources of valuation only to determine the lowest amount payable for the total loss of the motor vehicle."
+  ]
+ },
+ "3 CCR 702-5-1-14": {
+  "topics": [
+   "prompt_payment",
+   "supplement_handling",
+   "prompt_investigation",
+   "fair_settlement",
+   "claim_denial"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "supplement sitting sixty days",
+   "no decision on a clean claim",
+   "prompt payment deadline",
+   "carrier will not answer the supplement",
+   "sixty days is two months, and the carrier still has not decided",
+   "sixty day decision deadline on a valid and complete claim",
+   "eight percent interest penalty for a late claim payment",
+   "thirty day status letters while an investigation is open"
+  ],
+  "quoteSafeExcerpts": [
+   "shall make a decision on claims and/or pay benefits due under the\npolicy within sixty (60) days after receipt of a valid and complete claim unless\nthere is a reasonable dispute between the parties concerning such claim, and\nprovided the insured has complied with the terms and conditions of the policy of\ninsurance.",
+   "3. A good faith offer by the insurer to the insured within sixty (60) days after the receipt of a\nvalid and complete claim satisfies the requirements under this regulation.",
+   "the insurer shall, every thirty (30) days\nthereafter, send to the insured or the insured’s representative a letter setting forth the\nreason(s) additional time is needed for investigation."
+  ]
+ },
+ "3 CCR 702-5-2-15": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute",
+   "rental_reimbursement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "total loss valuation method",
+   "credible source used for valuation",
+   "rental reimbursement after a total loss",
+   "collision damage waiver for a third-party claimant",
+   "comparable class rental vehicle",
+   "when rental can be shut off after a total loss offer"
+  ],
+  "quoteSafeExcerpts": [
+   "1. The insurer shall develop and maintain written procedures that will be consistently used\nwhen determining the value of a vehicle declared a total loss.",
+   "2. Claims files shall include the credible source used for valuation by vendor name and the\nmethodology for determining the amount of the loss."
+  ]
+ },
+ "CRS 42-9-104": {
+  "topics": [
+   "written_estimate",
+   "consumer_protection",
+   "estimate_dispute",
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "customer never authorized the repairs",
+   "no written consent before the work started",
+   "written estimate required before repairs begin",
+   "teardown estimate and the cost of reassembly",
+   "customer signed a waiver of the estimate",
+   "work order record of an oral authorization",
+   "hundred dollar cap when the vehicle was towed in or dropped after hours"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) (a) No repairs on a motor vehicle shall be performed by a motor vehicle repair facility unless the facility obtains the written consent of the customer.",
+   "(2) (a) (I) Except as provided in paragraph (b) of this subsection (2), no repairs shall be performed by a motor vehicle repair facility unless said facility first submits in writing or, where allowed by this section, orally communicates to the customer an estimate of the total cost of any such repairs.",
+   "(c) When the customer has not given the motor vehicle repair facility written consent to perform repairs, no repairs shall be performed unless the facility first communicates orally to the customer the written estimate of the total cost of such repairs and the customer then consents to the required repairs."
+  ]
+ },
+ "CRS 42-9-105": {
+  "topics": [
+   "written_estimate",
+   "estimate_dispute",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "additional repairs beyond the original estimate",
+   "extra work not on the original estimate",
+   "ten percent over the estimate without consent",
+   "changed completion date notice",
+   "customer consent to additional charges"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Except when an estimate has been waived pursuant to section 42-9-104 (2)(b), no charge shall be made for labor and parts in excess of the estimate, plus ten percent thereof or twenty-five dollars, whichever is less, without the consent of the customer to the additional charge before performance of the labor or installation of the parts not included in the estimate.",
+   "(a) The customer shall be notified in writing on the work order of any changes in the expected completion date of the repairs and of the new expected completion date."
+  ]
+ },
+ "CRS 42-9-106": {
+  "topics": [
+   "storage_towing",
+   "written_estimate",
+   "estimate_dispute",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "final bill over the written estimate",
+   "charges over the estimate and the lien",
+   "storage charges after the customer is notified the repairs are done",
+   "storage fee policy in a separate written agreement",
+   "customer cancelled authorized repairs and wants the vehicle back",
+   "reassembly after a cancellation"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Except when an estimate has been waived pursuant to section 42-9-104 (2)(b), if the charge for labor and parts is over the original estimate or any subsequent estimate by ten percent thereof or twenty-five dollars, whichever is less, and unless further oral or written consent is given by the customer pursuant to section 42-9-105 (1), the motor vehicle repair facility shall return the motor vehicle to the customer upon the payment of the amount of the original estimate or any subsequent estimate plus ten percent thereof or twenty-five dollars, whichever is less, and the motor vehicle repair facility shall not be entitled to a lien for said excess pursuant to section 38-20-106, C.R.S.",
+   "(2) No charge shall be made for storage of the motor vehicle unless the motor vehicle is not picked up by the customer within three days, exclusive of Saturday, Sunday, legal holidays, and any days the repair facility is closed for business, after the customer is notified that the repairs have been completed and the customer was notified, as required by section 42-9-104 (2)(a), that such storage charges would accrue."
+  ]
+ },
+ "CRS 42-9-107": {
+  "topics": [
+   "aftermarket_parts",
+   "consumer_protection",
+   "written_estimate"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "used, reconditioned, or rebuilt parts",
+   "consent before installing recycled parts",
+   "the estimate must specify new OEM or non-OEM parts",
+   "adjusting the estimate when a salvage part is authorized"
+  ],
+  "quoteSafeExcerpts": [
+   "The motor vehicle repair facility shall specify in the original estimate whether any parts to be installed are new original equipment manufacturer, new nonoriginal equipment manufacturer, used, reconditioned, or rebuilt and then shall obtain the consent of the customer before any new original equipment manufacturer, new nonoriginal equipment manufacturer, used, reconditioned, or rebuilt parts are installed in the motor vehicle."
+  ]
+ },
+ "CRS 42-9-109": {
+  "topics": [
+   "parts_return",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "return of replaced parts to the customer",
+   "customer wants the old parts back",
+   "body shop repair parts are excluded from the return duty",
+   "airbag and inflatable restraint components are never returned"
+  ],
+  "quoteSafeExcerpts": [
+   "the motor vehicle repair facility shall return replaced parts to the customer at the time of the completion of the repairs if the customer so requests at the time of consenting to or authorizing the repairs.",
+   "A motor vehicle repair facility is not authorized to return any components of an inflatable restraint system to the consumer."
+  ]
+ },
+ "CRS 6-1-105": {
+  "topics": [
+   "consumer_protection",
+   "misrepresentation"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers",
+   "insurers"
+  ],
+  "claimUseCases": [
+   "deceptive trade practice",
+   "false representation about the quality or grade of parts or services",
+   "failure to disclose material information to induce the sale",
+   "Colorado Consumer Protection Act claim"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) A person engages in an unfair or deceptive trade practice when, in the course of the person's business, vocation, or occupation, the person:",
+   "(I) Goods, food, services, or property is of a particular standard, quality, or grade if the person knows or should know that they are of another standard, quality, or grade; or",
+   "(u) Fails to disclose material information concerning goods, services, or property which information was known at the time of an advertisement or sale if such failure to disclose such information was intended to induce the consumer to enter into a transaction;"
+  ]
+ },
+ "7 CCR 1103-1-2.4.1": {
+  "topics": [
+   "overtime"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "flag rate tech exempt from overtime",
+   "flag hour pay and the overtime exemption",
+   "mechanics exempt from Rule 4 overtime",
+   "open question: the exemption is written for retail automobile, truck, and farm implement dealers, so whether an independent body shop can claim it for its mechanics is not settled by the text of this rule",
+   "parts-person or salesperson overtime at a dealership"
+  ],
+  "quoteSafeExcerpts": [
+   "Salespersons, parts-persons, and\nmechanics employed by automobile, truck, or farm implement (retail)\ndealers; and salespersons employed by trailer, aircraft, and boat (retail)\ndealers are exempt from Rule 4 (Overtime)."
+  ]
+ },
+ "7 CCR 1103-1-4.1.1": {
+  "topics": [
+   "overtime"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "time and one-half over 40 hours in a workweek",
+   "twelve hour workday overtime",
+   "overtime on flag hours",
+   "the twelve consecutive hour rule"
+  ],
+  "quoteSafeExcerpts": [
+   "Employees shall be paid time and one-half of the regular rate of pay for\nany work in excess of any of the following, except as provided in\nexemptions or variances in Rule 2:"
+  ]
+ },
+ "7 CCR 1103-1-5.2": {
+  "topics": [
+   "meal_rest_breaks"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "painters and body techs asking about paid rest breaks",
+   "ten minute paid rest period for each 4 hours of work",
+   "rest break during the shift",
+   "techs working through their breaks",
+   "how many rest periods on a ten hour shift"
+  ],
+  "quoteSafeExcerpts": [
+   "Every employer shall authorize and permit a compensated 10-\nminute rest period for each 4 hours of work, or major fractions thereof, for all\nemployees, as follows, except as provided in exemptions or variances in Rule 2:"
+  ]
+ },
+ "7 CCR 1103-1-5.1": {
+  "topics": [
+   "meal_rest_breaks"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "thirty minute unpaid meal period",
+   "lunch on a shift over five consecutive hours",
+   "on-duty meal period when the shop cannot spare the tech"
+  ],
+  "quoteSafeExcerpts": [
+   "Employees shall be entitled to an uninterrupted and duty-free meal\nperiod of at least a 30-minute duration when the shift exceeds 5 consecutive\nhours."
+  ]
+ },
+ "CRS 8-4-109": {
+  "topics": [
+   "final_paycheck",
+   "payroll_deductions"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "when is the final check due after a tech quits",
+   "final paycheck timing on a discharge",
+   "employee still has shop tools",
+   "set off a deduction against the final check",
+   "penalty for unpaid final wages",
+   "written demand for wages after separation"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) (a) When an interruption in the employer-employee relationship by volition of the employer occurs, the wages or compensation for labor or service earned, vested, determinable, and unpaid at the time of such discharge is due and payable immediately.",
+   "(b) When an employee quits or resigns such employee's employment, the wages or compensation shall become due and payable upon the next regular payday."
+  ]
+ },
+ "CRS 8-4-105": {
+  "topics": [
+   "payroll_deductions"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "deduction for unreturned equipment",
+   "written agreement before deducting for property provided to the employee",
+   "theft shortage deduction after a police report",
+   "personal protective equipment cannot be deducted"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) An employer shall not make a deduction from the wages or compensation of an employee except as follows:",
+   "(b) Deductions for loans, advances, goods or services, and equipment or property, or any other thing that primarily benefits an employee, which does not include personal protective equipment, provided by an employer to an employee pursuant to a written agreement between such employer and employee, so long as it is enforceable and not in violation of law;"
+  ]
+ },
+ "Colorado DOI Bulletin B-5.04": {
+  "topics": [
+   "steering",
+   "repair_facility_choice",
+   "fair_settlement",
+   "short_pay",
+   "estimate_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "division guidance on payment of repair claims",
+   "the disclosure an insurer must give under 10-4-120",
+   "summary of the anti-steering duties",
+   "what a carrier must tell a claimant about choosing a repair business",
+   "note: a bulletin is the Division's interpretation and establishes no binding norm — cite 10-4-120 itself for the duty"
+  ],
+  "quoteSafeExcerpts": [
+   "Under §10-4-120, C.R.S. insurers are required to make certain oral or written disclosures to\nbeneficiaries or claimants.",
+   "Bulletins are the Division’s interpretation of existing insurance law or general statements of\nDivision policy. Bulletins themselves establish neither binding norms nor finally determine\nissues or rights.",
+   " Assume all reasonable costs sufficient to pay for the beneficiary’s or claimant’s repairs\nless any applicable deductible or reduction for comparative negligence"
+  ]
+ }
+}

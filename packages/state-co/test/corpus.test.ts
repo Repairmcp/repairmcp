@@ -67,6 +67,85 @@ describe('the committed corpus', () => {
   });
 });
 
+/**
+ * The launch bar (kickoff §7). Every query is shop-floor phrasing, never
+ * statutory phrasing — the annotation layer's claimUseCases are the bridge,
+ * and these assertions are what prove the bridge carries weight. When one of
+ * these fails the fix is annotation vocabulary, never a scoring weight.
+ */
+describe('launch demo criteria — the expert gauntlet', () => {
+  test('steering: 10-4-120 first', () => {
+    const r = corpus.findSupporting('adjuster says my customer has to use their network shop');
+    expect(r.hits[0]!.section.cite).toBe('10-4-120');
+  });
+  test('the killer demo: OEM procedure short-pay reaches 10-4-120 with the (3)(e) excerpt', () => {
+    const r = corpus.findSupporting(
+      'insurer refuses to pay for the OEM procedure and is short-paying the repair',
+    );
+    expect(r.hits[0]!.section.cite).toBe('10-4-120');
+    expect(r.hits[0]!.annotation?.quoteSafeExcerpts?.some((e) => e.includes('reasonable costs'))).toBe(
+      true,
+    );
+  });
+  test('undisclosed aftermarket parts: 10-3-1305 in the top three', () => {
+    const r = corpus.findSupporting('estimate written with aftermarket parts and nobody told the customer');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('10-3-1305');
+  });
+  test('supplement sitting: Reg 5-1-14 in the top three', () => {
+    const r = corpus.findSupporting('supplement has been sitting for two months with no answer from the carrier');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('702-5-1-14');
+  });
+  test('total loss taxes and fees: 10-4-639 in the top three', () => {
+    const r = corpus.findSupporting('total loss but they will not pay the sales tax and registration fees');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('10-4-639');
+  });
+  test('authorization: 42-9-104 in the top three', () => {
+    const r = corpus.findSupporting('customer never authorized the extra work before we started');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('42-9-104');
+  });
+  test('over the estimate and storage: 42-9-106 in the top three', () => {
+    const r = corpus.findSupporting('final bill came in over the written estimate and now storage charges');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('42-9-106');
+  });
+  test('painter breaks: the COMPS rest rule in the top three', () => {
+    const r = corpus.findSupporting('do my painters get paid rest breaks during the shift');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('1103-1-5.2');
+  });
+  test('flag-hour overtime: the exemption rule surfaces WITH the dealers caveat', () => {
+    const r = corpus.findSupporting('are my flag rate techs exempt from overtime');
+    const hit = r.hits.slice(0, 3).find((h) => h.section.cite === '1103-1-2.4.1');
+    expect(hit).toBeDefined();
+    expect(hit!.annotation?.claimUseCases?.some((u) => /dealer/i.test(u))).toBe(true);
+  });
+  test('final paycheck: 8-4-109 first', () => {
+    const r = corpus.findSupporting('tech quit and still has my tools, when is his final check due');
+    expect(r.hits[0]!.section.cite).toBe('8-4-109');
+  });
+  /**
+   * Added after the brief was written: 10-3-1115/-1116 landed in the corpus
+   * later (task 10's CRS additions), and they are the only sections in it
+   * that answer "what can we actually DO about it" with a money remedy. The
+   * scenario earns a slot because the honest-caveat annotation on 10-3-1104
+   * ("no private right of action of its own") is only useful if the section
+   * that DOES carry one outranks it on exactly this question.
+   */
+  test('statutory first-party remedy: 10-3-1115 or 10-3-1116 in the top three', () => {
+    const r = corpus.findSupporting("can I sue the insurer for unreasonably delaying my customer's claim");
+    const top3 = r.hits.slice(0, 3).map((h) => h.section.cite);
+    expect(top3.some((c) => c === '10-3-1115' || c === '10-3-1116')).toBe(true);
+  });
+  test('an exact cite short-circuits at 1.0', () => {
+    const r = corpus.search('CRS 10-4-120');
+    expect(r.hits[0]!.score).toBe(1);
+    expect(r.hits[0]!.breakdown.citation).toBe(1);
+  });
+  test('a chapter listing works for the repair act', () => {
+    const r = corpus.search('42-9');
+    expect(r.chapterListing).toBe(true);
+    expect(r.hits.length).toBeGreaterThan(8);
+  });
+});
+
 describe('CoAdapter as a SourceAdapter', () => {
   const adapter = new CoAdapter(corpus);
 
