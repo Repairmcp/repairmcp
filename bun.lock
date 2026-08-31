@@ -45,6 +45,19 @@
         "wrangler": "^4.118.0",
       },
     },
+    "apps/state-co-server": {
+      "name": "@repairmcp/state-co-server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-co": "workspace:*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260730.1",
+        "wrangler": "^4.118.0",
+      },
+    },
     "apps/state-mt-server": {
       "name": "@repairmcp/state-mt-server",
       "version": "0.0.0",
@@ -322,6 +335,8 @@
     "@repairmcp/site": ["@repairmcp/site@workspace:apps/site"],
 
     "@repairmcp/state-co": ["@repairmcp/state-co@workspace:packages/state-co"],
+
+    "@repairmcp/state-co-server": ["@repairmcp/state-co-server@workspace:apps/state-co-server"],
 
     "@repairmcp/state-law": ["@repairmcp/state-law@workspace:packages/state-law"],
 
