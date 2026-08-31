@@ -1,10 +1,11 @@
 /**
  * Colorado's four co_* tools: the descriptions (the model's routing signal)
  * plus the CO config handed to the shared builders. The KNOWN CAVEATS
- * paragraph is deliberate product surface: Colorado law's open questions (no
- * private right of action under 10-3-1104, the Division's declined stance on
- * OEM-procedure refusals, the open COMPS "dealer" exemption question, no
- * state OSHA plan) must be answered honestly, not filled in from model
+ * paragraph is deliberate product surface: Colorado law's open questions
+ * (10-3-1104 itself carries no private right of action, but 10-3-1115/-1116
+ * do; the Division's 2018-declined stance on OEM-procedure refusals; the open
+ * COMPS "dealer" exemption question; no state OSHA plan; Bulletin B-5.04 is
+ * guidance, not law) must be answered honestly, not filled in from model
  * memory.
  */
 import type { RepairMCPServer, ToolRegistrar } from '@repairmcp/core';
@@ -23,7 +24,7 @@ import { EDUCATIONAL_CAVEAT, EMPTY_SEARCH_HINT, LEGAL_ADVICE_NOTE } from './note
 import { CO_DOMAINS, CoDomainSchema } from './schema.js';
 import { CO_TOPICS, CoTopicSchema } from './taxonomy.js';
 
-const CO_SEARCH_AUTHORITY_DESCRIPTION = `Search Colorado state law for collision repair facilities: insurance claims handling (CRS 10-4-120, the anti-steering statute whose subsection (3)(e) requires insurers to assume all reasonable repair costs including materials and parts; the CRS 10-3-1104 unfair claims practices catalog; the Model Quality Replacement Parts Act with its 10-3-1305 aftermarket-parts estimate disclosure; DOI Regulation 5-1-14 prompt payment and 5-2-15 total-loss valuation; DOI Bulletin B-5.04), the Motor Vehicle Repair Act (CRS Title 42 Article 9: written estimates, charges over the estimate, storage, parts return, invoices), towing rules (CRS 42-4-2103 and the PUC towing-carrier rules), and employment rules (the Wage Act and the COMPS Order: breaks, overtime, minimum wage, final pay, deductions).
+const CO_SEARCH_AUTHORITY_DESCRIPTION = `Search Colorado state law for collision repair facilities: insurance claims handling (CRS 10-4-120, the anti-steering statute whose subsection (3)(e) requires insurers to assume all reasonable repair costs including materials and parts; CRS 10-4-639, claims practices for property damage — total loss, sales tax, towing/storage disclosure; the CRS 10-3-1104 unfair claims practices catalog; the Model Quality Replacement Parts Act with its 10-3-1305 aftermarket-parts estimate disclosure; DOI Regulation 5-1-14 prompt payment and 5-2-15 total-loss valuation; DOI Bulletin B-5.04), the Motor Vehicle Repair Act (CRS Title 42 Article 9: written estimates, charges over the estimate, storage, parts return, invoices), towing rules (CRS 42-4-2103 and the PUC towing-carrier rules), and employment rules (the Wage Act and the COMPS Order: breaks, overtime, minimum wage, final pay, deductions).
 
 USE THIS WHEN:
 - A Colorado claim issue needs the actual rule text: steering, short-pay, OEM procedure payment, supplement, prompt payment, aftermarket parts disclosure, total loss valuation or sales tax, storage.
@@ -31,7 +32,7 @@ USE THIS WHEN:
 - An HR question: rest and meal breaks, the flag-hour overtime exemption question, final paycheck timing, payroll deductions for tools or equipment.
 - You have a citation like "CRS 10-4-120", "3 CCR 702-5-1-14", "Reg 5-1-14", "COMPS Rule 5.2", or "B-5.04" and want it directly.
 
-KNOWN CAVEATS, answer these honestly instead of inventing law: CRS 10-3-1104 carries NO private right of action (Division of Insurance enforcement; common-law bad faith is case law outside this corpus). The Division of Insurance has publicly declined to decide whether refusing a specific OEM procedure is "unreasonable" under 10-4-120 — the statute text is here, the agency's enforcement posture is a fact to state. The COMPS overtime exemption for salespersons, parts-persons, and mechanics says "dealers" — whether an independent body shop qualifies is an OPEN question, never settled. Colorado has NO state OSHA plan: spray booth, respirator, and hazard communication duties come from federal OSHA (29 CFR), outside this corpus. Repair-lien and mechanic's-lien statutes are not in this corpus. Bulletin B-5.04 is DIVISION GUIDANCE, not law.
+KNOWN CAVEATS, answer these honestly instead of inventing law: CRS 10-3-1104 itself carries NO private right of action (Division of Insurance enforcement only) — but CRS 10-3-1115 and 10-3-1116 provide a statutory action for unreasonable delay or denial of first-party benefits (attorney fees, costs, and two times the covered benefit), both in this corpus; common-law bad faith remains case law outside it. The Division of Insurance publicly declined in 2018 to decide whether refusing a specific OEM procedure is "unreasonable" under 10-4-120 — the statute text is here, the agency's enforcement posture is a fact to state. The COMPS overtime exemption for salespersons, parts-persons, and mechanics says "dealers" — whether an independent body shop qualifies is an OPEN question, never settled. Colorado has NO state OSHA plan: spray booth, respirator, and hazard communication duties come from federal OSHA (29 CFR), outside this corpus. Repair-lien and mechanic's-lien statutes are not in this corpus. Bulletin B-5.04 is DIVISION GUIDANCE, not law.
 
 INPUT: A plain-language query or a citation, optional domain (insurance | repair_law | employment), optional topics, and result limit.
 
@@ -45,7 +46,7 @@ USE THIS WHEN:
 
 INPUT: A citation in any common form: "CRS 10-4-120", "3 CCR 702-5-1-14", "crs:10-4-120", or a bare "10-4-120" (hyphenated triples read as CRS; regulations and rules need their prefix; COMPS rules also resolve by their dotted number, "2.4.1").
 
-OUTPUT: The full verbatim section text (subsection numbering preserved), heading, chapter, the history line, the CCR effective date where one exists, topics, and citation forms — or found=false with guidance when the cite does not match.`;
+OUTPUT: The full verbatim section text (subsection numbering preserved), heading, chapter, the history line, the CCR effective date where one exists, topics, and citation forms — or found=false with guidance when the cite does not match. Bulletin B-5.04 is Division of Insurance guidance, not law.`;
 
 const CO_FIND_SUPPORTING_AUTHORITY_DESCRIPTION = `Find Colorado law that may support a repair claim dispute position.
 
@@ -65,12 +66,12 @@ USE THIS WHEN:
 
 INPUT: Dispute text, optional known facts, optional topics, and result limit. Insurance domain only — repair and employment questions belong to co_search_authority.
 
-OUTPUT: An educational packet: issue summary, supporting authorities with quote-safe excerpts, careful application notes, facts to verify, and a suggested citation list. This does not determine liability or provide legal advice — in particular, 10-3-1104 enforcement belongs to the Division of Insurance (no private right of action), and whether a specific OEM procedure refusal violates 10-4-120(3)(e) is a question the Division has declined to answer; both are questions for counsel.`;
+OUTPUT: An educational packet: issue summary, supporting authorities with quote-safe excerpts, careful application notes, facts to verify, and a suggested citation list. This does not determine liability or provide legal advice — in particular, 10-3-1104 itself carries no private right of action (Division of Insurance enforcement only), though CRS 10-3-1115 and 10-3-1116 provide a statutory action for unreasonable delay or denial of first-party benefits; whether a specific OEM procedure refusal violates 10-4-120(3)(e) is a question the Division publicly declined to answer in 2018; and if Bulletin B-5.04 appears among the authorities, it is Division of Insurance guidance, not law. All three are questions for counsel.`;
 
 const CO_TOOLS_CONFIG: StateToolsConfig = {
   prefix: 'co',
   stateName: 'Colorado',
-  sourceSiteName: 'leg.colorado.gov or coloradosos.gov',
+  sourceSiteName: 'leg.colorado.gov, coloradosos.gov, or doi.colorado.gov',
   descriptions: {
     search: CO_SEARCH_AUTHORITY_DESCRIPTION,
     get: CO_GET_AUTHORITY_DESCRIPTION,

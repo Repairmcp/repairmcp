@@ -11,7 +11,7 @@ const corpus = new CoCorpus(corpusJson, annotationsJson);
 describe('the committed corpus', () => {
   test('validates and holds all three domains', () => {
     const domains = corpus.domainBreakdown();
-    expect(domains.insurance).toBeGreaterThan(8);
+    expect(domains.insurance).toBeGreaterThan(13);
     expect(domains.repair_law).toBeGreaterThan(15);
     expect(domains.employment).toBeGreaterThan(6);
   });
@@ -46,6 +46,13 @@ describe('the committed corpus', () => {
     for (const topic of CO_TOPICS) {
       expect(reachable.has(topic), `topic ${topic} reaches no section`).toBe(true);
     }
+  });
+  test('the first-party statutory remedy sections (10-3-1115, 10-3-1116) are in the corpus', () => {
+    const s1115 = corpus.getSection('CRS 10-3-1115');
+    const s1116 = corpus.getSection('CRS 10-3-1116');
+    expect(s1115?.domain).toBe('insurance');
+    expect(s1116?.domain).toBe('insurance');
+    expect(s1116?.text).toContain('two times the covered benefit');
   });
   test('getSection tolerates every citation spelling', () => {
     for (const input of ['CRS 10-4-120', 'crs:10-4-120', '10-4-120']) {

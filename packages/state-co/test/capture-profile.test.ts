@@ -97,6 +97,8 @@ Regular Session in 2026.</p>
 const TITLE_10_HTML = `<html><body>
 ${toc('10-3-1104', 'A table-of-contents entry that must not become a section.')}
 ${crsSection('10-3-1104')}
+${crsSection('10-3-1115')}
+${crsSection('10-3-1116')}
 ${crsSection('10-3-1301')}
 ${crsSection('10-3-1302')}
 ${crsSection('10-3-1303')}

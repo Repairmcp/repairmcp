@@ -32,6 +32,12 @@ export const CO_CRS_SOURCES: readonly CrsCaptureSource[] = [
   {
     code: 'CRS', title: 10, chapterKey: '10-3',
     chapterTitle: 'Regulation of Insurance Companies', domain: 'insurance',
+    filter: { kind: 'sections', cites: ['10-3-1115', '10-3-1116'] },
+    note: 'The statutory first-party unreasonable-delay/denial remedy — a two-times-covered-benefit penalty (plus attorney fees and costs) when an insurer unreasonably delays or denies payment of a first-party claim. This IS a private right of action, unlike 10-3-1104 above.',
+  },
+  {
+    code: 'CRS', title: 10, chapterKey: '10-3',
+    chapterTitle: 'Regulation of Insurance Companies', domain: 'insurance',
     filter: {
       kind: 'sections',
       cites: ['10-3-1301', '10-3-1302', '10-3-1303', '10-3-1304', '10-3-1305', '10-3-1306'],
