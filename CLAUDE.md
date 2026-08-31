@@ -107,6 +107,11 @@ packages/state-law/   @repairmcp/state-law — the shared state-vertical machine
                       connector registration with freshness, corpus diff, and
                       the CaptureIo/StateCaptureProfile contract the scripts
                       consume. State packages are profile + parsers + data.
+                      Added at CO: `CaptureIo.fetchBinary` (optional — WA and
+                      MT never needed it), the hook that lets a state's
+                      capture profile fetch raw bytes for a PDF document
+                      (the CCR rule PDFs, the DOI bulletin) rather than text;
+                      state-co is the only package that wires it.
 
 packages/state-mt/    @repairmcp/state-mt — Montana vertical (pure corpus)
   src/parse-mca.ts    mca.legmt.gov section-page parser: edition-marker
@@ -128,6 +133,57 @@ packages/state-mt/    @repairmcp/state-mt — Montana vertical (pure corpus)
 
 apps/state-mt-server/ @repairmcp/state-mt-server — Worker, mt.repairmcp.com,
                       same shape as state-wa-server; /health adds mcaEdition
+
+packages/state-co/    @repairmcp/state-co — Colorado vertical (pure corpus,
+                      THREE publishers)
+  src/parse-crs.ts    OLLS whole-title HTML parser: fetches an entire CRS
+                      title in one document, splits by section anchor, filters
+                      to the manifest's cites — the currency analog of NHTSA's
+                      currentthrough marker is CRS_EDITION (identity.ts),
+                      pinned so the yearly rollover fails loudly
+  src/parse-ccr.ts    Code of Colorado Regulations parser over the Secretary
+                      of State's rule-info + document PDFs
+  src/capture-crs.ts  CRS capture: whole-title fetch, section-anchor split,
+                      manifest filter (sources-crs.ts)
+  src/capture-ccr.ts  CCR two-tier crawl: NumericalCCRDocList resolves each
+                      rule series' current document version, then the PDF
+                      itself is fetched and parsed (io.fetchBinary). The
+                      version SHORTCUT (skip the re-fetch when the SOS
+                      ruleVersionId is unchanged) also requires the previous
+                      cite set still match the CURRENT manifest filter — an
+                      unchanged version alone once let a manifest edit
+                      (regCite added/removed, prefix narrowed/widened) ship
+                      the stale cite set with no signal; a WIDENED prefix
+                      still can't be detected this way, so the shortcut's log
+                      line names that residual and says to force a refetch
+  src/capture-bulletin.ts  DOI Bulletin B-5.04 PDF capture, with the
+                      extraction-fidelity tripwire (a page parsing to
+                      near-nothing against a populated prior version aborts
+                      rather than silently shrinking the corpus)
+  src/pdf-text.ts     unpdf wrapper, loaded via dynamic `import()` so the
+                      Worker bundle never pulls in the PDF library — nothing
+                      the worker statically imports reaches this module
+  src/identity.ts     CRS cites carry the EDITION ("CRS 10-4-120, 2026
+                      edition" — CRS prints session-law source notes, never
+                      effective dates); CCR cites carry real effective dates;
+                      the bulletin carries its issue date; CRS_EDITION pin
+                      test makes the yearly rollover fail loudly at
+                      re-capture; resolveCoCitationQuery handles CRS
+                      point-five sections, four-group CCR cites, DOI "Reg"
+                      shorthand, COMPS bare-dotted rules, and bulletin cites
+                      that the shared factory's splitter cannot express
+  src/sources-crs.ts  the CRS capture manifest, incl. the 10-3-1104/-1115/
+                      -1116 no-private-right-of-action vs. statutory-remedy
+                      distinction captured as a source note
+  data/               co-law-corpus.json (55 sections, three domains:
+                      insurance 15 / repair_law 32 / employment 8) +
+                      annotations
+  test/               119 tests incl. the CRS_EDITION pin and the
+                      CCR version-shortcut/manifest-filter consistency suite
+
+apps/state-co-server/ @repairmcp/state-co-server — Worker, co.repairmcp.com,
+                      same shape as state-wa-server/state-mt-server; /health
+                      adds crsEdition + the three-domain breakdown
 
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
@@ -223,18 +279,20 @@ curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + 
 ```
 
 **State law servers** — Washington (`apps/state-wa-server/`, 670 WAC/RCW
-sections) and Montana (`apps/state-mt-server/`, 119 MCA/ARM sections). Pure
+sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections), and
+Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections). Pure
 corpus: the data ships in each bundle, so a corpus refresh IS a deploy —
 re-run the capture, run the tests (the substring, demo-criteria, and for MT
-the edition-pin suites are the acceptance gate), deploy from the state's app.
+the edition-pin, for CO the CRS_EDITION-pin suites are the acceptance gate),
+deploy from the state's app.
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt)
-bun scripts/capture-state.ts --state mt              # writes packages/state-mt/data JSON
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co)
+bun scripts/capture-state.ts --state co              # writes packages/state-co/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa.repairmcp.com / mt.repairmcp.com
-curl -s https://mt.repairmcp.com/health              # corpus meta + domains (+ mcaEdition)
+wrangler deploy                                      # → wa.repairmcp.com / mt.repairmcp.com / co.repairmcp.com
+curl -s https://co.repairmcp.com/health              # corpus meta + domains (+ crsEdition)
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -455,7 +513,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 | state-law extraction | ✅ | 2026-08-27: the shared machinery extracted from state-wa into `packages/state-law` at state #2, per the standing decision. Parity proven, not asserted: zero edits to the 101 pre-existing WA tests, a golden-ranking panel (pinned scores/breakdowns + one byte-exact payload) green throughout, the WA worker compiled with zero changes, and all four saved wire responses byte-identical after the refactor. Deployed to wa.repairmcp.com before Montana began. |
 | MT vertical | ✅ live | 2026-08-27: `https://mt.repairmcp.com/mcp` deployed and verified on the wire (killer demo: "adjuster is deleting operations from the estimating system we both use" → MCA 33-18-224 first, whose (iii) clause prohibits exactly that; WDEA → 39-2-904; WAF 429s at exactly 20). 119 verbatim sections from TWO publishers — MCA (two-tier slot-URL crawl, edition-marker tripwire) and ARM (SOS public JSON API, ISO effective dates, SHA-256 content hashes). Honest absences stated in tool descriptions (no aftermarket-disclosure law, no adult break statute, federal-OSHA safety). Site sells four sources, one setup. Open: connector gates in the project owner's clients. |
 
-**Test totals:** 627 passing (77 core + 106 deg + 74 nhtsa + 6 state-law + 112 state-wa + 59 state-mt + 193 ingestion). 0 failing.
+| CO vertical | ✅ live | 2026-08-31: `https://co.repairmcp.com/mcp` deployed (deployment `b00e811d`) and verified on the wire — `/health` reports 55 sections, current through 2026-08-31, "Colorado Revised Statutes 2026" edition, domains insurance 15 / repair_law 32 / employment 8; steering query → CRS 10-4-120 first with the verbatim (3)(e) reasonable-costs excerpt; an OEM-procedure short-pay query also lands CRS 10-4-120 first with (3)(e) in `quoteSafeExcerpts`; an adjuster-gone-silent supplement query → 3 CCR 702-5-1-14 first; DOI Bulletin B-5.04 fetches in full with `shortForm` "Colorado DOI Bulletin B-5.04, issued 9/19/2016"; WAF 429s confirmed (onset request 22, in line with WA/MT). 55 verbatim sections from THREE publishers — the Office of Legislative Legal Services (whole-title HTML, CRS_EDITION pin), the Secretary of State (CCR PDFs via the two-tier rule-version crawl), and the Division of Insurance (the one bulletin PDF, guidance not law). Honest absences stated in tool descriptions and the site card: no Colorado OSHA plan (federal OSHA governs spray booth/respirator duties), CRS 10-3-1104 carries no private right of action on its own (10-3-1115/-1116 provide the statutory delay/denial remedy), the COMPS "dealer" overtime exemption's application to an independent body shop is an open question the corpus states rather than answers. Site flips to five sources, one setup; /legal names the three CO publishers. Open: connector gates in the project owner's clients. |
+
+**Test totals:** 758 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 119 state-co + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -742,6 +802,28 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   copy-once-more, extract at state #2.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
+- ~~CO vertical.~~ **Shipped 2026-08-31** — see the Build status row. What remains:
+  the connector gates (add `https://co.repairmcp.com/mcp` in the project owner's
+  Claude and ChatGPT clients and run the demo scenarios, same as WA/MT/NHTSA).
+  Three candidates surfaced during the build that are future corpus/scorer work,
+  not blockers:
+  - **CRS 6-1-113, the Colorado Consumer Protection Act private-action section**, is
+    not in the CO corpus (6-1-105's unfair-practices catalog is; the section that
+    actually creates the private right of action to sue under it is not). A
+    future corpus-refresh candidate if a shop-facing CCPA private-action scenario
+    comes up — add it to `sources-crs.ts`'s manifest the same way 10-3-1115/-1116
+    were added alongside 10-3-1104.
+  - **Scorer length bias** (noted independently in DEG's saturation backlog entry
+    above) is a cross-state candidate now that three state corpora share the same
+    base scorer in `packages/state-law`: a long section can out-cover a short,
+    more on-point one by accident. Worth a length-normalization pass across all
+    three states at once rather than three separate tunings.
+  - **An optional serialized `note`/`scopeNote` annotation field** on `StateSection`
+    (or a sibling) was discussed but not built — CO's `sources-crs.ts` currently
+    carries capture-manifest notes as source comments (e.g. the 10-3-1104 vs.
+    10-3-1115/-1116 distinction) rather than as corpus-queryable data. Worth
+    revisiting if a future state's honest-absences story gets too big for a tool
+    description to carry alone.
 
 ---
 
