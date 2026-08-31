@@ -19,20 +19,25 @@
    "insurer requires a particular repair business",
    "DRP network pressure on the customer",
    "customer told to use the carrier's preferred shop",
+   "insurer pushing the customer toward a preferred facility",
+   "preferred shop list pressure on the client",
    "shop of choice denied",
    "disincentive used to discourage our shop",
    "referral fee or kickback for sending work to a repair business",
    "unreasonable travel distance to an approved shop",
-   "insurer refuses to pay for an OEM repair procedure",
-   "short paying the repair bill",
+   "OEM repair procedure not paid",
+   "carrier refuses a documented manufacturer procedure",
+   "carrier short paying the estimate",
    "short pay on OEM procedures",
-   "reasonable costs sufficient to pay for the repair including materials or parts",
-   "copy of the estimate the settlement is based on",
-   "prevailing competitive price dispute",
-   "note: subsection (2) is the prohibition list — (2)(a) requiring a specified repair business, (2)(e) using disincentives, (2)(f) referral fees, (2)(g) unreasonable travel distance; subsection (3) is the duty list — (3)(d) disclose free choice of shop, (3)(e) assume all reasonable costs sufficient to pay for the repairs including materials or parts"
+   "operations knocked off the estimate",
+   "line items removed from the repair bill",
+   "paid less than the documented repair operations",
+   "insurer will not cover the full cost of the repair",
+   "copy of the estimate the settlement is based on"
   ],
   "quoteSafeExcerpts": [
    "(e) Assume all reasonable costs sufficient to pay for the beneficiary's or claimant's repairs including materials or parts, less any applicable deductible or reduction for comparative negligence;",
+   "(f) Promptly pay the cost of property repair services and products from any repair facility location that is within a reasonable distance, less any applicable deductible amount payable by the beneficiary or claimant according to the terms of the insurance policy, at no less than the prevailing competitive market price in the same geographic area; and",
    "(a) Directly or indirectly require that appraisals or repairs to the property be made or not be made by a specified repair business;",
    "(c) Intimidate, coerce, threaten, or induce by incentive a beneficiary or claimant to use a particular repair business for repairs; except that an inducement by incentive does not include warranty or guaranty repairs;",
    "(e) Use disincentives to discourage a beneficiary or claimant from using a particular repair business; except that a disincentive does not include warranty or guaranty repairs;",
@@ -62,8 +67,7 @@
    "compelling the insured to institute litigation to recover what was owed",
    "no explanation given for the denial",
    "the market conduct standard the Division of Insurance enforces",
-   "note: this is the (1)(h) unfair-claim-settlement-practices catalog, enforced by the Division of Insurance; nothing in its own text gives a claimant a lawsuit — for a first-party money remedy see 10-3-1115 and 10-3-1116",
-   "note: (1)(h) requires a willful violation or conduct frequent enough to indicate a general business practice, so one badly handled file is not by itself a violation"
+   "a general business practice of mishandling claims"
   ],
   "quoteSafeExcerpts": [
    "(h) Unfair claim settlement practices: Committing or performing, either in willful violation of this part 11 or with such frequency as to indicate a tendency to engage in a general business practice, any of the following:",
@@ -107,16 +111,14 @@
   ],
   "appliesTo": [
    "insurers",
-   "claimants",
-   "consumers"
+   "claimants"
   ],
   "claimUseCases": [
    "sue the insurer",
    "unreasonably delaying payment of a claim",
    "two times the covered benefit and attorney fees",
    "action in district court for unreasonable delay or denial",
-   "short pay lawsuit",
-   "note: the remedy runs to the first-party claimant, not to the repair facility, unless the claim has been assigned"
+   "short pay lawsuit"
   ],
   "quoteSafeExcerpts": [
    "(1) A first-party claimant as defined in section 10-3-1115 whose claim for payment of benefits has been unreasonably delayed or denied may bring an action in a district court to recover reasonable attorney fees and court costs and two times the covered benefit."
@@ -147,7 +149,7 @@
   ],
   "quoteSafeExcerpts": [
    "No insurer shall specify the use of nonoriginal equipment replacement crash parts in the repair of an insured's motor vehicle without disclosing the intended use of such parts to the insured.",
-   "the written estimate shall clearly identify each such part as being a nonoriginal equipment replacement crash part"
+   "In all instances where nonoriginal equipment replacement crash parts are intended for use by an insurer, the written estimate shall clearly identify each such part as being a nonoriginal equipment replacement crash part, and a disclosure document containing the following information in ten-point type or larger type shall appear on or be attached to the insured's copy of the estimate:"
   ]
  },
  "CRS 10-4-639": {
@@ -193,16 +195,18 @@
    "supplement sitting sixty days",
    "no decision on a clean claim",
    "prompt payment deadline",
-   "carrier will not answer the supplement",
-   "sixty days is two months, and the carrier still has not decided",
-   "sixty day decision deadline on a valid and complete claim",
+   "the carrier has gone quiet on a supplement",
+   "still no answer months after the supplement went in",
+   "insurer sitting on a valid and complete claim",
+   "the sixty day clock is two months long",
+   "sixty day decision deadline",
    "eight percent interest penalty for a late claim payment",
    "thirty day status letters while an investigation is open"
   ],
   "quoteSafeExcerpts": [
-   "shall make a decision on claims and/or pay benefits due under the\npolicy within sixty (60) days after receipt of a valid and complete claim unless\nthere is a reasonable dispute between the parties concerning such claim, and\nprovided the insured has complied with the terms and conditions of the policy of\ninsurance.",
+   "a. All insurers authorized to write property and casualty insurance policies in\nColorado, shall make a decision on claims and/or pay benefits due under the\npolicy within sixty (60) days after receipt of a valid and complete claim unless\nthere is a reasonable dispute between the parties concerning such claim, and\nprovided the insured has complied with the terms and conditions of the policy of\ninsurance.",
    "3. A good faith offer by the insurer to the insured within sixty (60) days after the receipt of a\nvalid and complete claim satisfies the requirements under this regulation.",
-   "the insurer shall, every thirty (30) days\nthereafter, send to the insured or the insured’s representative a letter setting forth the\nreason(s) additional time is needed for investigation."
+   "Additionally, if the claim is not paid within the time\nrequirement under section 4.A.1., above, the insurer shall, every thirty (30) days\nthereafter, send to the insured or the insured’s representative a letter setting forth the\nreason(s) additional time is needed for investigation."
   ]
  },
  "3 CCR 702-5-2-15": {
@@ -241,9 +245,10 @@
    "consumers"
   ],
   "claimUseCases": [
-   "customer never authorized the repairs",
-   "no written consent before the work started",
-   "written estimate required before repairs begin",
+   "repairs performed without the customer's written consent",
+   "work done that was never authorized",
+   "unauthorized work started without a signed work order",
+   "an estimate is required before a repair begins",
    "teardown estimate and the cost of reassembly",
    "customer signed a waiver of the estimate",
    "work order record of an oral authorization",
@@ -268,6 +273,8 @@
   "claimUseCases": [
    "additional repairs beyond the original estimate",
    "extra work not on the original estimate",
+   "operations added after further teardown",
+   "no sign-off before doing additional operations",
    "ten percent over the estimate without consent",
    "changed completion date notice",
    "customer consent to additional charges"
@@ -289,8 +296,10 @@
    "consumers"
   ],
   "claimUseCases": [
-   "final bill over the written estimate",
-   "charges over the estimate and the lien",
+   "the invoice exceeds the written estimate",
+   "the final invoice exceeds the authorized amount",
+   "the ten percent limit on going over the estimate",
+   "charges above the original estimate without consent",
    "storage charges after the customer is notified the repairs are done",
    "storage fee policy in a separate written agreement",
    "customer cancelled authorized repairs and wants the vehicle back",
@@ -337,7 +346,7 @@
    "airbag and inflatable restraint components are never returned"
   ],
   "quoteSafeExcerpts": [
-   "the motor vehicle repair facility shall return replaced parts to the customer at the time of the completion of the repairs if the customer so requests at the time of consenting to or authorizing the repairs.",
+   "Except for body shop repair parts, inflatable restraint system components, and parts that the motor vehicle repair facility is required to return to the manufacturer or distributor under a manufacturer warranty or exchange arrangement, the motor vehicle repair facility shall return replaced parts to the customer at the time of the completion of the repairs if the customer so requests at the time of consenting to or authorizing the repairs.",
    "A motor vehicle repair facility is not authorized to return any components of an inflatable restraint system to the consumer."
   ]
  },
@@ -355,12 +364,195 @@
    "deceptive trade practice",
    "false representation about the quality or grade of parts or services",
    "failure to disclose material information to induce the sale",
-   "Colorado Consumer Protection Act claim"
+   "misrepresenting the standard or grade of a repair"
   ],
   "quoteSafeExcerpts": [
    "(1) A person engages in an unfair or deceptive trade practice when, in the course of the person's business, vocation, or occupation, the person:",
-   "(I) Goods, food, services, or property is of a particular standard, quality, or grade if the person knows or should know that they are of another standard, quality, or grade; or",
+   "(g) Represents that:\n(I) Goods, food, services, or property is of a particular standard, quality, or grade if the person knows or should know that they are of another standard, quality, or grade; or",
    "(u) Fails to disclose material information concerning goods, services, or property which information was known at the time of an advertisement or sale if such failure to disclose such information was intended to induce the consumer to enter into a transaction;"
+  ]
+ },
+ "4 CCR 723-6-6505": {
+  "topics": [
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "kickback for the privilege of towing vehicles",
+   "paying a property manager for tow referrals",
+   "gratuity paid to get nonconsensual tow work"
+  ],
+  "quoteSafeExcerpts": [
+   "Pursuant to § 40-10.1-408, C.R.S., a towing carrier shall not pay money or other valuable consideration\nincluding, but not limited to gifts and gratuities, for the privilege of nonconsensually towing vehicles."
+  ]
+ },
+ "4 CCR 723-6-6506": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "vehicle damaged during the tow",
+   "wrong equipment used to hook the vehicle",
+   "tow truck equipment requirements"
+  ],
+  "quoteSafeExcerpts": [
+   "(A) A towing carrier shall not tow a motor vehicle unless it has the necessary\nequipment to safely conduct the tow, in accordance with the requirements in Title\n42, C.R.S., and 49 C.F.R."
+  ]
+ },
+ "4 CCR 723-6-6507": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "where the towed vehicle was taken",
+   "impound lot location and hours",
+   "cannot find the vehicle after it was towed",
+   "storage facility signage and telephone number"
+  ],
+  "quoteSafeExcerpts": [
+   "(c) Disclosure for all towed motor vehicles. Upon request of the authorized or interested person of\nthe motor vehicle, a towing carrier which places a motor vehicle in a storage facility shall also\ndisclose the location of the storage facility, the total amount of the charges, and accepted forms\nof payment, as provided in rule 6512."
+  ]
+ },
+ "4 CCR 723-6-6508": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "vehicle towed without authorization",
+   "who can authorize a nonconsensual tow",
+   "towed off private property without permission",
+   "police ordered tow versus a private property impound"
+  ],
+  "quoteSafeExcerpts": [
+   "(I) A towing carrier shall not tow any motor vehicle unless one of the following conditions is\nmet:\n(A) the towing carrier is directed to perform a tow by a law enforcement officer;\n(B) the towing carrier is requested to perform a tow by an authorized or interested\nperson of the motor vehicle; or"
+  ]
+ },
+ "4 CCR 723-6-6509": {
+  "topics": [
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "no tow invoice was given",
+   "tow record and invoice requirements",
+   "itemized tow bill",
+   "warning signage before a private property tow"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) A towing carrier shall use and complete all applicable portions of a tow record/invoice form for all\nnonconsensual tows, whether the motor vehicle is removed from private property or retrieved\nbefore removal (commonly known as a drop), and law enforcement-ordered tows."
+  ]
+ },
+ "4 CCR 723-6-6510": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "tow rates were never quoted up front",
+   "surprise charges on the tow bill",
+   "disclosure of towing rates before the hook"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Prior to performing any tow, a towing carrier shall disclose to the authorized or interested person\nof the motor vehicle all rates and charges to be assessed."
+  ]
+ },
+ "4 CCR 723-6-6511": {
+  "topics": [
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "maximum towing and storage rates",
+   "overcharged on a tow bill",
+   "daily impound storage cap",
+   "drop charge when the owner shows up before the tow",
+   "no charge allowed when the tow broke the rules"
+  ],
+  "quoteSafeExcerpts": [
+   "(d) Storage for nonconsensual and law enforcement-ordered tows.\n(I) Storage charges shall not exceed the following maximum rates, based on a 24-hour\nperiod, for the following weight classifications:",
+   "(III) Storage charges shall not be charged, collected, or retained for any time during which\ngarage keeper's liability insurance coverage is not kept in force.",
+   "(f) Noncompliance. If a tow is performed, or storage is provided, in violation of state statute or\nCommission rule, the towing carrier may not charge or retain any fees or charges for the services\nperformed with respect to the motor vehicle. Any motor vehicle that is held in storage must be\nreleased, without charge, to an authorized or interested person."
+  ]
+ },
+ "4 CCR 723-6-6512": {
+  "topics": [
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "getting the vehicle out of impound",
+   "impound lot will not take a credit card",
+   "personal property left inside the towed vehicle",
+   "release of the vehicle on payment"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) The towing carrier shall immediately accept payment of the drop charge, towing, storage, release\ncharges, and any other appropriate charges, if payment is offered by an authorized or interested\nperson. The towing carrier must accept payments in cash or by valid major credit card."
+  ]
+ },
+ "4 CCR 723-6-6513": {
+  "topics": [
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "no parking signs before a private property tow",
+   "notice required before towing from private property",
+   "towed from a lot with no posted warning"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) A towing carrier may not perform a nonconsensual tow of a motor vehicle, other than an\nabandoned motor vehicle, from private property unless:"
+  ]
+ },
+ "4 CCR 723-6-6514": {
+  "topics": [
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "civil penalty for a towing violation",
+   "penalty for overcharging on a tow",
+   "complaint to the PUC about a towing carrier"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) A violation of any of the following provisions may result in the assessment of a civil penalty of up\nto $1,100.00 for each violation:"
   ]
  },
  "7 CCR 1103-1-2.4.1": {
@@ -372,10 +564,11 @@
    "employees"
   ],
   "claimUseCases": [
-   "flag rate tech exempt from overtime",
    "flag hour pay and the overtime exemption",
-   "mechanics exempt from Rule 4 overtime",
-   "open question: the exemption is written for retail automobile, truck, and farm implement dealers, so whether an independent body shop can claim it for its mechanics is not settled by the text of this rule",
+   "does the mechanic exemption cover a tech paid at flag rate",
+   "flat rate mechanic and overtime",
+   "exempt from Rule 4 overtime",
+   "the exemption names mechanics employed by retail automobile, truck, and farm implement dealers",
    "parts-person or salesperson overtime at a dealership"
   ],
   "quoteSafeExcerpts": [
@@ -392,6 +585,8 @@
   ],
   "claimUseCases": [
    "time and one-half over 40 hours in a workweek",
+   "time and a half on hours over forty",
+   "flat rate pay and the overtime a mechanic still earns",
    "twelve hour workday overtime",
    "overtime on flag hours",
    "the twelve consecutive hour rule"
@@ -409,11 +604,11 @@
    "employees"
   ],
   "claimUseCases": [
-   "painters and body techs asking about paid rest breaks",
+   "paid rest breaks for painters and body techs",
    "ten minute paid rest period for each 4 hours of work",
-   "rest break during the shift",
-   "techs working through their breaks",
-   "how many rest periods on a ten hour shift"
+   "rest period during a long shift",
+   "how many rest breaks on a ten hour day",
+   "employees working through their rest periods"
   ],
   "quoteSafeExcerpts": [
    "Every employer shall authorize and permit a compensated 10-\nminute rest period for each 4 hours of work, or major fractions thereof, for all\nemployees, as follows, except as provided in exemptions or variances in Rule 2:"
@@ -495,8 +690,7 @@
    "division guidance on payment of repair claims",
    "the disclosure an insurer must give under 10-4-120",
    "summary of the anti-steering duties",
-   "what a carrier must tell a claimant about choosing a repair business",
-   "note: a bulletin is the Division's interpretation and establishes no binding norm — cite 10-4-120 itself for the duty"
+   "what a carrier must tell a claimant about choosing a repair business"
   ],
   "quoteSafeExcerpts": [
    "Under §10-4-120, C.R.S. insurers are required to make certain oral or written disclosures to\nbeneficiaries or claimants.",
