@@ -137,14 +137,15 @@ apps/state-mt-server/ @repairmcp/state-mt-server — Worker, mt.repairmcp.com,
 packages/state-co/    @repairmcp/state-co — Colorado vertical (pure corpus,
                       THREE publishers)
   src/parse-crs.ts    OLLS whole-title HTML parser: fetches an entire CRS
-                      title in one document, splits by section anchor, filters
+                      title in one document, splits on the bold `NN-N-NNN.`
+                      section-head text (OLLS titles carry no anchors), filters
                       to the manifest's cites — the currency analog of NHTSA's
                       currentthrough marker is CRS_EDITION (identity.ts),
                       pinned so the yearly rollover fails loudly
   src/parse-ccr.ts    Code of Colorado Regulations parser over the Secretary
                       of State's rule-info + document PDFs
-  src/capture-crs.ts  CRS capture: whole-title fetch, section-anchor split,
-                      manifest filter (sources-crs.ts)
+  src/capture-crs.ts  CRS capture: whole-title fetch, section-head-text split
+                      (no anchors), manifest filter (sources-crs.ts)
   src/capture-ccr.ts  CCR two-tier crawl: NumericalCCRDocList resolves each
                       rule series' current document version, then the PDF
                       itself is fetched and parsed (io.fetchBinary). The

@@ -107,6 +107,11 @@ describe('launch demo criteria — the expert gauntlet', () => {
     const r = corpus.findSupporting('final bill came in over the written estimate and now storage charges');
     expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('42-9-106');
   });
+  test('storage after a tow (kickoff §7.7): PUC storage rule first, 42-9-106 in the top three', () => {
+    const r = corpus.findSupporting('storage charges after a tow');
+    expect(r.hits[0]!.section.cite).toBe('723-6-6511');
+    expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('42-9-106');
+  });
   test('painter breaks: the COMPS rest rule in the top three', () => {
     const r = corpus.findSupporting('do my painters get paid rest breaks during the shift');
     expect(r.hits.slice(0, 3).map((h) => h.section.cite)).toContain('1103-1-5.2');
