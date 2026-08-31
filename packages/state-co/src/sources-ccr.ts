@@ -6,9 +6,17 @@ import type { CoDomain } from './schema.js';
  * capture is two-tier like Montana's MCA slot URLs: the dept list resolves
  * deptID/agencyID by NAME, the doc list resolves the series ruleId, the
  * rule-info page yields the current ruleVersionId + effective date + the
- * word-document download, and the DOCX is split into individual regulations.
+ * document download, and that document is split into individual regulations.
+ *
+ * The download is the PDF, not the Word file. The research pass planned to
+ * split word/document.xml, but the SOS "Word" download is `application/msword`
+ * — a legacy OLE .doc with no zip container to open — and the rule-info page
+ * designates the other one anyway: "The PDF document constitutes the official
+ * version of the rule and shall govern in all cases. The Word document is
+ * provided as an accessible alternative."
+ *
  * deptName/agencyName strings are row-matching keys on the SOS pages —
- * verified (and corrected if needed) at the first --save-raw capture.
+ * verified against the real 273-row department list at the first capture.
  */
 export interface CcrCaptureSource {
   code: '3 CCR' | '4 CCR' | '7 CCR';

@@ -9,8 +9,8 @@ import {
 
 /**
  * Colorado's tightened shapes. Three publishers, five codes: CRS (statutes,
- * OLLS whole-title files), three CCR titles (SOS per-series DOCX documents),
- * and the one DOI bulletin. CRS sections carry NO effective date — their
+ * OLLS whole-title files), three CCR titles (one SOS per-series PDF each — the
+ * version the Secretary of State designates official), and the one DOI bulletin. CRS sections carry NO effective date — their
  * currency is the annual edition, stated in meta.crsEdition and every CRS
  * citation. CCR sections always carry a real effective date plus the SOS
  * ruleVersionId their text came from (the drift shortcut). The bulletin

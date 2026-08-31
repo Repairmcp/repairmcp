@@ -319,8 +319,10 @@ describe('CO_CAPTURE_PROFILE', () => {
   test('the bulletin source points at an official colorado.gov surface', () => {
     expect(new URL(CO_BULLETIN_SOURCE.pdfUrl).host).toBe('doi.colorado.gov');
     expect(new URL(CO_BULLETIN_SOURCE.pageUrl).host).toBe('doi.colorado.gov');
-    // The per-host agent override still has to name us.
+    // The per-host agent override is an override, not a disguise: it still has
+    // to name us AND carry the contact URL a publisher would use to reach us.
     expect(CO_BULLETIN_SOURCE.userAgent).toContain('RepairMCP-Bot');
+    expect(CO_BULLETIN_SOURCE.userAgent).toContain('+https://repairmcp.com');
   });
 
   test('captureAll composes CRS + CCR + the bulletin with no overlap, and meta carries crsEdition/crsCurrencyNote', async () => {

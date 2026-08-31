@@ -2,8 +2,9 @@
  * Colorado's StateCaptureProfile: the CRS whole-title fetches, the CCR
  * two-tier crawl, and the bulletin PDF composed into one captureAll. NOT
  * exported from the barrel — script plumbing, imported by path from
- * scripts/state-registry.ts (the MT pattern; fflate/unpdf stay out of the
- * Worker bundle this way).
+ * scripts/state-registry.ts (the MT pattern; unpdf, the one heavy capture-side
+ * dependency, stays out of the Worker bundle this way — and it is loaded by
+ * dynamic import inside pdf-text.ts on top of that).
  */
 import type { CaptureIo, CaptureOutcome, StateCaptureProfile } from '@repairmcp/state-law';
 import { captureBulletin, type BulletinSource } from './capture-bulletin.js';

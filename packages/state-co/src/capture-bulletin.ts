@@ -42,6 +42,17 @@ export async function captureBulletin(
     accept: 'application/pdf',
     ...(source.userAgent ? { userAgent: source.userAgent } : {}),
   });
+  // Same guard as the CCR document download: a WAF challenge, a login wall or
+  // an HTML error page all arrive as a cheerful 200, and unpdf's failure on one
+  // is far less legible than saying so here. Checked on the bytes themselves,
+  // so an injected extractText cannot skip it.
+  if (String.fromCharCode(...bytes.subarray(0, 5)) !== '%PDF-') {
+    throw new Error(
+      `Bulletin ${source.cite}: the download is not a PDF (it starts ` +
+        `"${String.fromCharCode(...bytes.subarray(0, 8)).replace(/[^\x20-\x7e]/g, '.')}") — ` +
+        'it may be an error page or a WAF challenge. Inspect the saved raw.',
+    );
+  }
   const raw = await extract(bytes);
   const text = raw
     .split('\n')
