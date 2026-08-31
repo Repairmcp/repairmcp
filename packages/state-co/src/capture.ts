@@ -21,13 +21,47 @@ function today(): string {
 const SOURCE_NOTE =
   'Captured from the Office of Legislative Legal Services CRS title files at olls.info ' +
   '(the practical official surface; the OLLS states currency per General Assembly session), ' +
-  'from the Secretary of State Code of Colorado Regulations at coloradosos.gov (per-series ' +
-  'documents with stated effective dates), and from the Division of Insurance bulletin PDF. ' +
-  'Statute currency is the CRS edition stated in crsEdition; each CCR rule carries its own ' +
-  'effective date; all were captured on the date stated.';
+  'from the Secretary of State Code of Colorado Regulations at coloradosos.gov (the PDF the ' +
+  'Secretary of State designates the official version of each rule series), and from the ' +
+  'Division of Insurance bulletin PDF at doi.colorado.gov. Statute currency is the CRS edition ' +
+  'stated in crsEdition. A CCR rule carries the effective date its own text states, and where ' +
+  'the rule states none, the effective date of the series document version it was captured ' +
+  'from. All were captured on the date stated.';
 
-/** Filled with the real DOI URL in the first-capture task; null skips loudly. */
-export const CO_BULLETIN_SOURCE: BulletinSource | null = null;
+/**
+ * DOI Bulletin B-5.04, located on doi.colorado.gov 2026-08-31. The bulletins
+ * landing page renders its index inside a Looker Studio embed rather than as
+ * HTML, so the PDF URL is not reachable by reading the page's markup — it was
+ * read out of the embedded report's own data, and both URLs were then verified
+ * on the wire.
+ *
+ * `heading` and `effectiveDate` are the document's, checked against the PDF:
+ * its title line reads exactly as below, and its History section records
+ * "Originally issued as bulletin 11-03, December 11, 2003. Reissued May 8,
+ * 2007. Reissued September 1, 2007. Reissued September 19, 2016." — the last
+ * reissue is the date carried here.
+ *
+ * The userAgent override is not cosmetic: doi.colorado.gov's WAF answers the
+ * bare `RepairMCP-Bot/1.0 (+https://repairmcp.com)` string with 403 and the
+ * conventional `Mozilla/5.0 (compatible; …)` form with 200 (bare `Mozilla/5.0`
+ * and `curl/8.0` are also refused, so this is a shape requirement, not
+ * browser-sniffing). It still names us and still points at the project.
+ */
+export const CO_BULLETIN_SOURCE: BulletinSource = {
+  cite: 'B-5.04',
+  heading:
+    'Notice of the Provisions Pertaining to the Payment of Claims for the Repair of Damaged Property',
+  chapter: 'B-5',
+  chapterTitle: 'Division of Insurance Bulletins, Property and Casualty',
+  domain: 'insurance',
+  effectiveDate: '2016-09-19',
+  pdfUrl:
+    'https://doi.colorado.gov/sites/doi/files/documents/' +
+    'Bulletin-B-5.04-Notice-of-Provisions-Pertaining-to-Payment-Claims-for-Repair-of-Damaged-Property.pdf',
+  pageUrl: 'https://doi.colorado.gov/statutes-regulations-bulletins/colorado-insurance-bulletins',
+  mustContain: ['B-5.04', '10-4-120'],
+  userAgent: 'Mozilla/5.0 (compatible; RepairMCP-Bot/1.0; +https://repairmcp.com)',
+};
 
 export const CO_CAPTURE_PROFILE: StateCaptureProfile = {
   state: 'CO',
@@ -52,14 +86,9 @@ export const CO_CAPTURE_PROFILE: StateCaptureProfile = {
 
     const sections: CoSection[] = [...crs.sections, ...ccr.sections];
     const warnings = [...crs.report.warnings, ...ccr.report.warnings];
-    if (CO_BULLETIN_SOURCE) {
-      const bulletin = await captureBulletin(io, CO_BULLETIN_SOURCE);
-      sections.push(bulletin.section);
-      warnings.push(...bulletin.report.warnings);
-    } else {
-      io.log('  WARNING: CO_BULLETIN_SOURCE is null — B-5.04 NOT captured. Fill it (task 10).');
-      warnings.push('bulletin skipped: CO_BULLETIN_SOURCE is null.');
-    }
+    const bulletin = await captureBulletin(io, CO_BULLETIN_SOURCE);
+    sections.push(bulletin.section);
+    warnings.push(...bulletin.report.warnings);
 
     const byKey = new Map<string, CoSection>();
     for (const section of sections) {

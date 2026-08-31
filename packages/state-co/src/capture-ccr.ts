@@ -1,16 +1,17 @@
 /**
  * The CCR capture pipeline. Two-tier discovery (names → ids → current
- * version), then ONE DOCX per series, unzipped here (fflate stays out of
- * the barrel) and split by parseCcrDocumentXml. The ruleVersionId is the
+ * version), then ONE document per series — the PDF the rule-info page itself
+ * calls the official version — text-extracted here (unpdf stays out of
+ * the barrel) and split by parseCcrPdfPages. The ruleVersionId is the
  * drift shortcut: when the rule-info page still states the version the
  * served corpus was captured from, the document fetch is skipped entirely
  * and the served text is reused — the CCR analog of ARM's content hashes.
  */
-import { strFromU8, unzipSync } from 'fflate';
 import type { CaptureIo } from '@repairmcp/state-law';
 import {
-  findAgencyIds, findCurrentVersion, findRuleId, parseCcrDocumentXml,
+  findAgencyIds, findCurrentVersion, findRuleId, parseCcrPdfPages,
 } from './parse-ccr.js';
+import { extractPdfPages } from './pdf-text.js';
 import type { CoSection } from './schema.js';
 import { CCR_BASE, type CcrCaptureSource } from './sources-ccr.js';
 
@@ -51,11 +52,16 @@ export function regNumberToCite(source: CcrCaptureSource, regNumber: string): st
 export async function captureCcr(
   io: CaptureIo,
   sources: readonly CcrCaptureSource[],
-  opts: { previousSections?: readonly CoSection[] } = {},
+  opts: {
+    previousSections?: readonly CoSection[];
+    /** Injected in tests so the fixtures need not be real PDFs. */
+    extractPages?: (bytes: Uint8Array) => Promise<string[]>;
+  } = {},
 ): Promise<{ sections: CoSection[]; report: { skippedEmpty: string[]; warnings: string[] } }> {
   if (!io.fetchBinary) {
-    throw new Error('CCR capture needs io.fetchBinary (DOCX documents) — wire makeCaptureIo.');
+    throw new Error('CCR capture needs io.fetchBinary (PDF documents) — wire makeCaptureIo.');
   }
+  const extractPages = opts.extractPages ?? extractPdfPages;
   const sections: CoSection[] = [];
   const skippedEmpty: string[] = [];
   const warnings: string[] = [];
@@ -96,25 +102,20 @@ export async function captureCcr(
     const docUrl = version.docDownload.url.startsWith('http')
       ? version.docDownload.url
       : `${CCR_BASE}/${version.docDownload.url.replace(/^\/?(?:CCR\/)?/, '')}`;
-    const docxBytes = await io.fetchBinary(docUrl, {
-      rawName: `ccr-doc-${source.chapterKey}.docx.b64`,
-      accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    const pdfBytes = await io.fetchBinary(docUrl, {
+      rawName: `ccr-doc-${source.chapterKey}.pdf.b64`,
+      accept: 'application/pdf',
     });
-
-    let files: Record<string, Uint8Array>;
-    try {
-      files = unzipSync(docxBytes);
-    } catch {
+    if (String.fromCharCode(...pdfBytes.subarray(0, 5)) !== '%PDF-') {
       throw new Error(
-        `${source.seriesNum}: the word-document download is not a zip (DOCX) — it may be a legacy .doc or an error page. Inspect the saved raw.`,
+        `${source.seriesNum}: the document download is not a PDF (it starts ` +
+          `"${String.fromCharCode(...pdfBytes.subarray(0, 8)).replace(/[^\x20-\x7e]/g, '.')}") — ` +
+          'it may be an error page or the legacy .doc. Inspect the saved raw.',
       );
     }
-    const documentXml = files['word/document.xml'];
-    if (!documentXml) {
-      throw new Error(`${source.seriesNum}: DOCX has no word/document.xml — inspect the saved raw.`);
-    }
+    const pages = await extractPages(pdfBytes);
 
-    const parsed = parseCcrDocumentXml(strFromU8(documentXml), {
+    const parsed = parseCcrPdfPages(pages, {
       headerKind: source.headerKind,
       seriesNum: source.seriesNum,
     });
@@ -125,19 +126,34 @@ export async function captureCcr(
     let wantedCites: string[];
     if (source.filter.kind === 'regs') {
       for (const cite of source.filter.regCites) {
-        if (!byCite.has(cite)) {
+        const reg = byCite.get(cite);
+        if (!reg) {
           throw new Error(
             `${source.seriesNum}: ${cite} was requested by name but is not in the document. ` +
               'The series may have renumbered (COMPS orders do) — reconcile the manifest against the real document.',
+          );
+        }
+        if (reg.placeholder) {
+          throw new Error(
+            `${source.seriesNum}: ${cite} was requested by name but the document holds that ` +
+              `number empty ("${reg.heading}").`,
           );
         }
       }
       wantedCites = [...source.filter.regCites];
     } else {
       const prefix = source.filter.citePrefix;
-      wantedCites = [...byCite.keys()].filter((cite) => cite.startsWith(prefix));
-      const dropped = byCite.size - wantedCites.length;
-      io.log(`  ${source.seriesNum}: prefix ${prefix} kept ${wantedCites.length}, dropped ${dropped}.`);
+      const inPrefix = [...byCite.entries()].filter(([cite]) => cite.startsWith(prefix));
+      // `[Reserved]` slots inside the band are numbers, not rules.
+      for (const [cite, reg] of inPrefix.filter(([, r]) => r.placeholder)) {
+        io.log(`  ${source.seriesNum}: skipping held/emptied ${cite} ("${reg.heading}")`);
+        skippedEmpty.push(cite);
+      }
+      wantedCites = inPrefix.filter(([, r]) => !r.placeholder).map(([cite]) => cite);
+      io.log(
+        `  ${source.seriesNum}: prefix ${prefix} kept ${wantedCites.length} of ${byCite.size}, ` +
+          `dropped ${byCite.size - inPrefix.length} outside the band.`,
+      );
       if (wantedCites.length === 0) {
         throw new Error(`${source.seriesNum}: prefix ${prefix} matched nothing — renumbered?`);
       }

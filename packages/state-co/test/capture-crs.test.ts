@@ -6,53 +6,75 @@ import { CRS_EDITION } from '../src/identity.js';
 import { CRS_INDEX_URL, type CrsCaptureSource } from '../src/sources-crs.js';
 
 /**
- * Fixtures mirror the OLLS download-index + whole-title HTML shape verified
- * in parse-crs.test.ts. TITLE_42 is that same fixture (42-9-104 live,
- * 42-9-105 repealed, 42-9-108.5 a point-five live section) plus a 42-3-*
- * pair that is entirely repealed, for the all-repealed-article hard-fail.
- * TITLE_10 adds the 10-4-120 page the brief calls for, plus a sibling
+ * Fixtures follow the OLLS whole-title markup as the first real capture found
+ * it (see parse-crs.test.ts): every article opens with a table of contents
+ * whose entries carry the same number and catchline as the section heads, and
+ * only the HEAD sets the number in bold. `toc` and `head` below produce those
+ * two shapes, so these fixtures exercise the same discrimination the real
+ * 7.6 MB files do.
+ *
+ * TITLE_42 has 42-9-104 live, 42-9-105 repealed, 42-9-108.5 a point-five live
+ * section, plus a 42-3-* pair that is entirely repealed, for the
+ * all-repealed-article hard-fail. TITLE_10 adds 10-4-120 plus a sibling
  * section that a 'sections' filter must NOT pull in by accident. TITLE_6
- * exists only to be linked with a relative href, to lock in the join
- * behavior in captureCrs. INDEX lists titles 10 and 42 only — title 8 is
- * deliberately absent, which is what drives the missing-title-8 assertion.
+ * exists only to be linked with a relative href, to lock in the join behavior
+ * in captureCrs. INDEX lists titles 10 and 42 only — title 8 is deliberately
+ * absent, which is what drives the missing-title-8 assertion.
  * INDEX_RELATIVE_SLASH / INDEX_RELATIVE_BARE add title 6 with, respectively,
  * a leading-slash and a bare relative href.
  */
 const TITLE_42_URL = 'https://olls.info/crs/crs2026-title-42.htm';
 const TITLE_10_URL = 'https://olls.info/crs/crs2026-title-10.htm';
 
+const TIMES = `style='font-family:"Times New Roman",serif'`;
+/** An article table-of-contents entry — number NOT bold. */
+const toc = (cite: string, catchline: string): string =>
+  `<p class=MsoNormal style='margin-left:1.25in;text-indent:-1.25in'><span ${TIMES}>${cite}.</span>` +
+  `&nbsp;&nbsp;<span ${TIMES}>${catchline}</span></p>`;
+/** A section head — number bold, catchline bold. */
+const head = (cite: string, catchline: string): string =>
+  `<p class=MsoNormal style='text-indent:.15in;page-break-after:avoid'><b><span ${TIMES}>${cite}.</span></b>` +
+  `<span ${TIMES}>&nbsp;&nbsp;<b>${catchline}</b>&nbsp;</span></p>`;
+
 const TITLE_42 = `
 <html><body>
-<p><b>42-9-104.  Written estimate required - exception.</b></p>
+${toc('42-9-104', 'Written estimate required - exception.')}
+${toc('42-9-105', '(Repealed)')}
+${toc('42-9-108.5', 'Completion of repairs - warranty work.')}
+${head('42-9-104', 'Written estimate required - exception.')}
 <p>(1) A repair facility shall give the customer a written estimate.</p>
 <p>(2) The estimate shall state the total price.</p>
 <p>Source: L. 77: Entire article added, p. 1930, § 1.</p>
 <p>Editor's note: This section is similar to former law.</p>
-<p><b>42-9-105.  (Repealed)</b></p>
+${head('42-9-105', '(Repealed)')}
 <p>Source: L. 85: Entire section repealed.</p>
-<p><b>42-9-108.5.  Completion of repairs - warranty work.</b></p>
+${head('42-9-108.5', 'Completion of repairs - warranty work.')}
 <p>Text of the point five section.</p>
 <p>Source: L. 91: Entire section added.</p>
-<p><b>42-3-101.  (Repealed)</b></p>
+${toc('42-3-101', '(Repealed)')}
+${head('42-3-101', '(Repealed)')}
 <p>Source: L. 90: Entire section repealed.</p>
-<p><b>42-3-102.  (Repealed)</b></p>
+${head('42-3-102', 'Fees for certificates of title. (Repealed)')}
 <p>Source: L. 90: Entire section repealed.</p>
 </body></html>`;
 
 const TITLE_6 = `
 <html><body>
-<p><b>6-1-105.  Deceptive trade practice.</b></p>
+${toc('6-1-105', 'Deceptive trade practice.')}
+${head('6-1-105', 'Deceptive trade practice.')}
 <p>(1) A person engages in a deceptive trade practice when, in the course of business, the person does any of the following.</p>
 <p>Source: L. 69: Entire article added.</p>
 </body></html>`;
 
 const TITLE_10 = `
 <html><body>
-<p><b>10-4-120.  Payment of claims - options - definitions.</b></p>
+${toc('10-4-120', 'Payment of claims - options - definitions.')}
+${toc('10-4-121', 'A neighboring section the sections filter must not pull in.')}
+${head('10-4-120', 'Payment of claims - options - definitions.')}
 <p>(1) An insurer shall not require repairs to be performed by a specific repair facility.</p>
 <p>(2) An insurer shall pay for repairs that restore the vehicle to its condition before the loss.</p>
 <p>Source: L. 2003: Entire section added, p. 100, § 1.</p>
-<p><b>10-4-121.  A neighboring section the sections filter must not pull in.</b></p>
+${head('10-4-121', 'A neighboring section the sections filter must not pull in.')}
 <p>Unrelated text.</p>
 <p>Source: L. 2003: Entire section added, p. 101, § 2.</p>
 </body></html>`;

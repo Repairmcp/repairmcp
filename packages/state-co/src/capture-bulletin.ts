@@ -8,6 +8,7 @@
  * cannot state its own number did not extract.
  */
 import type { CaptureIo } from '@repairmcp/state-law';
+import { extractPdfText } from './pdf-text.js';
 import type { CoDomain, CoSection } from './schema.js';
 
 export interface BulletinSource {
@@ -23,13 +24,8 @@ export interface BulletinSource {
   pageUrl: string;
   /** Extraction-fidelity tripwire: all must appear in the extracted text. */
   mustContain: readonly string[];
-}
-
-async function defaultExtractText(bytes: Uint8Array): Promise<string> {
-  const { extractText, getDocumentProxy } = await import('unpdf');
-  const pdf = await getDocumentProxy(new Uint8Array(bytes));
-  const { text } = await extractText(pdf, { mergePages: true });
-  return Array.isArray(text) ? text.join('\n') : String(text);
+  /** Overrides the capture-wide agent for this one host. See CO_BULLETIN_SOURCE. */
+  userAgent?: string;
 }
 
 export async function captureBulletin(
@@ -40,10 +36,11 @@ export async function captureBulletin(
   if (!io.fetchBinary) {
     throw new Error('Bulletin capture needs io.fetchBinary (PDF) — wire makeCaptureIo.');
   }
-  const extract = opts.extractText ?? defaultExtractText;
+  const extract = opts.extractText ?? extractPdfText;
   const bytes = await io.fetchBinary(source.pdfUrl, {
     rawName: `bulletin-${source.cite}.pdf.b64`,
     accept: 'application/pdf',
+    ...(source.userAgent ? { userAgent: source.userAgent } : {}),
   });
   const raw = await extract(bytes);
   const text = raw
