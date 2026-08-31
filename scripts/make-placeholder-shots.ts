@@ -63,6 +63,10 @@ const SHOTS: Shot[] = [
   { file: "chatgpt-05-risk-warning.png", w: 420, h: 644 },
   { file: "chatgpt-06-connect.png", w: 584, h: 436 },
   { file: "chatgpt-07-connected.png", w: 496, h: 548 },
+  { file: "gemini-01-connected-apps.png", w: 690, h: 610 },
+  { file: "gemini-02-custom-apps.png", w: 782, h: 596 },
+  { file: "gemini-03-url-entered.png", w: 446, h: 430 },
+  { file: "gemini-04-connected.png", w: 782, h: 596 },
   { file: "og-image.png", w: 1200, h: 630 },
 ];
 

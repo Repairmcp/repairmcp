@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RepairMCP: DEG, NHTSA, and state law inside Claude and ChatGPT</title>
-<meta name="description" content="Connect Claude or ChatGPT to six free sources a collision shop can cite: more than 22,000 DEG inquiries, live NHTSA recalls and complaints, and Washington, Montana, Colorado, and Texas law quoted word for word. Free, read-only, no sign-in.">
+<title>RepairMCP: DEG, NHTSA, and state law inside Claude, ChatGPT, and Gemini</title>
+<meta name="description" content="Connect Claude, ChatGPT, or Gemini to six free sources a collision shop can cite: more than 22,000 DEG inquiries, live NHTSA recalls and complaints, and Washington, Montana, Colorado, and Texas law quoted word for word. Free, read-only, no sign-in.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="https://repairmcp.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="RepairMCP: DEG, NHTSA, and state law inside Claude and ChatGPT">
+<meta property="og:title" content="RepairMCP: DEG, NHTSA, and state law inside Claude, ChatGPT, and Gemini">
 <meta property="og:description" content="Six free sources a shop can cite: DEG inquiries, NHTSA recalls and complaints, and Washington, Montana, Colorado, and Texas law quoted word for word, inside the AI assistant you already use.">
 <meta property="og:url" content="https://repairmcp.com/">
 <meta property="og:image" content="https://repairmcp.com/img/og-image.png">
@@ -27,6 +27,7 @@
         <li><a href="#sources">The sources</a></li>
         <li><a href="#claude">Claude setup</a></li>
         <li><a href="#chatgpt">ChatGPT setup</a></li>
+        <li><a href="#gemini">Gemini setup</a></li>
         <li><a href="#ask">What to ask</a></li>
         <li><a href="#inside">What's inside</a></li>
         <li><a href="#next">What's next</a></li>
@@ -42,7 +43,7 @@
   <div class="wrap">
     <h1><span>Ask your AI.</span> <span>Cite the source.</span></h1>
     <p class="lede">
-      RepairMCP connects Claude or ChatGPT to the reference data collision
+      RepairMCP connects Claude, ChatGPT, or Gemini to the reference data collision
       shops argue from: more than 22,000 real Database Enhancement Gateway
       inquiries, live NHTSA recalls and complaints, and Washington, Montana,
       Colorado, and Texas state law quoted word for word. Ask in plain shop language. Get back the number,
@@ -69,8 +70,8 @@
 
     <p class="jump">
       Set one up in about two minutes:
-      <a href="#claude">Claude</a> or <a href="#chatgpt">ChatGPT</a>. The steps
-      are the same for every source.
+      <a href="#claude">Claude</a>, <a href="#chatgpt">ChatGPT</a>, or
+      <a href="#gemini">Gemini</a>. The steps are the same for every source.
     </p>
   </div>
 </section>
@@ -488,8 +489,92 @@
   </div>
 </section>
 
+<!-- ============ GEMINI ============ -->
+<section id="gemini" class="band">
+  <div class="wrap">
+    <h2>Set it up in Gemini</h2>
+    <p class="prose">
+      The newest of the three. Google added custom connections to Gemini at
+      the end of June 2026, and they live inside <strong>Spark</strong>, the
+      Gemini feature that runs tasks for you, not in plain Gemini chat. The
+      setup itself is the shortest on this page: paste a URL and you are done.
+      As with Claude and ChatGPT, the screenshots show the DEG connector, and
+      every other source connects the same way with its URL from the top of
+      the page.
+    </p>
+
+    <div class="callout">
+      <h3>Which Google accounts this works on</h3>
+      <p>Google gates this more tightly than Anthropic or OpenAI do. Its own
+      help page, as of August 2026, requires all of the following:</p>
+      <ul class="ticks">
+        <li>A paid <strong>Google AI Pro</strong> or <strong>Google AI
+        Ultra</strong> plan. The free plan does not have it.</li>
+        <li>A personal Google account. Workspace and school accounts are
+        excluded.</li>
+        <li>A United States account, held by someone 18 or over.</li>
+        <li>The <strong>Keep Activity</strong> setting turned on. Spark cannot
+        reach any connected app with it off.</li>
+      </ul>
+      <p>Google has been widening where Spark is available, so if you are
+      outside the US it is worth checking whether the setting has reached you
+      before assuming it has not.</p>
+    </div>
+
+    <ol class="steps">
+
+      <li class="step">
+        <h3>Open Connected apps</h3>
+        <p>In Gemini, on the web or in the phone app, open
+        <strong>Settings &amp; help</strong>, then
+        <strong>Connected apps</strong>.</p>
+        <figure class="shot">
+          <img src="/img/gemini-01-connected-apps.png" alt="The Gemini Settings and help menu with Connected apps listed" loading="lazy" decoding="async" width="690" height="610">
+          <figcaption>Settings &amp; help, then Connected apps.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Add a custom app for Spark</h3>
+        <p>Find <strong>Custom apps for Spark</strong> and choose
+        <strong>Add a custom app</strong>. This is the part that only appears
+        on the plans listed above.</p>
+        <figure class="shot">
+          <img src="/img/gemini-02-custom-apps.png" alt="The Custom apps for Spark area of Gemini's Connected apps settings, with the option to add a custom app" loading="lazy" decoding="async" width="782" height="596">
+          <figcaption>Custom apps for Spark.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Paste the URL</h3>
+        <p>Paste the URL of the source you are adding. For DEG that is:</p>
+        <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
+        <p>There is an advanced area for sign-in credentials. These sources
+        have no sign-in, so leave it alone.</p>
+        <figure class="shot">
+          <img src="/img/gemini-03-url-entered.png" alt="Gemini's add custom app dialog with the connector URL pasted in and the advanced sign-in fields left empty" loading="lazy" decoding="async" width="446" height="430">
+          <figcaption>The URL is the whole form. Sign-in fields stay empty.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Use it by name</h3>
+        <p>Once it is added, call it the way Gemini calls any connected app:
+        type <strong>@</strong> and its name in your prompt, then ask in plain
+        shop language. Naming the source in the ask, the habit the What to ask
+        section teaches, is built right into Gemini.</p>
+        <figure class="shot">
+          <img src="/img/gemini-04-connected.png" alt="The DEG source connected in Gemini's custom apps list, ready to be called by name in a prompt" loading="lazy" decoding="async" width="782" height="596">
+          <figcaption>Connected and callable by name.</figcaption>
+        </figure>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
 <!-- ============ ASK ============ -->
-<section id="ask" class="band">
+<section id="ask" class="band band-alt">
   <div class="wrap">
     <h2>What to ask it</h2>
     <p class="prose">
@@ -609,7 +694,7 @@
 </section>
 
 <!-- ============ INSIDE ============ -->
-<section id="inside" class="band band-alt">
+<section id="inside" class="band">
   <div class="wrap">
     <h2>What's inside, and what it is not</h2>
 
@@ -687,7 +772,7 @@
 </section>
 
 <!-- ============ NEXT ============ -->
-<section id="next" class="band">
+<section id="next" class="band band-alt">
   <div class="wrap">
     <h2>What's next</h2>
     <p class="prose">
@@ -762,8 +847,8 @@
       Product names are the trademarks of their owners.
     </p>
     <p class="foot-meta">
-      Built on Model Context Protocol (MCP), the open standard Claude and
-      ChatGPT both use to reach outside data.
+      Built on Model Context Protocol (MCP), the open standard Claude,
+      ChatGPT, and Gemini all use to reach outside data.
       &middot;
       <a href="https://github.com/Repairmcp/repairmcp" rel="noopener">Source on GitHub</a>
       &middot;

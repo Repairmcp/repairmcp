@@ -1,8 +1,11 @@
 # Screenshot manifest
 
-**Status: done.** Fourteen captures are cropped, placed, and live, and the
-social card landed 2026-08-27. This file is now the record of what each one is
-and how it was cropped, so a re-shoot can match.
+**Status: four Gemini slots open, everything else done.** Fourteen captures are
+cropped, placed, and live, and the social card landed 2026-08-27. The Gemini
+section added 2026-08-31 ships with four placeholder slots (see "Gemini shots
+to capture" below) awaiting the owner's own Spark setup walk-through. This file
+is the record of what each capture is and how it was cropped, so a re-shoot can
+match.
 
 Raw captures came in at `apps/site/shots-raw/` and were deleted after cropping.
 There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
@@ -27,6 +30,37 @@ the owner's OneDrive screenshots folder, which may still hold the raw.)
 | `chatgpt-05-risk-warning.png` | the filled form | panel only, warning and checkbox | 420 x 644 |
 | `chatgpt-06-connect.png` | the Add DEG card | card only | 584 x 436 |
 | `chatgpt-07-connected.png` | connected plugin | sidebar cropped away | 496 x 548 |
+| `gemini-01-connected-apps.png` | **PLACEHOLDER** | to capture | 690 x 610 |
+| `gemini-02-custom-apps.png` | **PLACEHOLDER** | to capture | 782 x 596 |
+| `gemini-03-url-entered.png` | **PLACEHOLDER** | to capture | 446 x 430 |
+| `gemini-04-connected.png` | **PLACEHOLDER** | to capture | 782 x 596 |
+
+## Gemini shots to capture
+
+Taken during the owner's own "Custom apps for Spark" setup on gemini.google.com
+(requires Google AI Pro or Ultra, personal account, US, Keep Activity on). The
+declared sizes above are guesses borrowed from the Claude/ChatGPT crops; when a
+real crop comes in at a different size, update the `<img>` width/height in
+`index.html` AND the entry in `scripts/make-placeholder-shots.ts`, same as any
+re-shoot.
+
+1. `gemini-01-connected-apps.png`: the Settings & help menu (or settings page)
+   showing the **Connected apps** entry. Crop to the menu/panel.
+2. `gemini-02-custom-apps.png`: the **Custom apps for Spark** area with its
+   add-a-custom-app control visible.
+3. `gemini-03-url-entered.png`: the add dialog with a RepairMCP URL pasted in,
+   advanced/sign-in fields visibly untouched.
+4. `gemini-04-connected.png`: the source connected, ideally showing whatever
+   label Gemini gives it and, if visible, its tool list or read-only marker.
+   If Gemini labels tools read-only the way Claude/ChatGPT do, the trust
+   section's evidence list should gain a Gemini clause, so look for it.
+
+Same hygiene as always: crop out browser chrome, redact the account email or
+avatar if the frame catches it, PNG under 250 KB. **The setup copy in
+`index.html` was written from Google's documentation before anyone here had
+walked the flow. If the real flow contradicts a step (different menu names,
+a name field that does exist, a consent screen), correct the copy to match
+reality, the same way the Claude and ChatGPT captures corrected theirs.**
 
 Every capture had its browser chrome removed: tab strips, the address bar, the
 extension row, the profile chip, and the conversation sidebars. The only text
