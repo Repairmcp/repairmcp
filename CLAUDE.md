@@ -186,6 +186,59 @@ apps/state-co-server/ @repairmcp/state-co-server — Worker, co.repairmcp.com,
                       same shape as state-wa-server/state-mt-server; /health
                       adds crsEdition + the three-domain breakdown
 
+packages/state-tx/    @repairmcp/state-tx — Texas vertical (pure corpus,
+                      THREE publishers, and the first state whose research-
+                      by-search said capture was impossible: both the
+                      statutes site and the TAC moved to JS-rendered SPAs.
+                      Both have clean machine surfaces the SPAs themselves
+                      consume — found by watching the apps' own requests)
+  src/parse-statutes.ts  parser for the whole-chapter HTML the statutes SPA
+                      fetches from tcss.legis.texas.gov/resources/{ABBR}/htm/
+                      — bold self-link section heads, history notes with
+                      "eff. <date>" (NEWEST eff wins as effectiveDate, both
+                      full and abbreviated month forms), "Text of section as
+                      amended by" dual-print notes terminate a section
+  src/capture-statutes.ts  currency tripwire first (the
+                      api/GetProperty/StatutesCurrentMsg sentence, pinned by
+                      TX_STATUTES_CURRENCY — the Legislature-rollover analog
+                      of MT/CO edition pins), one fetch per chapter, named
+                      cites hard-fail when absent or repealed
+  src/parse-tac.ts    SAIL-JSON parsers for the SOS Appian portal: ordered
+                      walk pairs each §number with the next VIEW_TAC_SUMMARY
+                      SafeLink (browse), rule text + Source Note arrive as
+                      JSON-in-string richText values (summary); Source Note's
+                      newest "effective <date>" is the rule's effectiveDate
+  src/capture-tac.ts  two-tier crawl (browse JSON resolves recordIds, then
+                      per-rule summary JSON); the summary's own "Rule §…"
+                      breadcrumb is cross-checked so a recordId can never
+                      deliver the wrong rule. The portal's `_/ui` endpoint
+                      answers a plain GET only with the Appian client's own
+                      protocol headers (sources-tac.ts, values pinned from
+                      the portal JS bundle — a 406 means Appian upgraded;
+                      re-derive, the failure is loud by design). This is why
+                      CaptureIo.FetchOpts grew `headers` at TX.
+  src/capture-bulletins.ts  TDI bulletin HTML pages; pageUrl is PINNED
+                      because filename ≠ bulletin number on older bulletins
+                      (B-0031-10 is 2010/cc30.html); page must state its own
+                      number, and a date mismatch (reissue) hard-fails
+  src/identity.ts     eight codes (six statute codes + 28 TAC + TDI
+                      Bulletin); statute cites are chapter.section dotted
+                      pairs the shared factory would misread as chapters, so
+                      TX resolves everything itself; bare cites resolve by
+                      CHAPTER lookup (captured chapters are disjoint across
+                      all codes — TX_CHAPTER_CODES, tested against the
+                      manifest); statutes and TAC citations carry effective
+                      dates, bulletins carry issue dates
+  data/               tx-law-corpus.json (62 sections, 144 KB: insurance 34 /
+                      repair_law 19 / employment 9) + annotations
+  test/               58 tests incl. the demo gauntlet (appraisal-first is
+                      the Texas headliner), the currency pin, and the
+                      full-manifest capture-profile fixtures
+
+apps/state-tx-server/ @repairmcp/state-tx-server — Worker, tx.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      statutesCurrentThrough + the three-domain breakdown
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -227,7 +280,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -280,20 +333,21 @@ curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + 
 ```
 
 **State law servers** — Washington (`apps/state-wa-server/`, 670 WAC/RCW
-sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections), and
-Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections). Pure
+sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections),
+Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), and
+Texas (`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections). Pure
 corpus: the data ships in each bundle, so a corpus refresh IS a deploy —
-re-run the capture, run the tests (the substring, demo-criteria, and for MT
-the edition-pin, for CO the CRS_EDITION-pin suites are the acceptance gate),
-deploy from the state's app.
+re-run the capture, run the tests (the substring, demo-criteria, and the
+currency-pin suites — MT edition, CO CRS_EDITION, TX TX_STATUTES_CURRENCY —
+are the acceptance gate), deploy from the state's app.
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co)
-bun scripts/capture-state.ts --state co              # writes packages/state-co/data JSON
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx)
+bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa.repairmcp.com / mt.repairmcp.com / co.repairmcp.com
-curl -s https://co.repairmcp.com/health              # corpus meta + domains (+ crsEdition)
+wrangler deploy                                      # → wa. / mt. / co. / tx.repairmcp.com
+curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -516,7 +570,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | CO vertical | ✅ live | 2026-08-31: `https://co.repairmcp.com/mcp` deployed (deployment `b00e811d`) and verified on the wire — `/health` reports 55 sections, current through 2026-08-31, "Colorado Revised Statutes 2026" edition, domains insurance 15 / repair_law 32 / employment 8; steering query → CRS 10-4-120 first; an OEM-procedure short-pay query also lands CRS 10-4-120 first with the verbatim (3)(e) reasonable-costs excerpt in `quoteSafeExcerpts`; an adjuster-gone-silent supplement query → 3 CCR 702-5-1-14 first; DOI Bulletin B-5.04 fetches in full with `shortForm` "Colorado DOI Bulletin B-5.04, issued 9/19/2016"; WAF 429s confirmed on the hostname, onset at request 22 — jitter vs the rule's 20, rule active. 55 verbatim sections from THREE publishers — the Office of Legislative Legal Services (whole-title HTML, CRS_EDITION pin), the Secretary of State (CCR PDFs via the two-tier rule-version crawl), and the Division of Insurance (the one bulletin PDF, guidance not law). Honest absences stated in tool descriptions and the site card: no Colorado OSHA plan (federal OSHA governs spray booth/respirator duties), CRS 10-3-1104 carries no private right of action on its own (10-3-1115/-1116 provide the statutory delay/denial remedy), the COMPS "dealer" overtime exemption's application to an independent body shop is an open question the corpus states rather than answers. Site flips to five sources, one setup; /legal names the three CO publishers. Open: connector gates in the project owner's clients. |
 
-**Test totals:** 758 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 119 state-co + 193 ingestion). 0 failing.
+| TX vertical | ✅ live | 2026-08-31: `https://tx.repairmcp.com/mcp` deployed (version `dc199094`) and verified on the wire — `/health` reports 62 sections, current through 2026-08-31, statutes current through the 89th 2nd Called Legislative Session, 2025, domains insurance 34 / repair_law 19 / employment 9; steering query → Tex. Ins. Code 1952.302 first; "invoke appraisal on a lowball estimate" → 1813.003 first with shortForm "Tex. Ins. Code 1813.003, effective 9/1/2025" (SB 458's brand-new mandatory appraisal chapter — no other shipped state has an analog); 542.060 fetches with the verbatim 18-percent-interest text; "reimbursement rates artificially low" → TDI Bulletin B-0031-10 first at 0.681; WAF confirmed on the hostname, exactly 20 pass then 429s. 62 verbatim sections from THREE publishers — the Legislature's statutes backend (tcss.legis.texas.gov, found by watching the Angular SPA's own requests after every classic URL turned out to serve an app shell), the SOS Appian rules portal (stateless `_/ui` GETs with the client's own pinned protocol headers), and TDI bulletin HTML. Honest absences in tool descriptions and the site card: no body shop licensing, no state OSHA plan, no state overtime or break law, 542 deadlines first-party only, 541.060(b) bars third-party actions in its own text, ch. 1813 applies to policies issued/renewed on/after 1/1/2026 only. Site flips to six sources; /legal names the three TX publishers. Demo with a Texas shop scheduled the following week — the gauntlet's shop-phrasing queries are the demo script. Open: connector gates in the project owner's clients. |
+
+**Test totals:** 817 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27

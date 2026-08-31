@@ -1,0 +1,403 @@
+{
+ "Tex. Ins. Code 1952.301": {
+  "topics": ["steering", "repair_facility_choice", "aftermarket_parts", "short_pay", "fair_settlement"],
+  "appliesTo": ["insurers", "repairers", "claimants", "consumers"],
+  "claimUseCases": [
+   "adjuster steering the customer to a network shop",
+   "insurer requires a particular repair facility",
+   "DRP network pressure on the customer",
+   "customer told to use the carrier's preferred shop",
+   "shop of choice denied",
+   "insurer specifying aftermarket parts on the estimate",
+   "carrier dictating the brand or condition of parts",
+   "insurer limiting coverage because of the shop the customer picked",
+   "third party claimant told where to repair",
+   "insurer will not cover the full cost of the repair at our shop"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) specifying the brand, type, kind, age, vendor, supplier, or condition of parts or products that may be used to repair the vehicle; or",
+   "(2) limiting the beneficiary of the policy from selecting a repair person or facility to repair damage to the vehicle.",
+   "(b) In settling a liability claim by a third party against an insured for property damage claimed by the third party, an insurer may not require the third-party claimant to have repairs made by a particular repair person or facility or to use a particular brand, type, kind, age, vendor, supplier, or condition of parts or products."
+  ]
+ },
+ "Tex. Ins. Code 1952.302": {
+  "topics": ["steering", "repair_facility_choice", "aftermarket_parts"],
+  "appliesTo": ["insurers", "repairers", "claimants", "consumers"],
+  "claimUseCases": [
+   "adjuster says the customer must use a specific shop",
+   "adjuster says my customer has to use their network shop",
+   "preferred list shop pressure",
+   "referral fee for sending the car to a repair facility",
+   "kickback for steering work to a shop",
+   "customer told repairs will not be covered unless the preferred shop does them",
+   "unreasonable distance to the approved shop",
+   "insurer telling the customer coverage depends on the shop"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) solicit or accept a referral fee or gratuity in exchange for referring a beneficiary or third-party claimant to a repair person or facility to repair the damage;",
+   "(2) state or suggest, either orally or in writing, to a beneficiary that the beneficiary must use a specific repair person or facility or a repair person or facility identified on a preferred list compiled by an insurer for the damage repair or parts replacement to be covered by the policy; or",
+   "(3) restrict the right of a beneficiary or third-party claimant to choose a repair person or facility by requiring the beneficiary or third-party claimant to travel an unreasonable distance to repair the damage."
+  ]
+ },
+ "Tex. Ins. Code 1952.305": {
+  "topics": ["steering", "repair_facility_choice", "consumer_protection"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "customer never told about the right to pick the shop",
+   "notice of rights when the vehicle is presented for a claim",
+   "insurer skipped the repair rights notice"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) At the time a motor vehicle is presented to an insurer, an insurance adjuster, or other person in connection with a claim for damage repair, the insurer, insurance adjuster, or other person shall provide to the beneficiary or third-party claimant notice of the provisions of this subchapter."
+  ]
+ },
+ "Tex. Ins. Code 1813.001": {
+  "topics": ["appraisal", "estimate_dispute"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "does the appraisal law apply to this policy",
+   "policy issued or renewed on or after January 1, 2026",
+   "commercial auto policy excluded from appraisal chapter",
+   "personal auto policy appraisal rights"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) This chapter applies only to a personal automobile or residential property insurance policy delivered, issued for delivery, or renewed in this state by an insurer, including:",
+   "(2) a commercial insurance policy."
+  ]
+ },
+ "Tex. Ins. Code 1813.003": {
+  "topics": ["appraisal", "estimate_dispute", "valuation_dispute", "short_pay"],
+  "appliesTo": ["insurers", "claimants", "consumers", "repairers"],
+  "claimUseCases": [
+   "invoke appraisal on a lowball offer",
+   "customer wants to invoke the appraisal clause",
+   "demand appraisal to resolve the amount of loss",
+   "dispute over the amount of the estimate",
+   "insurer and customer disagree on the repair cost",
+   "lowball total loss valuation",
+   "appraisal provision required in the policy"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) An insurance policy described by Section 1813.001(a) must contain an appraisal provision that complies with this chapter.",
+   "(b) The appraisal provision required by this chapter is intended to provide a type of dispute resolution process solely to determine the amount of loss when that amount is in dispute between the policyholder and the insurer."
+  ]
+ },
+ "Tex. Ins. Code 1813.004": {
+  "topics": ["appraisal", "valuation_dispute"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "is the appraisal award binding",
+   "insurer refusing to honor the appraisal award"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) Except for fraud, accident, or material mistake relevant to the appraisal or an appraisal award made without authority, the amount of loss determined by an appraisal under this chapter is binding as to the policyholder and the insurer."
+  ]
+ },
+ "Tex. Ins. Code 542.055": {
+  "topics": ["prompt_payment", "supplement_handling"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "adjuster has gone silent after the claim was filed",
+   "no acknowledgment of the claim",
+   "insurer never started the investigation",
+   "waiting on the adjuster to ask for documents",
+   "fifteen days to acknowledge the claim"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) acknowledge receipt of the claim;",
+   "(2) commence any investigation of the claim; and",
+   "(3) request from the claimant all items, statements, and forms that the insurer reasonably believes, at that time, will be required from the claimant."
+  ]
+ },
+ "Tex. Ins. Code 542.056": {
+  "topics": ["prompt_payment", "claim_denial", "supplement_handling"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "supplement has been sitting with no answer from the carrier",
+   "no decision on the claim for weeks",
+   "insurer will not accept or reject the claim",
+   "waiting on claim approval",
+   "denial with no reasons stated"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Except as provided by Subsection (b) or (d), an insurer shall notify a claimant in writing of the acceptance or rejection of a claim not later than the 15th business day after the date the insurer receives all items, statements, and forms required by the insurer to secure final proof of loss.",
+   "(c) If the insurer rejects the claim, the notice required by Subsection (a) or (b) must state the reasons for the rejection."
+  ]
+ },
+ "Tex. Ins. Code 542.057": {
+  "topics": ["prompt_payment", "short_pay"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "claim approved but the check never came",
+   "insurer approved the supplement but has not paid",
+   "five business days to pay after approval",
+   "payment overdue on an accepted claim"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Except as otherwise provided by this section, if an insurer notifies a claimant under Section 542.056 that the insurer will pay a claim or part of a claim, the insurer shall pay the claim not later than the fifth business day after the date notice is made."
+  ]
+ },
+ "Tex. Ins. Code 542.058": {
+  "topics": ["prompt_payment", "supplement_handling", "short_pay"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "supplement sitting for two months with no answer",
+   "insurer dragging out payment of the claim",
+   "claim delayed past sixty days",
+   "payment delay damages",
+   "carrier sitting on the payment"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Except as otherwise provided, if an insurer, after receiving all items, statements, and forms reasonably requested and required under Section 542.055, delays payment of the claim for a period exceeding the period specified by other applicable statutes or, if other statutes do not specify a period, for more than 60 days, the insurer shall pay damages and other items as provided by Section 542.060."
+  ]
+ },
+ "Tex. Ins. Code 542.060": {
+  "topics": ["prompt_payment", "short_pay", "fair_settlement"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "interest and attorney fees for slow pay",
+   "18 percent interest on the late claim payment",
+   "what the insurer owes for missing the payment deadlines",
+   "penalty for late payment of the claim",
+   "attorney fees on a prompt payment violation"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Except as provided by Subsection (c), if an insurer that is liable for a claim under an insurance policy is not in compliance with this subchapter, the insurer is liable to pay the holder of the policy or the beneficiary making the claim under the policy, in addition to the amount of the claim, interest on the amount of the claim at the rate of 18 percent a year as damages, together with reasonable and necessary attorney's fees. Nothing in this subsection prevents the award of prejudgment interest on the amount of the claim, as provided by law."
+  ]
+ },
+ "Tex. Ins. Code 541.060": {
+  "topics": ["fair_settlement", "claim_denial", "short_pay", "misrepresentation"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "unfair claim settlement practice",
+   "lowball offer on a clear liability claim",
+   "no reasonable investigation before refusing to pay",
+   "no explanation given for the denial",
+   "insurer will not affirm or deny coverage",
+   "full release demanded for a partial payment",
+   "TDI complaint over claim handling",
+   "insurer refuses OEM repair procedures without investigating them"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) failing to attempt in good faith to effectuate a prompt, fair, and equitable settlement of:",
+   "(A) a claim with respect to which the insurer's liability has become reasonably clear; or",
+   "(3) failing to promptly provide to a policyholder a reasonable explanation of the basis in the policy, in relation to the facts or applicable law, for the insurer's denial of a claim or offer of a compromise settlement of a claim;",
+   "(7) refusing to pay a claim without conducting a reasonable investigation with respect to the claim;",
+   "(b) Subsection (a) does not provide a cause of action to a third party asserting one or more claims against an insured covered under a liability insurance policy."
+  ]
+ },
+ "Tex. Ins. Code 541.151": {
+  "topics": ["fair_settlement", "claim_denial"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "sue the insurer for unfair settlement practices",
+   "private action for damages against the carrier",
+   "can the customer sue over the claim handling"
+  ],
+  "quoteSafeExcerpts": [
+   "A person who sustains actual damages may bring an action against another person for those damages caused by the other person engaging in an act or practice:"
+  ]
+ },
+ "28 TAC 5.501": {
+  "topics": ["repair_facility_choice", "steering", "aftermarket_parts", "consumer_protection"],
+  "appliesTo": ["insurers", "claimants", "consumers", "repairers"],
+  "claimUseCases": [
+   "written notice of the right to pick the repair shop",
+   "insurer never sent the motor vehicle repair rights notice",
+   "notice about parts choice on a claim",
+   "right to select where the vehicle is repaired and the parts used"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) An insurer must give the notice prescribed by subsection (h) of this section (hereinafter referred to as the written notice) to any insured or third-party claimant who makes a claim regarding damage to a vehicle. If a claimant presents the vehicle to the insurer in connection with a claim for damage repair, or otherwise makes the claim in person, the written notice must be given to the claimant at that time.",
+   "(i) The verbal notice at a minimum must consist of the following: BY LAW, YOU HAVE THE RIGHT TO SELECT WHERE YOUR MOTOR VEHICLE IS REPAIRED AND THE PARTS USED FOR REPAIRS. HOWEVER, AN INSURANCE COMPANY IS NOT REQUIRED TO PAY MORE THAN A REASONABLE AMOUNT FOR SUCH REPAIRS AND PARTS. YOUR RIGHTS CONCERNING MOTOR VEHICLE REPAIRS ARE EXPLAINED IN THE INSURANCE CODE §§1952.301 - 1952.307, A COPY OF WHICH WILL BE MAILED TO YOU WITHIN 15 BUSINESS DAYS. IF YOU HAVE ANY QUESTIONS ABOUT YOUR MOTOR VEHICLE REPAIR RIGHTS, CONTACT THE TEXAS DEPARTMENT OF INSURANCE AT 1-800-252-3439."
+  ]
+ },
+ "28 TAC 21.203": {
+  "topics": ["fair_settlement", "claim_denial", "short_pay", "prompt_payment"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "unfair claim settlement practices rule",
+   "offering substantially less than what the claim is worth",
+   "compelling the customer to sue to get paid",
+   "refusing to pay without a reasonable investigation",
+   "slow acknowledgment of claim communications",
+   "the market conduct standard TDI enforces"
+  ],
+  "quoteSafeExcerpts": [
+   "(4) not attempting in good faith to effectuate prompt, fair, and equitable settlements of claims submitted in which liability has become reasonably clear;",
+   "(5) compelling policyholders to institute suits to recover amounts due under its policies by offering substantially less than the amounts ultimately recovered in suits brought by them;",
+   "(15) refusing to pay claims without conducting a reasonable investigation based upon all available information;"
+  ]
+ },
+ "TDI Bulletin B-0031-10": {
+  "topics": ["steering", "repair_facility_choice", "short_pay", "fair_settlement", "aftermarket_parts"],
+  "appliesTo": ["insurers", "repairers", "claimants"],
+  "claimUseCases": [
+   "TDI told insurers not to steer",
+   "notice implying the customer pays more at a non-preferred shop",
+   "artificially low reimbursement rates",
+   "labor rate set below a reasonable amount",
+   "insurer paying less than like kind and quality repairs require",
+   "substandard repairs from lowball reimbursement",
+   "warranty at risk because the insurer will not pay for proper repairs"
+  ],
+  "quoteSafeExcerpts": [
+   "The Department is also concerned that setting reimbursement rates artificially low for specific motor vehicle repairs and parts that are used to make the repairs may lead to substandard repairs, which may also impact the warranty on a vehicle. The majority of personal automobile insurance policies require insurers to pay the amount necessary to repair or replace the property with other(s) of like kind and quality. It is an unfair claim settlement practice for insurers to pay claimants an amount for the repair of the vehicle, including parts, that is not a reasonable amount for repairing or replacing the property with other of like kind and quality or is not sufficient enough to make the repairs necessary for the manufacturer to honor the vehicle warranty."
+  ]
+ },
+ "TDI Bulletin B-0026-11": {
+  "topics": ["steering", "repair_facility_choice", "fair_settlement"],
+  "appliesTo": ["insurers", "repairers", "claimants"],
+  "claimUseCases": [
+   "TDI reissued the steering warning",
+   "repeat steering conduct after the 2010 bulletin"
+  ]
+ },
+ "Tex. Occ. Code 2303.155": {
+  "topics": ["storage_towing"],
+  "appliesTo": ["repairers", "insurers", "consumers"],
+  "claimUseCases": [
+   "what storage charges a vehicle storage facility may bill",
+   "daily storage fee limits",
+   "storage fees before notice is mailed",
+   "impoundment and notification fees"
+  ],
+  "quoteSafeExcerpts": [
+   "(f) The operator of a vehicle storage facility or governmental vehicle storage facility may not charge an additional fee related to the storage of a vehicle other than a fee authorized by this section or a towing fee authorized by Chapter 2308."
+  ]
+ },
+ "Tex. Occ. Code 2303.156": {
+  "topics": ["storage_towing", "total_loss"],
+  "appliesTo": ["insurers", "repairers"],
+  "claimUseCases": [
+   "insurer will not pay storage on the total loss",
+   "total loss paid but storage charges unpaid",
+   "who owes the storage bill after a total loss",
+   "lienholder repossessed the vehicle without paying storage"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) An insurance company that pays a claim of total loss on a vehicle in a vehicle storage facility is liable to the operator of the facility for any money owed to the operator in relation to delivery of the vehicle to or storage of the vehicle in the facility regardless of whether an amount accrued before the insurance company paid the claim."
+  ]
+ },
+ "Tex. Prop. Code 70.001": {
+  "topics": ["repair_lien"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "customer will not pay for the repair",
+   "hold the vehicle until the bill is paid",
+   "mechanic's lien on the vehicle",
+   "check bounced after the customer picked up the car",
+   "repossess the vehicle after a stopped payment"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) A worker in this state who by labor repairs an article, including a vehicle, motorboat, vessel, or outboard motor, may retain possession of the article until:",
+   "(1) the amount due under the contract for the repairs is paid; or",
+   "(2) if no amount is specified by contract, the reasonable and usual compensation is paid."
+  ]
+ },
+ "Tex. Prop. Code 70.006": {
+  "topics": ["repair_lien", "storage_towing"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "customer abandoned the car and will not pay",
+   "sell an abandoned vehicle for the repair bill",
+   "notice to the owner and lienholder before selling",
+   "county filing to foreclose the repair lien"
+  ]
+ },
+ "Tex. Bus. & Com. Code 17.46": {
+  "topics": ["consumer_protection", "misrepresentation"],
+  "appliesTo": ["repairers", "consumers", "insurers"],
+  "claimUseCases": [
+   "deceptive trade practice claim",
+   "misstating the need for parts or repairs",
+   "failing to disclose something the customer needed to know",
+   "misrepresenting repair quality or standard"
+  ],
+  "quoteSafeExcerpts": [
+   "(13) knowingly making false or misleading statements of fact concerning the need for parts, replacement, or repair service;",
+   "(7) representing that goods or services are of a particular standard, quality, or grade, or that goods are of a particular style or model, if they are of another;",
+   "(24) failing to disclose information concerning goods or services which was known at the time of the transaction if such failure to disclose such information was intended to induce the consumer into a transaction into which the consumer would not have entered had the information been disclosed;"
+  ]
+ },
+ "Tex. Lab. Code 61.014": {
+  "topics": ["final_paycheck", "wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "tech quit and wants his final check",
+   "when is the final paycheck due after firing someone",
+   "discharged employee final pay deadline",
+   "painter walked off the job, when do I pay him"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) An employer shall pay in full an employee who is discharged from employment not later than the sixth day after the date the employee is discharged.",
+   "(b) An employer shall pay in full an employee who leaves employment other than by discharge not later than the next regularly scheduled payday."
+  ]
+ },
+ "Tex. Lab. Code 61.015": {
+  "topics": ["wage_claims", "final_paycheck"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "flag hours owed to a tech",
+   "commission pay for a flag rate technician",
+   "bonus owed under the pay plan",
+   "when flag rate commissions are due"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Wages paid on commission and bonuses are due according to the terms of:",
+   "(b) An employer shall pay wages paid on commission and bonuses to an employee in a timely manner as required for the payment of other wages under this chapter."
+  ]
+ },
+ "Tex. Lab. Code 61.018": {
+  "topics": ["payroll_deductions", "wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "charging a tech for a comeback",
+   "deducting the cost of a redo from a paycheck",
+   "tool account deductions from wages",
+   "written authorization for payroll deductions",
+   "docking pay for damaged equipment"
+  ],
+  "quoteSafeExcerpts": [
+   "An employer may not withhold or divert any part of an employee's wages unless the employer:",
+   "(3) has written authorization from the employee to deduct part of the wages for a lawful purpose."
+  ]
+ },
+ "Tex. Lab. Code 61.051": {
+  "topics": ["wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "employee filed a wage claim with the Texas Workforce Commission",
+   "TWC wage claim deadline",
+   "180 days to file a wage claim"
+  ],
+  "quoteSafeExcerpts": [
+   "(c) A wage claim must be filed not later than the 180th day after the date the wages claimed became due for payment. The 180-day deadline is a matter of jurisdiction."
+  ]
+ },
+ "Tex. Lab. Code 62.051": {
+  "topics": ["minimum_wage"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "what minimum wage applies in Texas",
+   "detailer paid below minimum wage"
+  ],
+  "quoteSafeExcerpts": [
+   "Except as provided by Section 62.057, an employer shall pay to each employee the federal minimum wage under Section 6, Fair Labor Standards Act of 1938 (29 U.S.C. Section 206)."
+  ]
+ },
+ "Tex. Transp. Code 501.091": {
+  "topics": ["total_loss", "valuation_dispute"],
+  "appliesTo": ["insurers", "repairers", "consumers"],
+  "claimUseCases": [
+   "when is it legally a total loss in Texas",
+   "total loss threshold",
+   "repair cost exceeds the actual cash value",
+   "salvage title after the wreck",
+   "insurer calling it a total too early"
+  ],
+  "quoteSafeExcerpts": [
+   "(A) has damage to or is missing a major component part to the extent that the cost of repairs, including parts and labor other than the cost of materials and labor for repainting the motor vehicle and excluding sales tax on the total cost of repairs, exceeds the actual cash value of the motor vehicle immediately before the damage; or"
+  ]
+ }
+}

@@ -33,6 +33,13 @@ export interface FetchOpts {
   rawName?: string;
   accept?: string;
   userAgent?: string;
+  /**
+   * Extra request headers, merged last so they win. Added at TX: the SOS
+   * Appian portal's data endpoint requires the client's own protocol headers
+   * (X-Appian-Features and friends) or it answers 406 — see state-tx's
+   * sources-tac.ts, the only package that passes this.
+   */
+  headers?: Record<string, string>;
 }
 
 export interface CaptureIo {
@@ -119,6 +126,7 @@ export function makeCaptureIo(opts: {
     accept: string,
     rawName?: string,
     userAgent?: string,
+    extraHeaders?: Record<string, string>,
   ): Promise<string> {
     if (rawName && opts.readRaw) {
       const saved = opts.readRaw(rawName);
@@ -131,7 +139,7 @@ export function makeCaptureIo(opts: {
     fetchedOnce = true;
     log(`fetching ${url}`);
     const res = await fetchImpl(url, {
-      headers: { 'user-agent': userAgent ?? opts.userAgent, accept },
+      headers: { 'user-agent': userAgent ?? opts.userAgent, accept, ...extraHeaders },
     });
     if (!res.ok) {
       throw new Error(`${new URL(url).host} responded ${res.status} for ${url} — not capturing.`);
@@ -146,9 +154,12 @@ export function makeCaptureIo(opts: {
   }
 
   return {
-    fetchText: (url, o) => fetchRaw(url, o?.accept ?? 'text/html', o?.rawName, o?.userAgent),
+    fetchText: (url, o) =>
+      fetchRaw(url, o?.accept ?? 'text/html', o?.rawName, o?.userAgent, o?.headers),
     fetchJson: async (url, o) =>
-      JSON.parse(await fetchRaw(url, 'application/json', o?.rawName, o?.userAgent)),
+      JSON.parse(
+        await fetchRaw(url, o?.accept ?? 'application/json', o?.rawName, o?.userAgent, o?.headers),
+      ),
     fetchBinary: async (url, o) => {
       const rawName = o?.rawName;
       if (rawName && opts.readRaw) {
