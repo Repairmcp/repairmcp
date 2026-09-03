@@ -1,11 +1,10 @@
 # Screenshot manifest
 
-**Status: four Gemini slots open, everything else done.** Fourteen captures are
-cropped, placed, and live, and the social card landed 2026-08-27. The Gemini
-section added 2026-08-31 ships with four placeholder slots (see "Gemini shots
-to capture" below) awaiting the owner's own Spark setup walk-through. This file
-is the record of what each capture is and how it was cropped, so a re-shoot can
-match.
+**Status: done.** Twenty-one captures are cropped, placed, and live: fourteen
+from the Claude/ChatGPT launch, plus seven Gemini captures cut 2026-09-03 from
+the owner's real Spark walk-through. The social card landed 2026-08-27. This
+file is the record of what each capture is and how it was cropped, so a
+re-shoot can match.
 
 Raw captures came in at `apps/site/shots-raw/` and were deleted after cropping.
 There is no second copy. **If a shot needs re-cutting, it needs re-shooting.**
@@ -30,27 +29,35 @@ the owner's OneDrive screenshots folder, which may still hold the raw.)
 | `chatgpt-05-risk-warning.png` | the filled form | panel only, warning and checkbox | 420 x 644 |
 | `chatgpt-06-connect.png` | the Add DEG card | card only | 584 x 436 |
 | `chatgpt-07-connected.png` | connected plugin | sidebar cropped away | 496 x 548 |
-| `gemini-01-connected-apps.png` | **PLACEHOLDER** | to capture | 690 x 610 |
-| `gemini-02-custom-apps.png` | **PLACEHOLDER** | to capture | 782 x 596 |
-| `gemini-03-url-entered.png` | **PLACEHOLDER** | to capture | 446 x 430 |
-| `gemini-04-connected.png` | **PLACEHOLDER** | to capture | 782 x 596 |
+| `gemini-01-spark-toggle.png` | Spark home after flipping the switch | sidebar + title strip (y 140-560 of the raw), scaled 0.6; **red highlight box drawn on the Spark toggle** | 786 x 252 |
+| `gemini-02-url-entered.png` | Set up a custom connected app dialog | dialog only, DEG URL entered, OAuth fields empty | 520 x 615 |
+| `gemini-03-risk-warning.png` | Google's custom-app warning dialog | dialog only, checkbox ticked | 520 x 670 |
+| `gemini-04-actions.png` | Save your custom app dialog | dialog only: name "Repairmcp Deg" + six synced actions | 840 x 330 |
+| `gemini-05-connected.png` | Custom apps for Spark section | connected card + Add tile | 570 x 270 |
+| `gemini-06-use-the-app.png` | Spark routing to the app | prompt bubble + reasoning trail with the app icon | 820 x 400 |
+| `gemini-07-answer.png` | the completed answer | right panel, DEG #21350 + MOTOR GTE quote, scaled 0.85 | 782 x 642 |
 
-## Gemini shots to capture
+## The Gemini captures, 2026-09-03
 
-**The Gemini section launched text-only (2026-09-03), with an honest-status
-callout in place of screenshots.** The four `<figure>` blocks were removed from
-`index.html` before deploy so the live page never shows grey boxes; the markup
-to restore lives in git history (the commit that added the section). When the
-shots land: re-add the figures, drop the files in `public/img/`, delete the
-honest-status callout, and re-verify the steps against what actually happened.
+Cut from the owner's real "Custom apps for Spark" walk-through on a personal
+@gmail.com account with Google AI Pro (the 2026-08-31 Workspace attempt
+confirmed a work sign-in hides the section entirely; no error, just absent).
+Raw sources: `C:\Users\ttrav\OneDrive\Pictures\Screenshots\`, files
+`Screenshot 2026-09-03 110848.png` through `123831.png` (all 1920x1032); the
+raws may persist in OneDrive, so unlike the launch set these can be re-cut.
+Every crop starts below y=140 of the raw, which keeps a "ChatGPT started
+debugging this browser" banner and all browser chrome out of frame.
+`gemini-01` is the one annotated capture on the site: a 5px #9a3412 rectangle
+drawn on the Spark toggle before scaling, at the owner's direction, because
+the whole flow hides behind that unlabeled switch.
 
-Taken during the owner's own "Custom apps for Spark" setup on gemini.google.com
-(requires Google AI Pro or Ultra, personal account, US, Keep Activity on; the
-2026-08-31 attempt confirmed a Workspace sign-in hides the section entirely).
-The declared sizes above are guesses borrowed from the Claude/ChatGPT crops;
-when a real crop comes in at a different size, update the `<img>` width/height
-in `index.html` AND the entry in `scripts/make-placeholder-shots.ts`, same as
-any re-shoot.
+What these captures corrected, same tradition as the launch set: custom apps
+connect on the web only (mobile use comes after), the app's name defaults to
+the SOURCE's own server name ("Repairmcp Deg") and is editable at the save
+dialog, Gemini's vocabulary is "apps" (asking for "the DEG connector" routed
+to Google Search; "Use the App Repairmcp Deg" routed to the source), and the
+six synced actions screen is the Gemini analog of Claude's Read-only heading
+and ChatGPT's READ tags, now cited in the trust section.
 
 1. `gemini-01-connected-apps.png`: the Settings & help menu (or settings page)
    showing the **Connected apps** entry. Crop to the menu/panel.

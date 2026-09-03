@@ -471,8 +471,10 @@
       <p><strong>Why these sit at the low end of that range.</strong></p>
       <ul class="ticks">
         <li>They only read, and you do not have to take that on faith. Claude
-        files every tool under a heading that reads Read-only, and ChatGPT
-        tags every action READ. Both screenshots above show it.</li>
+        files every tool under a heading that reads Read-only, ChatGPT
+        tags every action READ, and Gemini lists the six actions it synced
+        before you connect, every one a lookup. The screenshots in each
+        section show it.</li>
         <li>They hold public data: inquiries already published free at
         degweb.org, NHTSA's public recall and complaint services, and law text
         published by the government.</li>
@@ -497,87 +499,164 @@
     <h2>Set it up in Gemini</h2>
     <p class="prose">
       The newest of the three. Google added custom connections to Gemini at
-      the end of June 2026, and they live inside <strong>Spark</strong>, the
-      Gemini feature that runs tasks for you, not in plain Gemini chat. The
-      setup itself is the shortest on this page: paste a URL and you are done.
-      Every source connects the same way: same steps, its URL from the top of
-      the page.
+      the end of June 2026, and they live inside <strong>Spark</strong>,
+      Gemini's task-running mode, not in plain Gemini chat. Like the other
+      two sections, everything below was walked on a real account in
+      September 2026, and the screenshots are what actually happened. The
+      walk-through connects DEG; every other source connects the same way
+      with its URL from the top of the page. Adding a custom app only works
+      in a web browser; once it is added, it works in the phone app too.
     </p>
 
     <div class="callout">
-      <h3>Honest status: we have not finished our own setup yet</h3>
-      <p>Every Claude and ChatGPT step above was walked on a real account,
-      screenshotted, and corrected against what actually happened. This
-      section is not there yet, which is why it has no screenshots. The steps
-      below are Google's own, from
-      <a href="https://support.google.com/gemini/answer/17209137" rel="noopener">its
-      help page</a>, and our first attempt stopped exactly where the account
-      list below says it would: signed in with a Workspace account, the
-      custom apps area was simply not on the page. We are rerunning it on a
-      personal account and will replace this note with screenshots when it
-      works. If you connect a source before we do and anything here is wrong,
-      tell us:
-      <a href="mailto:support@bainbridgeai.ai">support@bainbridgeai.ai</a>.</p>
-    </div>
-
-    <div class="callout">
       <h3>Which Google accounts this works on</h3>
-      <p>Google gates this more tightly than Anthropic or OpenAI do. Its own
-      help page, as of August 2026, requires all of the following:</p>
+      <p>Google gates this more tightly than Anthropic or OpenAI do. You
+      need all of the following:</p>
       <ul class="ticks">
         <li>A paid <strong>Google AI Pro</strong> or <strong>Google AI
-        Ultra</strong> plan. The free plan does not have it.</li>
-        <li>A personal Google account. Workspace and school accounts are
-        excluded, and this one bites quietly: signed in with your shop's
-        Workspace account, the custom apps area simply is not there. Check
-        which account you are signed in with before anything else.</li>
-        <li>A United States account, held by someone 18 or over.</li>
+        Ultra</strong> plan. The free plan does not have it. The screenshots
+        below were taken on Pro.</li>
+        <li>A personal Google account, the kind that ends in @gmail.com. A
+        company address like bob@bobscollisionshop.com is a Workspace
+        account, and Google excludes those, along with school accounts. This
+        one bites quietly: signed in with a work account, the custom apps
+        area simply is not on the page. No error, just absent. Check which
+        account you are signed in with before anything else.</li>
+        <li>A United States account, held by someone 18 or over, per
+        <a href="https://support.google.com/gemini/answer/17209137" rel="noopener">Google's
+        help page</a> as of September 2026. Google has been widening where
+        Spark is available, so if you are outside the US it is worth
+        checking whether it has reached you.</li>
         <li>The <strong>Keep Activity</strong> setting turned on. Spark cannot
         reach any connected app with it off. Keep Activity is also the Google
         setting that governs what happens to your conversations, so it is a
         real trade, not a checkbox. It is covered honestly on
         <a href="/ai-safety">Using AI safely in the shop</a>.</li>
       </ul>
-      <p>Google has been widening where Spark is available, so if you are
-      outside the US it is worth checking whether the setting has reached you
-      before assuming it has not.</p>
     </div>
 
     <ol class="steps">
 
       <li class="step">
-        <h3>Open Connected apps</h3>
-        <p>In Gemini in a web browser, click <strong>Settings &amp; help</strong>
-        at the bottom left, then <strong>Connected apps</strong>. Adding a
-        custom app only works on the web; once it is added, it works in the
-        phone app too.</p>
+        <h3>Turn on Spark</h3>
+        <p>Go to gemini.google.com in a browser. In the left sidebar, right
+        under the Gemini logo, there is a small switch. That is the Spark
+        toggle, and everything below lives behind it. Flip it and the page
+        changes to <strong>Put Gemini Spark to work for you</strong>, with a
+        BETA tag in the corner. If you have never heard of Spark, you are
+        not behind: it is Gemini's mode for running tasks, it is new, and
+        this is a fine first reason to use it.</p>
+        <figure class="shot">
+          <img src="/img/gemini-01-spark-toggle.png" alt="The Gemini sidebar with the Spark switch highlighted below the logo, and the Spark page headed Put Gemini Spark to work for you" loading="lazy" decoding="async" width="786" height="252">
+          <figcaption>The switch, top left under the logo. Flip it first.</figcaption>
+        </figure>
       </li>
 
       <li class="step">
-        <h3>Add a custom app for Spark</h3>
-        <p>Find <strong>Custom apps for Spark</strong> and choose
-        <strong>Add a custom app</strong>. This is the part that only appears
-        for the accounts listed above. If your Connected apps page shows
-        Google's own apps and a few big partners but no custom section at
-        all, you are signed in with a work account or do not have Spark
-        yet.</p>
-      </li>
-
-      <li class="step">
-        <h3>Paste the URL</h3>
-        <p>Paste the URL of the source you are adding. For DEG that is:</p>
+        <h3>Open the Apps page and add the link</h3>
+        <p>Open <strong>Settings &amp; help</strong> at the bottom left,
+        then <strong>Connected apps</strong>. Google's own partner apps sit
+        at the top; scroll to <strong>Custom apps for Spark</strong>, paste
+        the URL of the source you are adding into the
+        <strong>Add a custom app link</strong> field, and click
+        <strong>Next</strong>. For DEG that is:</p>
         <p class="inline-url"><code>https://deg.repairmcp.com/mcp</code></p>
-        <p>There is an advanced area for sign-in credentials. These sources
-        have no sign-in, so leave it alone. Click <strong>Next</strong> and
-        follow what Gemini shows you.</p>
+        <p>The dialog has an Advanced Settings area with two sign-in
+        fields. These sources have no sign-in, so both stay empty. If the
+        custom apps area is not on the page at all, you are signed in with
+        a work account or do not have Spark yet; see the account list
+        above.</p>
+        <figure class="shot">
+          <img src="/img/gemini-02-url-entered.png" alt="Gemini's Set up a custom connected app dialog with the DEG URL pasted in and both Advanced Settings sign-in fields left empty" loading="lazy" decoding="async" width="520" height="615">
+          <figcaption>The URL is the whole form. Both sign-in boxes stay empty.</figcaption>
+        </figure>
       </li>
 
       <li class="step">
-        <h3>Use it by name</h3>
-        <p>Once it is added, call it the way Gemini calls any connected app:
-        type <strong>@</strong> and its name in your prompt, then ask in plain
-        shop language. Naming the source in the ask, the habit the What to ask
-        section teaches, is built right into Gemini.</p>
+        <h3>Read the warning, then tick the box</h3>
+        <p>Google shows a warning before it will connect, and just like
+        ChatGPT's, it is fair and worth reading. The heart of it, word for
+        word:</p>
+        <blockquote class="verbatim">
+          <p>Google does not control, monitor, or secure this MCP server
+          (shown above). Model Context Protocol (MCP) servers may request
+          data beyond what is needed to complete your request, including
+          data you may consider sensitive. Supervise the MCP server. Make
+          sure you understand the actions it supports and trust the
+          provider before proceeding.</p>
+          <p>I understand and accept the security and privacy risks of
+          connecting this custom app.</p>
+        </blockquote>
+        <p>The reasons these sources sit at the safe end of that warning
+        are the same four listed in the ChatGPT section above: they only
+        read, they hold public data, they have no sign-in to steal, and
+        every operation is a lookup. Decide for yourself, tick the box,
+        and click <strong>Connect</strong>.</p>
+        <figure class="shot">
+          <img src="/img/gemini-03-risk-warning.png" alt="Gemini's warning dialog about custom connected apps with the I understand checkbox ticked and the Connect button" loading="lazy" decoding="async" width="520" height="670">
+          <figcaption>Google's warning, read and acknowledged.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>See what it is allowed to do, and note the name</h3>
+        <p>Gemini syncs the source and shows you exactly what it found: six
+        actions, every one a lookup. This screen also names the app, and
+        the name matters more here than in Claude or ChatGPT, because you
+        will call it by that name in your prompts. DEG arrives as
+        <strong>Repairmcp Deg</strong>. You can edit it here; whatever it
+        says when you click <strong>Connect</strong> is what you say in
+        step six.</p>
+        <figure class="shot">
+          <img src="/img/gemini-04-actions.png" alt="Gemini's Save your custom app dialog showing the name Repairmcp Deg and the six available actions it synced from the source" loading="lazy" decoding="async" width="840" height="330">
+          <figcaption>Six actions synced, every one a lookup. Note the name.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Confirm it is on</h3>
+        <p>Back on the Apps page, the source now has its own card under
+        Custom apps for Spark, with its toggle on and a last-sync time. To
+        add another source, click <strong>Add a custom app</strong> next to
+        it and run the same steps with the next URL.</p>
+        <figure class="shot">
+          <img src="/img/gemini-05-connected.png" alt="The Custom apps for Spark section of Gemini's Apps page showing the connected Repairmcp Deg card with its toggle on" loading="lazy" decoding="async" width="570" height="270">
+          <figcaption>Connected, toggled on, freshly synced.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Guide it by name</h3>
+        <p>Gemini calls these <strong>apps</strong>, not connectors, and it
+        will not guess. We asked it to "use the DEG connector" and it went
+        to Google Search instead, the same way ChatGPT reaches for the web.
+        The ask that works names the app exactly the way the Apps page
+        does:</p>
+        <p><strong>"Use the App Repairmcp Deg, and find DEG inquiries
+        supporting setup and measure as its own line on a frame bench. The
+        estimate is in CCC."</strong></p>
+        <p>Typing <strong>@</strong> in the prompt box also brings up your
+        connected apps to pick from. Either way, watch its reasoning: the
+        app's icon appears while it searches. That is how you know it went
+        to the source and not the web.</p>
+        <figure class="shot">
+          <img src="/img/gemini-06-use-the-app.png" alt="Gemini Spark working on the frame bench prompt with the Repairmcp Deg app named in its reasoning trail" loading="lazy" decoding="async" width="820" height="400">
+          <figcaption>Named correctly, it goes to the source. The icon in the trail is the proof.</figcaption>
+        </figure>
+      </li>
+
+      <li class="step">
+        <h3>Get an answer you can put in writing</h3>
+        <p>What came back, on the first try: the MOTOR Guide to Estimating
+        position that frame machine setup and measure times are not
+        developed by MOTOR and not included in any other operation, with
+        the resolved inquiries behind it cited by number and date, starting
+        with DEG #21350. The same citation discipline as the other two
+        assistants, from the same corpus.</p>
+        <figure class="shot">
+          <img src="/img/gemini-07-answer.png" alt="Gemini's completed answer citing DEG inquiry 21350 and quoting the MOTOR Guide to Estimating on frame machine setup and measure times" loading="lazy" decoding="async" width="782" height="642">
+          <figcaption>Cited by inquiry number and date, straight from the corpus.</figcaption>
+        </figure>
       </li>
 
     </ol>
@@ -600,7 +679,9 @@
       inquiry resolved against one does not settle the other two. In ChatGPT,
       go one step further: it will happily reach for its own web search
       instead, so call the connector by name and tell it to use it. The note
-      at the bottom of this section shows the wording. You can
+      at the bottom of this section shows the wording. Gemini is the same,
+      with its own vocabulary: open with "Use the App" plus the name on your
+      Apps page, like "Use the App Repairmcp Deg". You can
       tell which answer you got: a real search comes back with inquiry
       numbers, campaign numbers, or section numbers with dates, not web
       links. Every prompt below returns real, citable records today. Steal
