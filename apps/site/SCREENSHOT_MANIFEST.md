@@ -37,12 +37,20 @@ the owner's OneDrive screenshots folder, which may still hold the raw.)
 
 ## Gemini shots to capture
 
+**The Gemini section launched text-only (2026-09-03), with an honest-status
+callout in place of screenshots.** The four `<figure>` blocks were removed from
+`index.html` before deploy so the live page never shows grey boxes; the markup
+to restore lives in git history (the commit that added the section). When the
+shots land: re-add the figures, drop the files in `public/img/`, delete the
+honest-status callout, and re-verify the steps against what actually happened.
+
 Taken during the owner's own "Custom apps for Spark" setup on gemini.google.com
-(requires Google AI Pro or Ultra, personal account, US, Keep Activity on). The
-declared sizes above are guesses borrowed from the Claude/ChatGPT crops; when a
-real crop comes in at a different size, update the `<img>` width/height in
-`index.html` AND the entry in `scripts/make-placeholder-shots.ts`, same as any
-re-shoot.
+(requires Google AI Pro or Ultra, personal account, US, Keep Activity on; the
+2026-08-31 attempt confirmed a Workspace sign-in hides the section entirely).
+The declared sizes above are guesses borrowed from the Claude/ChatGPT crops;
+when a real crop comes in at a different size, update the `<img>` width/height
+in `index.html` AND the entry in `scripts/make-placeholder-shots.ts`, same as
+any re-shoot.
 
 1. `gemini-01-connected-apps.png`: the Settings & help menu (or settings page)
    showing the **Connected apps** entry. Crop to the menu/panel.
