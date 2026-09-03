@@ -32,7 +32,9 @@ export interface Env {
   CF_VERSION_METADATA?: WorkerVersionMetadata;
 }
 
-const SERVER_NAME = 'repairmcp-state-co';
+// Display-cased on purpose: Gemini shows this string verbatim as the app's
+// name in Custom apps for Spark. The wrangler.jsonc Worker name stays kebab.
+const SERVER_NAME = 'RepairMCP Colorado Law';
 const SERVER_VERSION = '0.1.0';
 
 // Validated once per isolate. A malformed corpus, an orphaned annotation key,

@@ -35,7 +35,9 @@ export interface Env {
   CF_VERSION_METADATA?: WorkerVersionMetadata;
 }
 
-const SERVER_NAME = 'repairmcp-nhtsa';
+// Display-cased on purpose: Gemini shows this string verbatim as the app's
+// name in Custom apps for Spark. The wrangler.jsonc Worker name stays kebab.
+const SERVER_NAME = 'RepairMCP NHTSA';
 const SERVER_VERSION = '0.1.0';
 
 /** Upstream timeout. Wall-clock waits don't count against Worker CPU limits. */

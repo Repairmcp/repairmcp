@@ -42,7 +42,10 @@ export interface Env {
   CF_VERSION_METADATA?: WorkerVersionMetadata;
 }
 
-const SERVER_NAME = 'repairmcp-deg';
+// Display-cased on purpose: Gemini shows this string verbatim as the app's
+// name in Custom apps for Spark ('repairmcp-deg' rendered as "Repairmcp Deg").
+// The Cloudflare Worker name in wrangler.jsonc is separate and stays kebab.
+const SERVER_NAME = 'RepairMCP DEG';
 const SERVER_VERSION = '0.2.0';
 
 /**

@@ -25,7 +25,8 @@ async function main(): Promise<void> {
   );
 
   const server = new RepairMCPServer(adapter, {
-    name: 'repairmcp-deg',
+    // Display-cased to match the Worker's advertised name (see worker.ts).
+    name: 'RepairMCP DEG',
     version: '0.1.0',
   });
   // Register all four DEG tools with shop-floor descriptions. search/get/list_recent
