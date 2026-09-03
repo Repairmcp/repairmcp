@@ -597,7 +597,10 @@
       web instead of searching the real records. The estimating database,
       CCC, Mitchell, or Audatex, matters on every DEG question, because each
       system publishes its own labor times and included operations, and an
-      inquiry resolved against one does not settle the other two. You can
+      inquiry resolved against one does not settle the other two. In ChatGPT,
+      go one step further: it will happily reach for its own web search
+      instead, so call the connector by name and tell it to use it. The note
+      at the bottom of this section shows the wording. You can
       tell which answer you got: a real search comes back with inquiry
       numbers, campaign numbers, or section numbers with dates, not web
       links. Every prompt below returns real, citable records today. Steal
@@ -685,13 +688,22 @@
 
     <div class="callout">
       <h3>If ChatGPT answers with web links instead</h3>
-      <p>That means it searched the open web and never used the connector. The
-      usual cause is simpler than it looks: the connector is not actually
-      installed on the account you are asking from. It is easy to set it up
-      on one account and ask from another. Open Settings, then Plugins, and
-      confirm the source is there and connected; if it is not, the steps above
-      take about two minutes. Then name it, the way every prompt above does.
-      When the connector answers, you get a Called tool note and numbers
+      <p>That means it searched the open web and never used the connector.
+      There are two usual causes, and both are quick fixes.</p>
+      <p><strong>The connector is not on the account you are asking
+      from.</strong> It is easy to set it up on one account and ask from
+      another. Open Settings, then Plugins, and confirm the source is there
+      and connected; if it is not, the steps above take about two
+      minutes.</p>
+      <p><strong>The connector is there and ChatGPT reached for web search
+      anyway.</strong> ChatGPT favors its own web search, and a polite ask
+      can lose to it. Be direct: call the connector by the exact name you
+      gave it when you added it, and tell ChatGPT to use it. "Use the
+      Colorado Law connector: the adjuster went silent on our supplement,
+      what deadline applies?" If it starts listing websites anyway,
+      interrupt and say "use the connector." We have watched it drop the web
+      results and switch mid-answer on exactly that.</p>
+      <p>When the connector answers, you get a Called tool note and numbers
       with dates; web links mean it did not.</p>
     </div>
 
