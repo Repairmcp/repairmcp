@@ -22,6 +22,11 @@
     "enabled": true
   },
 
+  // Tool-usage telemetry — the shared cross-server dataset. Blob layout and
+  // the no-arguments rule: packages/core/src/server/usage.ts; the full
+  // reasoning lives in apps/deg-server/wrangler.jsonc.
+  "analytics_engine_datasets": [{ "binding": "USAGE", "dataset": "repairmcp_usage" }],
+
   // The only public entrance. Cloudflare creates the DNS record and issues the
   // certificate on deploy. Before the first deploy, confirm the zone's single
   // WAF rate-limit rule matches this hostname too (Free allows exactly one

@@ -41,6 +41,16 @@ export {
   buildSearchTool,
 } from './server/tool-builder.js';
 
+// MCP usage telemetry (Analytics Engine, platform-structural)
+export type {
+  AnalyticsDataPoint,
+  AnalyticsEngineLike,
+  McpRequestLike,
+  McpUsageEvent,
+  McpUsageEventKind,
+} from './server/usage.js';
+export { parseMcpUsage, recordMcpUsage } from './server/usage.js';
+
 // OpenAI / ChatGPT connector contract (search + fetch)
 export type {
   ConnectorDocument,

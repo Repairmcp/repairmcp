@@ -40,6 +40,14 @@
     "enabled": true
   },
 
+  // Tool-usage telemetry. All six MCP workers write to this ONE shared dataset
+  // (each row carries its vertical as blob1/index1), so a single Analytics
+  // Engine query answers "which tools, which clients, which states" across the
+  // whole product. Rows carry tool and client names only — never query
+  // arguments, which can hold VINs and claim details. See
+  // packages/core/src/server/usage.ts for the blob layout.
+  "analytics_engine_datasets": [{ "binding": "USAGE", "dataset": "repairmcp_usage" }],
+
   // The only public entrance. Cloudflare creates the DNS record and issues the
   // certificate on deploy; nothing needs adding by hand in the dashboard.
   //

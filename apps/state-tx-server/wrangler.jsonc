@@ -19,6 +19,11 @@
     "enabled": true
   },
 
+  // Tool-usage telemetry — the shared cross-server dataset. Blob layout and
+  // the no-arguments rule: packages/core/src/server/usage.ts; the full
+  // reasoning lives in apps/deg-server/wrangler.jsonc.
+  "analytics_engine_datasets": [{ "binding": "USAGE", "dataset": "repairmcp_usage" }],
+
   // The only public entrance. The zone's single WAF rate-limit rule matches
   // path /mcp without pinning a hostname (verified at the NHTSA, WA, MT, and
   // CO launches) — burst-test after deploy anyway.

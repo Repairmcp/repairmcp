@@ -17,7 +17,7 @@
  * ChatGPT's connector contract.
  */
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
-import { RepairMCPServer } from '@repairmcp/core';
+import { RepairMCPServer, recordMcpUsage } from '@repairmcp/core';
 import {
   WaAdapter,
   WaCorpus,
@@ -31,6 +31,11 @@ import annotationsJson from '@repairmcp/state-wa/data/wa-annotations.json';
 export interface Env {
   /** The running deployment's own id, supplied by Cloudflare. */
   CF_VERSION_METADATA?: WorkerVersionMetadata;
+  /**
+   * Tool-usage telemetry (Analytics Engine). Optional so a local `wrangler dev`
+   * without the binding degrades to a no-op instead of a crash.
+   */
+  USAGE?: AnalyticsEngineDataset;
 }
 
 // Display-cased on purpose: Gemini shows this string verbatim as the app's
@@ -90,7 +95,7 @@ async function handleMcp(request: Request): Promise<Response> {
 }
 
 export default {
-  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
@@ -122,6 +127,15 @@ export default {
     }
 
     if (url.pathname === '/mcp') {
+      // Before the transport consumes the body — the clone is read inside
+      // waitUntil, off the response path, and only tool/client names are
+      // recorded, never arguments.
+      recordMcpUsage({
+        dataset: env.USAGE,
+        vertical: 'wa',
+        request,
+        waitUntil: (p) => ctx.waitUntil(p),
+      });
       try {
         return await handleMcp(request);
       } catch (err) {

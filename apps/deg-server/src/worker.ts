@@ -16,7 +16,7 @@
  * (citations, scoring breakdowns) that clients able to use it should prefer.
  */
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
-import { RepairMCPServer } from '@repairmcp/core';
+import { RepairMCPServer, recordMcpUsage } from '@repairmcp/core';
 import {
   D1DEGAdapter,
   registerDegConnectorTools,
@@ -40,6 +40,11 @@ export interface Env {
    * "is the new code live?" — this can.
    */
   CF_VERSION_METADATA?: WorkerVersionMetadata;
+  /**
+   * Tool-usage telemetry (Analytics Engine). Optional so a local `wrangler dev`
+   * without the binding degrades to a no-op instead of a crash.
+   */
+  USAGE?: AnalyticsEngineDataset;
 }
 
 // Display-cased on purpose: Gemini shows this string verbatim as the app's
@@ -187,6 +192,15 @@ export default {
     }
 
     if (url.pathname === '/mcp') {
+      // Before the transport consumes the body — the clone is read inside
+      // waitUntil, off the response path, and only tool/client names are
+      // recorded, never arguments.
+      recordMcpUsage({
+        dataset: env.USAGE,
+        vertical: 'deg',
+        request,
+        waitUntil: (p) => ctx.waitUntil(p),
+      });
       try {
         return await handleMcp(request, env, ctx);
       } catch (err) {
