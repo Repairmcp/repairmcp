@@ -366,6 +366,20 @@ rankings, and the per-state test suite is the gate that needs eyes. No
 legislative calendars are modeled anywhere — Montana's biennial sessions and
 year-round agency rulemaking get the same answer: poll cheaply, flag loudly.
 
+**Usage telemetry (all six MCP workers)** — since 2026-09-04 every worker
+writes one Analytics Engine row per JSON-RPC message on `/mcp` to the ONE
+shared dataset `repairmcp_usage`: vertical, event kind, tool or client name,
+user agent, country. Blob layout and the never-record-arguments rule live in
+`packages/core/src/server/usage.ts`; `initialize` rows carry `clientInfo`,
+the only place claude-ai vs Claude Desktop vs Gemini is distinguishable
+(hosted clients all arrive from their platform's egress IPs — Anthropic's
+160.79.106.x, UA `Claude-User` — so IPs can never attribute a human).
+Row counts: dashboard → Storage & databases → Analytics Engine. Real queries
+go through the SQL API and need an API token with Account Analytics Read:
+`curl -X POST https://api.cloudflare.com/client/v4/accounts/<acct>/analytics_engine/sql -H "Authorization: Bearer <token>" -d "SELECT blob3, count() FROM repairmcp_usage WHERE blob2='tool_call' GROUP BY blob3"`.
+Gotcha: the one-time account-level Enable (done) propagates slowly — deploys
+kept failing with error 10089 for ~4 minutes after the dashboard said enabled.
+
 **Remote server (Cloudflare)** — from `apps/deg-server/`. Regenerate the SQL
 after any corpus change; the migrations are the corpus on the remote side.
 
