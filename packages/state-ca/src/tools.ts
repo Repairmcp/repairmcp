@@ -47,7 +47,7 @@ USE THIS WHEN:
 - A citation appears in a search result, a packet, or a conversation and you need the complete section text before quoting it.
 - You want the official source URL, the history note, and the effective date for a specific section.
 
-INPUT: A citation in any common form: "Ins. Code 758.5", "Cal. Ins. Code § 758.5", "B&P 9884.9", "Bus. & Prof. Code 9884.9", "Labor Code 226.2", "Civ. Code 3068", "10 CCR 2695.8", "Cal. Code Regs. tit. 16, § 3353", "8 CCR 5446", "cal. ins. code:758.5", or a bare "758.5" / "2695.8" / "5446" (every captured section number is unique across codes, so a bare cite resolves unambiguously). "Automotive Repair Act" lists Bus. & Prof. Code ch. 20.3; "Fair Claims Settlement Practices Regulations" lists 10 CCR 2695; "Wage Order 9" fetches 8 CCR 11090.
+INPUT: A citation in any common form: "Ins. Code 758.5", "Cal. Ins. Code § 758.5", "B&P 9884.9", "Bus. & Prof. Code 9884.9", "Labor Code 226.2", "Civ. Code 3068", "10 CCR 2695.8", "Cal. Code Regs. tit. 16, § 3353", "8 CCR 5446", "cal. ins. code:758.5", or a bare "758.5" / "2695.8" / "5446" (every captured section number is unique across codes, so a bare cite resolves unambiguously). "Wage Order 9" fetches 8 CCR 11090 and "Auto Body Repair Consumer Bill of Rights" fetches 10 CCR 2695.85. This tool returns ONE section: to list a whole chapter ("Automotive Repair Act" for Bus. & Prof. Code ch. 20.3, "Fair Claims Settlement Practices Regulations" for 10 CCR 2695), pass that name to ca_search_authority instead.
 
 OUTPUT: The full verbatim section text (subsection numbering preserved), heading, chapter, the history note, the effective date where the source states one, topics, and citation forms — or found=false with guidance when the cite does not match. Statute headings are editorial descriptors (California prints none); regulation headings are the source's own.`;
 
@@ -88,7 +88,7 @@ const CA_TOOLS_CONFIG: StateToolsConfig = {
   domainSchema: CaDomainSchema,
   topicSchema: CaTopicSchema,
   getInputDescription:
-    'A citation such as "Ins. Code 758.5", "B&P 9884.9", "Labor Code 226.2", "10 CCR 2695.8", "16 CCR 3365", "8 CCR 5446", "cal. ins. code:758.5", or a bare "758.5". "Automotive Repair Act" or "Fair Claims Settlement Practices Regulations" lists the chapter.',
+    'A citation such as "Ins. Code 758.5", "B&P 9884.9", "Labor Code 226.2", "10 CCR 2695.8", "16 CCR 3365", "8 CCR 5446", "cal. ins. code:758.5", or a bare "758.5". One section per call; to list a chapter ("Automotive Repair Act", "Fair Claims Settlement Practices Regulations") use ca_search_authority.',
   identity: caStateIdentity,
   notes: {
     legalAdviceNote: LEGAL_ADVICE_NOTE,
