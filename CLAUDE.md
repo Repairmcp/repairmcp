@@ -111,7 +111,12 @@ packages/state-law/   @repairmcp/state-law — the shared state-vertical machine
                       MT never needed it), the hook that lets a state's
                       capture profile fetch raw bytes for a PDF document
                       (the CCR rule PDFs, the DOI bulletin) rather than text;
-                      state-co is the only package that wires it.
+                      state-co is the only package that wires it. Added at
+                      CA: `FetchOpts.minDelayMs`, a per-fetch floor on the
+                      politeness pause for publishers whose robots.txt asks
+                      for more than the io-wide 2 s (leginfo and the LII
+                      mirror both ask for 10 s); replays from --from-dir
+                      never wait.
 
 packages/state-mt/    @repairmcp/state-mt — Montana vertical (pure corpus)
   src/parse-mca.ts    mca.legmt.gov section-page parser: edition-marker
@@ -239,6 +244,58 @@ apps/state-tx-server/ @repairmcp/state-tx-server — Worker, tx.repairmcp.com,
                       same shape as the other state servers; /health adds
                       statutesCurrentThrough + the three-domain breakdown
 
+packages/state-ca/    @repairmcp/state-ca — California vertical (pure corpus,
+                      THREE capture surfaces, FOUR domains — the state OSHA
+                      plan brings safety back for the first time since WA).
+                      Two policy decisions the project owner made 2026-09-04
+                      are recorded in docs/CA-VERTICAL-KICKOFF.md and must not
+                      be silently reversed: leginfo's robots.txt disallows
+                      all agents (fetch politely at its 10 s crawl delay, in
+                      code), and the official CCR publisher (Westlaw calregs)
+                      is behind a bot challenge (capture 10/16 CCR and Wage
+                      Order 9 from Cornell LII's mirror, provenance stated
+                      everywhere, per section via `captureSource`)
+  src/parse-leginfo.ts   the Legislature's article/chapter text views: <h6>
+                      section heads (two markup variants), <h4>/<h5>
+                      hierarchy headers with bracketed ranges (the manifest's
+                      expectHeader tripwire), the <i>(Amended by Stats. …
+                      Effective <date>.)</i> history note (newest Effective/
+                      operative wins), absence = HTTP 200 with an EMPTY
+                      single_law_section div, dual-printed versions (Lab.
+                      Code 226.7) resolved by date in capture-statutes.ts
+  src/parse-ccr-lii.ts  the LII mirror: h1 identity (title AND cite cross-
+                      checked), breadcrumb hierarchy, statereg-text blocks,
+                      Register history in <note> blocks — cut to the ACTIVE
+                      tab (the "Compare" tab carries an older copy whose
+                      history hid 16 CCR 3353's 2025 teardown amendment)
+  src/parse-dir.ts    dir.ca.gov Title 8 pages, two markup generations, one
+                      line-based read; Article line → chapter, Group fallback
+                      for orders like 3203 that sit under a Group only
+  src/history-dates.ts  the one Register-history date rule (operative /
+                      effective / "thirtieth day thereafter" = filed + 30 /
+                      upon filing; changes without regulatory effect count
+                      for nothing; a slash-dated transcription exists)
+  src/identity.ts     eight codes; every cite is a single number, so bare
+                      cites resolve by EXACT number through CA_CITE_CODES
+                      (built from the manifests, throws on a collision) —
+                      NOT by prefix (Veh. Code 544 is a prefix of 8 CCR
+                      5446); named aliases list the Automotive Repair Act and
+                      the Fair Claims regs; statute headings are MANIFEST
+                      descriptors (California prints no catchlines),
+                      recorded per section as `headingSource`
+  data/               ca-law-corpus.json (97 sections: insurance 23 /
+                      repair_law 39 / safety 17 / employment 18) + annotations
+  test/               73 tests incl. the demo gauntlet (paint-cap → 758.6,
+                      labor rate → 2695.81, OEM procedure → 16 CCR 3365,
+                      flat-rate rest pay → 226.2) and full-manifest capture
+                      fixtures
+
+apps/state-ca-server/ @repairmcp/state-ca-server — Worker, ca.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      captureSources (leginfo/dir/lii counts) + the four-
+                      domain breakdown — no currency pin exists because none
+                      of the three surfaces states one
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -280,7 +337,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -334,20 +391,26 @@ curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + 
 
 **State law servers** — Washington (`apps/state-wa-server/`, 670 WAC/RCW
 sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections),
-Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), and
-Texas (`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections). Pure
-corpus: the data ships in each bundle, so a corpus refresh IS a deploy —
-re-run the capture, run the tests (the substring, demo-criteria, and the
-currency-pin suites — MT edition, CO CRS_EDITION, TX TX_STATUTES_CURRENCY —
-are the acceptance gate), deploy from the state's app.
+Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), Texas
+(`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections), and
+California (`apps/state-ca-server/`, 97 statute/CCR/Cal-OSHA sections across
+four domains). Pure corpus: the data ships in each bundle, so a corpus
+refresh IS a deploy — re-run the capture, run the tests (the substring,
+demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
+TX_STATUTES_CURRENCY; California has no pin because none of its surfaces
+states currency — are the acceptance gate), deploy from the state's app.
+A California capture takes ~20 minutes: leginfo and the LII mirror each ask
+for a 10-second crawl delay and the capture honors it (`--save-raw` once,
+then `--from-dir` for every re-parse).
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx)
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca)
 bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa. / mt. / co. / tx.repairmcp.com
+wrangler deploy                                      # → wa. / mt. / co. / tx. / ca.repairmcp.com
 curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
+curl -s https://ca.repairmcp.com/health              # corpus meta + domains + captureSources
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -360,7 +423,10 @@ history) and stale flags cleared. Drift or failure →
 `C:\degdata\<ST>-LAW-ATTENTION.txt` with the changed cites and that state's
 refresh checklist (exit 1 any failure, else 2 any drift). ARM checks ride the
 API's own SHA-256 content hashes and skip unchanged documents; MCA re-fetches
-its ~110 pages (~5 min, fine at this cadence). The refresh stays a human
+its ~110 pages (~5 min, fine at this cadence); California re-fetches its 16
+leginfo views and 32 LII pages at their 10 s crawl delays plus 16 DIR pages
+(~20 min, and a block by either publisher fails loudly rather than shipping
+stale text). The refresh stays a human
 action ON PURPOSE: changed law can renumber annotated sections or shift demo
 rankings, and the per-state test suite is the gate that needs eyes. No
 legislative calendars are modeled anywhere — Montana's biennial sessions and
@@ -589,7 +655,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | TX vertical | ✅ live | 2026-08-31: `https://tx.repairmcp.com/mcp` deployed (version `dc199094`) and verified on the wire — `/health` reports 62 sections, current through 2026-08-31, statutes current through the 89th 2nd Called Legislative Session, 2025, domains insurance 34 / repair_law 19 / employment 9; steering query → Tex. Ins. Code 1952.302 first; "invoke appraisal on a lowball estimate" → 1813.003 first with shortForm "Tex. Ins. Code 1813.003, effective 9/1/2025" (SB 458's brand-new mandatory appraisal chapter — no other shipped state has an analog); 542.060 fetches with the verbatim 18-percent-interest text; "reimbursement rates artificially low" → TDI Bulletin B-0031-10 first at 0.681; WAF confirmed on the hostname, exactly 20 pass then 429s. 62 verbatim sections from THREE publishers — the Legislature's statutes backend (tcss.legis.texas.gov, found by watching the Angular SPA's own requests after every classic URL turned out to serve an app shell), the SOS Appian rules portal (stateless `_/ui` GETs with the client's own pinned protocol headers), and TDI bulletin HTML. Honest absences in tool descriptions and the site card: no body shop licensing, no state OSHA plan, no state overtime or break law, 542 deadlines first-party only, 541.060(b) bars third-party actions in its own text, ch. 1813 applies to policies issued/renewed on/after 1/1/2026 only. Site flips to six sources; /legal names the three TX publishers. Demo with a Texas shop scheduled the following week — the gauntlet's shop-phrasing queries are the demo script. Open: connector gates in the project owner's clients. |
 
-**Test totals:** 817 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 193 ingestion). 0 failing.
+| CA vertical | ✅ live | 2026-09-04: `https://ca.repairmcp.com/mcp` deployed (deployment `1e08a259`) and verified on the wire — `/health` reports 97 sections, captured 2026-09-05 (UTC), captureSources leginfo 49 / dir 16 / lii 32, domains insurance 23 / repair_law 39 / safety 17 / employment 18; the paint-and-materials cap query → Ins. Code 758.6 first at 0.616 with the verbatim "Insurers shall not engage in capping" excerpt; 16 CCR 3365 fetches verbatim with shortForm "16 CCR 3365, effective 11/19/1997"; the connector search on steering → 758.5 first; WAF confirmed on the hostname, exactly 20 pass then 429s. 97 verbatim sections from THREE surfaces — the Legislature's article/chapter text views (leginfo.legislature.ca.gov; its robots.txt disallows all agents and the project owner chose to fetch politely at its 10 s crawl delay, enforced in code), the Department of Industrial Relations' own Title 8 pages, and Cornell LII's mirror of the CCR for Titles 10 and 16 and Wage Order 9 (the official publisher, Westlaw calregs, answers non-browser requests with a Cloudflare challenge; the project owner chose the mirror over a hollow corpus, and the provenance is stated on /legal, in the source note, in every tool description, and per section). Headliners no other shipped state has: Ins. Code 758.6 (no capping paint and materials), 10 CCR 2695.81 (the standardized labor rate survey), 16 CCR 3365 (auto body and frame repairs per OEM or nationally recognized specifications), Lab. Code 226.2 (piece-rate rest and nonproductive time pay). Honest absences in the tool descriptions and the site card: no private action under 790.03 (Moradi-Shalal), no prompt-payment interest remedy, no statutory total-loss percentage, no mandatory appraisal statute, and the piece-rate question for flat-rate plans is for counsel. Site flips to seven sources; /legal names the three surfaces and why. Open: connector gates in the project owner's clients; the mirror's lag on freshly amended rules is the residual risk. |
+
+**Test totals:** 890 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 73 state-ca + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -874,6 +942,18 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   reworded annotated section fails loudly and needs judgment, not automation.
   State #2 folds in here too — the extraction decision (kickoff §4.1) was
   copy-once-more, extract at state #2.
+- ~~CA vertical.~~ **Shipped 2026-09-04** — see the Build status row and
+  `docs/CA-VERTICAL-KICKOFF.md`. What remains: the connector gates (add
+  `https://ca.repairmcp.com/mcp` in the project owner's Claude, ChatGPT, and
+  Gemini clients and run the gauntlet's shop-phrasing queries). Two residuals
+  worth knowing: (1) **the LII mirror's lag** — it carried BAR's 2025
+  teardown amendment in the same season it was adopted, but nothing
+  guarantees that pace; a shop-facing dispute over a freshly amended rule
+  should be checked against the official publisher by hand, and the
+  per-section Register history is the visible signal; (2) **length bias**
+  shows again here (Wage Order 9's 941 lines out-cover Lab. Code 221 on a
+  comeback-chargeback query by 0.01) — the same cross-state scorer candidate
+  noted under CO, now with four state corpora on the shared base scorer.
 - **`deg_get_estimating_tip` (5th tool).** Spec includes it; deferred post-demo. Needs separate scrape path, schema, parser, sample data. Demo doesn't need it.
 - **D1 schema migration + cron refresh.** Whole `apps/deg-server/migrations/` and `cron.ts` deferred until D1 wiring (post-demo).
 - ~~CO vertical.~~ **Shipped 2026-08-31** — see the Build status row. What remains:
@@ -903,6 +983,30 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Known gotchas
 
+- **leginfo answers an unknown section with HTTP 200 and an EMPTY
+  `single_law_section` div**, and answers a section the Legislature prints in
+  two versions (Lab. Code 226.7 until 2027) with a 302 to a JSF picker whose
+  links are POST-only. Neither is detectable by status. The CA capture fetches
+  article/chapter TEXT views instead — both versions print inline with their
+  own history notes and `selectVersion` keeps the one in force on the capture
+  date — and the parser refuses a page with no law-section wrapper. The
+  site's robots.txt says `Disallow: /` for everyone; fetching at its 10 s
+  crawl delay was the project owner's call (2026-09-04), and the delay is
+  enforced through `FetchOpts.minDelayMs`. Do not lower it.
+- **The LII CCR mirror carries TWO copies of a section on one page.** The
+  active tab is the regulation; the "Compare" tab holds a prior point-in-time
+  copy with its own, shorter Register history. Parsing the whole page took
+  the older copy's history and dated 16 CCR 3353 to 2018 when its 2025
+  teardown amendment (Register 2025, No. 22, operative 7/1/2025) was on the
+  page. `parseLiiCcrHtml` is cut to `tab_default_1`. Absence there is also
+  HTTP 200 — a generic page with no `page_title` h1 — and the h1 cross-checks
+  title AND cite so a URL cannot deliver the wrong section. One transcription
+  prints an operative date with slashes (`1/1/2017`); the date rule accepts
+  both separators.
+- **DIR Title 8 pages come in two markup generations**, and not every order
+  sits under an Article: 3203 (the IIPP) is in Group 1's "Introduction", so
+  `dirChapterFromHierarchy` falls back to the Group. A page with neither an
+  Article nor a Group line is template drift and fails.
 - **leg.wa.gov chapter pages contain empty part-head anchors** (296-24-370,
   296-901-140, two dozen more): the capture prints the skip LIST every run — a
   nonempty list is normal, a growing one is the signal. WAC 296-62 is ~3.5 MB and

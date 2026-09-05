@@ -1,0 +1,1118 @@
+{
+ "Cal. Ins. Code 758.5": {
+  "topics": [
+   "steering",
+   "repair_facility_choice",
+   "consumer_rights",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers",
+   "claimants",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "adjuster steering the customer to a network shop",
+   "adjuster says my customer has to use their network shop",
+   "insurer requires a particular repair facility",
+   "DRP network pressure on the customer",
+   "customer told to use the carrier's preferred shop",
+   "shop of choice denied",
+   "insurer recommended a shop without telling the customer they could pick their own",
+   "insurer keeps suggesting a different shop after the customer already chose ours",
+   "written notice of the right to select the repair shop",
+   "insurer must restore the vehicle to pre-loss condition when the customer takes their recommended shop"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) No insurer shall require that an automobile be repaired at a specific automotive repair dealer, as defined in Section 9880.1 of the Business and Professions Code.",
+   "(b) (1) No insurer shall suggest or recommend that an automobile be repaired at a specific automotive repair dealer unless either of the following applies:",
+   "(B) The claimant has been informed in writing of the right to select the automotive repair dealer.",
+   "(3) If an insurer’s recommendation of an automotive repair dealer is accepted by the claimant, the insurer shall cause the damaged vehicle to be restored to its condition prior to the loss at no additional cost to the claimant other than as stated in the policy or as is otherwise allowed by law."
+  ]
+ },
+ "Cal. Ins. Code 758.6": {
+  "topics": [
+   "paint_materials",
+   "short_pay",
+   "estimate_dispute",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "insurer caps paint and materials at a flat dollar amount",
+   "adjuster says they only pay a set amount for paint and materials",
+   "paint and materials cap on the estimate",
+   "carrier will not pay the paint and materials calculator amount",
+   "insurer ignores the materials calculation methodology",
+   "refinish materials short paid to a cap",
+   "capping paint and materials charges"
+  ],
+  "quoteSafeExcerpts": [
+   "Insurers shall not engage in capping. For the purposes of this section, “capping” means offering or paying an amount that is unrelated to a methodology used in determining paint and materials charges that is accepted by automobile repair shops and insurers."
+  ]
+ },
+ "Cal. Ins. Code 758": {
+  "topics": [
+   "labor_rate",
+   "storage_towing",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "DRP agreement makes the shop pay for the customer's rental car",
+   "insurer wants the shop to eat the rental or towing charges to stay on the program",
+   "denied participation in a direct repair program",
+   "insurer must report its labor rate survey results to the Department"
+  ],
+  "quoteSafeExcerpts": [
+   "(c) Any insurer that conducts an auto body repair labor rate survey to determine and set a specified prevailing auto body rate in a specific geographic area shall report the results of that survey to the department, which shall make the information available upon request. The survey information shall include the names and addresses of the auto body repair shops and the total number of shops surveyed."
+  ]
+ },
+ "Cal. Ins. Code 790.03": {
+  "topics": [
+   "fair_settlement",
+   "misrepresentation",
+   "claim_denial",
+   "prompt_investigation",
+   "short_pay"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "unfair claims settlement practices list",
+   "insurer not responding to claim communications",
+   "adjuster will not explain why the claim was denied or reduced",
+   "lowball settlement offer to force the insured to sue",
+   "insurer misrepresenting the policy coverage",
+   "not attempting a fair settlement when liability is clear",
+   "no written explanation for the denial or compromise offer",
+   "general business practice of the insurer"
+  ],
+  "quoteSafeExcerpts": [
+   "(h) Knowingly committing or performing with such frequency as to indicate a general business practice any of the following unfair claims settlement practices:",
+   "(2) Failing to acknowledge and act reasonably promptly upon communications with respect to claims arising under insurance policies.",
+   "(3) Failing to adopt and implement reasonable standards for the prompt investigation and processing of claims arising under insurance policies.",
+   "(5) Not attempting in good faith to effectuate prompt, fair, and equitable settlements of claims in which liability has become reasonably clear.",
+   "(13) Failing to provide promptly a reasonable explanation of the basis relied on in the insurance policy, in relation to the facts or applicable law, for the denial of a claim or for the offer of a compromise settlement."
+  ]
+ },
+ "Cal. Ins. Code 790.035": {
+  "topics": [
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers"
+  ],
+  "claimUseCases": [
+   "what penalty does the insurer face for unfair claims practices",
+   "civil penalty payable to the state for each act"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Any person who engages in any unfair method of competition or any unfair or deceptive act or practice defined in Section 790.03 is liable to the state for a civil penalty to be fixed by the commissioner, not to exceed five thousand dollars ($5,000) for each act, or, if the act or practice was willful, a civil penalty not to exceed ten thousand dollars ($10,000) for each act"
+  ]
+ },
+ "Cal. Ins. Code 1874.87": {
+  "topics": [
+   "consumer_rights",
+   "steering",
+   "repair_facility_choice"
+  ],
+  "appliesTo": [
+   "insurers",
+   "consumers",
+   "claimants"
+  ],
+  "claimUseCases": [
+   "insurer never gave the customer the auto body repair consumer bill of rights",
+   "bill of rights required after an accident is reported"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Each insurer subject to this article shall provide each insured with an Auto Body Repair Consumer Bill of Rights either at the time of application for an automobile insurance policy or following an accident that is reported to the insurer."
+  ]
+ },
+ "Cal. Veh. Code 544": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "when is it legally a total loss in California",
+   "total loss threshold percentage",
+   "repair cost versus value, uneconomical to repair",
+   "total loss salvage vehicle definition",
+   "customer wants to keep the car after a total loss payment"
+  ],
+  "quoteSafeExcerpts": [
+   "“Total loss salvage vehicle” means either of the following:",
+   "(a) A vehicle, other than a nonrepairable vehicle, of a type subject to registration that has been wrecked, destroyed, or damaged, to the extent that the owner, leasing company, financial institution, or the insurance company that insured or is responsible for repair of the vehicle, considers it uneconomical to repair the vehicle and because of this, the vehicle is not repaired by or for the person who owned the vehicle at the time of the event resulting in damage."
+  ]
+ },
+ "Cal. Veh. Code 11515": {
+  "topics": [
+   "total_loss"
+  ],
+  "appliesTo": [
+   "insurers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "insurer paid the total loss, what happens to the title",
+   "salvage certificate after a total loss settlement",
+   "owner retained salvage on a total loss"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) (1) Whenever an insurance company makes a total loss settlement on a total loss salvage vehicle, the insurance company, an occupational licensee of the department authorized by the insurance company, or a salvage pool authorized by the insurance company, within 10 days from the settlement of the loss, shall forward the properly endorsed certificate of ow"
+  ]
+ },
+ "10 CCR 2695.5": {
+  "topics": [
+   "prompt_investigation",
+   "supplement_handling",
+   "fair_settlement",
+   "short_pay"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "adjuster not responding to the supplement",
+   "supplement has been sitting with no answer from the carrier",
+   "how long does the insurer have to respond to a claim communication",
+   "insurer went silent on our supplement request",
+   "15 days to respond to a claimant",
+   "insurer must acknowledge the claim",
+   "supplement sitting for weeks with no answer",
+   "carrier silent on the supplement",
+   "no answer from the carrier on our supplement",
+   "insurer has not responded to the supplement in two months"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) Upon receiving any communication from a claimant, regarding a claim, that reasonably suggests that a response is expected, every licensee shall immediately, but in no event more than fifteen (15) calendar days after receipt of that communication, furnish the claimant with a complete response based on the facts as then known by the licensee.",
+   "(e) Upon receiving notice of claim, every insurer shall immediately, but in no event more than fifteen (15) calendar days later, do the following unless the notice of claim received is a notice of legal action:"
+  ]
+ },
+ "10 CCR 2695.7": {
+  "topics": [
+   "prompt_investigation",
+   "claim_denial",
+   "supplement_handling",
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "how long does the insurer have to accept or deny the claim",
+   "40 days to accept or deny",
+   "insurer has not paid after accepting the claim",
+   "30 days to pay once the claim is accepted",
+   "insurer keeps asking for more documentation to stall the claim",
+   "claim decision deadline",
+   "insurer must investigate the claim thoroughly and fairly",
+   "partial denial of the claim without a reason",
+   "supplement neither accepted nor denied",
+   "carrier sitting on the supplement with no decision",
+   "insurer must accept or deny the supplement within the deadline"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) Upon receiving proof of claim, every insurer, except as specified in subsection 2695.7 (b)(4) below, shall immediately, but in no event more than forty (40) calendar days later, accept or deny the claim, in whole or in part. The amounts accepted or denied shall be clearly documented in the claim file unless the claim has been denied in its entirety.",
+   "(d) Every insurer shall conduct and diligently pursue a thorough, fair and objective investigation and shall not persist in seeking information not reasonably required for or material to the resolution of a claim dispute.",
+   "(h) Upon acceptance of the claim in whole or in part and, when necessary, upon receipt of a properly executed release, every insurer, except as specified in subsection 2695.7 (h)(1) and (2) below, shall immediately, but in no event more than thirty (30) calendar days later, tender payment or otherwise take action to perform its claim obligation."
+  ]
+ },
+ "10 CCR 2695.8": {
+  "topics": [
+   "total_loss",
+   "valuation_dispute",
+   "steering",
+   "repair_facility_choice",
+   "aftermarket_parts",
+   "estimate_dispute",
+   "short_pay",
+   "storage_towing",
+   "repair_standards",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "claimants",
+   "consumers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "total loss valuation of a comparable automobile",
+   "insurer lowballed the actual cash value on the total loss",
+   "insurer told the customer our shop does bad work",
+   "adjuster badmouthing the shop the customer chose",
+   "insurer suggesting a different shop after the customer already chose ours",
+   "customer told to drive an unreasonable distance for an inspection or repair",
+   "insurer wrote the estimate below accepted trade standards",
+   "insurer estimate ignores OEM procedures and repair standards",
+   "carrier wrote the estimate with aftermarket parts and says that is all they cover",
+   "aftermarket crash parts must be equal in kind, quality, safety, fit, and performance",
+   "insurer must pay to modify aftermarket parts that do not fit",
+   "betterment or depreciation deducted without itemizing it",
+   "insurer paid the total loss but will not pay the storage charges",
+   "reasonable towing and storage charges after a covered loss",
+   "insurer must give notice before cutting off storage",
+   "third party claimant told to file on their own policy"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) require that an automobile be repaired at a specific repair shop; or,",
+   "(B) Making a statement to the claimant to the effect that the automotive repair shop chosen by the claimant has a record of poor service or poor repair quality, or making any other statement to the claimant with respect to the chosen repair shop, if the statement is known to be, or should by the exercise of reasonable care be known to be, untrue, deceptive or misleading.",
+   "(4) require a claimant to travel an unreasonable distance or wait an unreasonable period of time either to inspect a replacement automobile, to conduct an inspection of the claimant's vehicle, to obtain a repair estimate, or to have the automobile repaired at a specific repair shop.",
+   "The estimate prepared by or for the insurer shall be of an amount that will allow for repairs to be made in accordance with accepted trade standards for good and workmanlike automotive repairs by an \"auto body repair shop\" as defined in section 9889.51 of the Business and Professions Code",
+   "(g) No insurer shall require the use of non-original equipment manufacturer replacement crash parts in the repair of an automobile unless all of the following conditions are met:",
+   "(1) the parts are at least equal to the original equipment manufacturer parts in terms of kind, quality, safety, fit, and performance;",
+   "(2) the insurer specifying the use of non-original equipment manufacturer replacement crash parts shall pay the cost of any modifications to the parts that may become necessary to effect the repair;",
+   "(k) After a covered loss under a policy of automobile collision coverage or automobile physical damage coverage as defined in California Insurance Code Section 660 , where towing and storage are reasonably necessary to protect the vehicle from further loss, the insurer shall pay reasonable towing and storage charges incurred by the claimant. The insurer shall provide reasonable notice to the claimant before terminating payment for storage charges, so that the claimant has time to remove the vehicle from storage."
+  ]
+ },
+ "10 CCR 2695.81": {
+  "topics": [
+   "labor_rate",
+   "short_pay",
+   "estimate_dispute",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "insurers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "adjuster says the prevailing rate is what their survey shows",
+   "insurer labor rate survey sets the prevailing rate",
+   "carrier will not pay our posted labor rate because of their survey",
+   "standardized labor rate survey requirements",
+   "insurer paying below the prevailing auto body rate",
+   "how must an insurer conduct a labor rate survey",
+   "market rate survey dispute",
+   "insurer uses an old or unreported survey to justify the rate"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) Nothing in this section shall be construed to prohibit an insurer from paying a labor rate lower than the prevailing auto body rate, if the auto body repair shop, chosen by the claimant to perform repairs, charges a labor rate lower than the prevailing auto body rate.",
+   "(d) The Standardized Labor Rate Survey.",
+   "(e) Use of the Standardized Labor Rate Survey."
+  ]
+ },
+ "10 CCR 2695.85": {
+  "topics": [
+   "consumer_rights",
+   "steering",
+   "repair_facility_choice",
+   "aftermarket_parts",
+   "estimate_authorization"
+  ],
+  "appliesTo": [
+   "insurers",
+   "consumers",
+   "claimants",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "auto body repair consumer bill of rights text",
+   "customer's right to select the auto body shop",
+   "customer entitled to an itemized written estimate and invoice",
+   "customer's right to an independent repair estimate during an insurance claim",
+   "where to report a complaint about the claim handling or the repair"
+  ],
+  "quoteSafeExcerpts": [
+   "1. SELECT THE AUTO BODY REPAIR SHOP TO REPAIR AUTO BODY DAMAGE COVERED BY THE INSURANCE COMPANY. AN INSURANCE COMPANY SHALL NOT REQUIRE THE REPAIRS TO BE DONE AT A SPECIFIC AUTO BODY REPAIR SHOP.",
+   "6. SEEK AND OBTAIN AN INDEPENDENT REPAIR ESTIMATE DIRECTLY FROM A REGISTERED AUTO BODY REPAIR SHOP FOR REPAIR OF A DAMAGED VEHICLE, EVEN WHEN PURSUING AN INSURANCE CLAIM FOR REPAIR OF THE VEHICLE."
+  ]
+ },
+ "Cal. Bus. & Prof. Code 9875.1": {
+  "topics": [
+   "aftermarket_parts",
+   "estimate_authorization"
+  ],
+  "appliesTo": [
+   "insurers",
+   "consumers",
+   "repairers"
+  ],
+  "claimUseCases": [
+   "insurer requiring aftermarket crash parts without telling the customer",
+   "non-OEM crash parts must be disclosed in the written estimate",
+   "aftermarket parts disclosure statement on the estimate",
+   "each non-OEM part must be identified by its manufacturer on the estimate"
+  ],
+  "quoteSafeExcerpts": [
+   "No insurer shall require the use of nonoriginal equipment manufacturer aftermarket crash parts in the repair of an insured’s motor vehicle, unless the consumer is advised in a written estimate of the use of nonoriginal equipment manufacturer aftermarket crash parts before repairs are made.",
+   "(a) The written estimate shall clearly identify each such part with the name of its nonoriginal equipment manufacturer or distributor."
+  ]
+ },
+ "Cal. Bus. & Prof. Code 9884.9": {
+  "topics": [
+   "estimate_authorization",
+   "supplement_handling",
+   "aftermarket_parts",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "customer did not authorize the additional repairs",
+   "written estimate required before starting work",
+   "no work before authorization to proceed",
+   "charging more than the estimate without consent",
+   "supplement authorization from the customer",
+   "auto body estimate must list each part as new, used, rebuilt, or reconditioned",
+   "crash parts identified as OEM or aftermarket on the estimate",
+   "customer designates someone else to authorize additional work"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) The automotive repair dealer shall give to the customer a written estimated price for labor and parts necessary for a specific job, except as provided in subdivision (e). No work shall be done and no charges shall accrue before authorization to proceed is obtained from the customer.",
+   "(c) In addition to subdivisions (a) and (b), an automotive repair dealer, when doing auto body or collision repairs, shall provide an itemized written estimate for all parts and labor to the customer. The estimate shall describe labor and parts separately and shall identify each part, indicating whether the replacement part is new, used, rebuilt, or reconditioned."
+  ]
+ },
+ "Cal. Bus. & Prof. Code 9884.7": {
+  "topics": [
+   "consumer_protection",
+   "repair_standards",
+   "estimate_authorization",
+   "shop_registration"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "what can get a shop's BAR registration suspended or revoked",
+   "shop accused of departing from accepted trade standards",
+   "untrue or misleading statement to a customer",
+   "customer signed a blank work order",
+   "BAR discipline for fraud or gross negligence"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Making or authorizing in any manner or by any means whatever any statement written or oral which is untrue or misleading, and which is known, or which by the exercise of reasonable care should be known, to be untrue or misleading.",
+   "(7) Any willful departure from or disregard of accepted trade standards for good and workmanlike repair in any material respect, which is prejudicial to another without consent of the owner or the owner’s duly authorized representative."
+  ]
+ },
+ "Cal. Bus. & Prof. Code 9884.10": {
+  "topics": [
+   "replaced_parts",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "customer wants the old parts back",
+   "return of replaced parts to the customer",
+   "does the shop have to keep the replaced parts"
+  ],
+  "quoteSafeExcerpts": [
+   "Upon request of the customer at the time the work order is taken, the automotive repair dealer shall return replaced parts to the customer at the time of the completion of the work"
+  ]
+ },
+ "Cal. Bus. & Prof. Code 9884.16": {
+  "topics": [
+   "shop_registration",
+   "repair_lien",
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers"
+  ],
+  "claimUseCases": [
+   "shop registration lapsed, can we still charge storage",
+   "unregistered shop cannot enforce a lien or sue for the repair bill",
+   "BAR registration and the right to charge storage fees"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) A person required to have a valid registration under the provisions of this chapter shall not have the benefit of any lien for labor or materials, including the ability to charge storage fees in accordance with applicable laws, or the right to sue on a contract for motor vehicle repairs unless the person possesses a valid registration."
+  ]
+ },
+ "16 CCR 3353": {
+  "topics": [
+   "estimate_authorization",
+   "aftermarket_parts",
+   "supplement_handling",
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "estimate must be authorized before any work commences",
+   "teardown before the estimate, what has to be disclosed",
+   "tear down to evaluate the damage before writing the estimate",
+   "auto body estimate must list every part and describe parts and labor separately",
+   "third-party payor authorization rules for the shop",
+   "towing fees must be on a separate document from the repair estimate"
+  ],
+  "quoteSafeExcerpts": [
+   "An estimate shall be provided to and authorized by the customer before any work commences. The estimate shall meet the requirements of Business and Professions Code section 9884.9 as well as the following:",
+   "(b) An automotive repair dealer, when doing auto body or collision repairs, shall provide the customer an itemized estimate containing the estimated price for parts and labor for a specific job. Parts and labor shall be described separately, and each part shall be listed in the estimate.",
+   "(c) Any automotive repair dealer, when performing a tear down, shall do all of the following:"
+  ]
+ },
+ "16 CCR 3354": {
+  "topics": [
+   "estimate_authorization",
+   "supplement_handling"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "additional repairs beyond the original estimate need a new authorization",
+   "exceeding the original estimate, what the shop must do first",
+   "supplement approval from the customer before more work",
+   "changing the repair method or parts on an itemized work order",
+   "designating someone to authorize additional repairs"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Exceeding Original Estimate. Except as provided in subsection (c), before any additional diagnosis or repair is commenced, and before any additional charges accrue for labor or parts in excess of the original estimated and authorized price, the automotive repair dealer shall:",
+   "(1) give the customer an estimate that describes all additional parts and labor, provides the cost of all additional parts and labor, and provides a total revised cost; and"
+  ]
+ },
+ "16 CCR 3355": {
+  "topics": [
+   "replaced_parts"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "returning replaced parts if the customer asked at authorization",
+   "which replaced parts are exempt from return"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) If requested by the customer at the time of authorization of the estimate, the automotive repair dealer shall return all replaced parts to the customer upon completion of the repair, pursuant to section 9884.10 of the Business and Professions Code."
+  ]
+ },
+ "16 CCR 3357": {
+  "topics": [
+   "estimate_authorization"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "hazardous waste disposal fee on the estimate",
+   "can the shop charge a toxic waste or hazardous materials handling fee",
+   "shop supplies and waste disposal charges must be itemized"
+  ],
+  "quoteSafeExcerpts": [
+   "An automotive repair dealer may charge a customer for costs associated with the handling, management and disposal of toxic wastes or hazardous substances under California or federal law which directly relate to the servicing or repair of the customer's vehicle."
+  ]
+ },
+ "16 CCR 3365": {
+  "topics": [
+   "repair_standards",
+   "estimate_dispute",
+   "short_pay",
+   "fair_settlement"
+  ],
+  "appliesTo": [
+   "repairers",
+   "insurers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "adjuster says the OEM procedure is not necessary",
+   "insurer refuses to pay for OEM repair procedures",
+   "OEM procedures denied as not required",
+   "sectioning a panel per OEM service specifications",
+   "accepted trade standards for auto body and frame repairs",
+   "insurer wants a repair method the manufacturer does not allow",
+   "corrosion protection per manufacturer specifications",
+   "what repair standard does California hold a body shop to",
+   "structural repair per OEM specs or industry standards",
+   "adjuster says the OEM procedure is not necessary",
+   "insurer will not pay for the OEM procedure",
+   "OEM procedure is not necessary according to the adjuster",
+   "manufacturer repair procedure denied by the insurer"
+  ],
+  "quoteSafeExcerpts": [
+   "The accepted trade standards for good and workmanlike auto body and frame repairs shall include, but not be limited to, the following:",
+   "(a) Repair procedures including but not limited to the sectioning of component parts, shall be performed in accordance with OEM service specifications or nationally distributed and periodically updated service specifications that are generally accepted by the autobody repair industry.",
+   "(b) All corrosion protection shall be applied in accordance with manufacturers' specifications or nationally distributed and periodically updated service specifications that are generally accepted by the autobody repair industry."
+  ]
+ },
+ "16 CCR 3368": {
+  "topics": [
+   "steering",
+   "storage_towing",
+   "consumer_protection"
+  ],
+  "appliesTo": [
+   "repairers"
+  ],
+  "claimUseCases": [
+   "paying a tow company a referral fee to bring cars to the shop",
+   "kickback to a towing service for delivering vehicles",
+   "referral fees for towed-in vehicles"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) An Automotive Repair Dealer shall not directly or indirectly pay or agree to pay any money or anything of value as a commission, referral fee, inducement, or in any manner a consideration, to a towing service for the delivery or the arranging of a delivery of a vehicle not owned by the repair shop or towing service, for the purpose of storage or repair."
+  ]
+ },
+ "16 CCR 3374": {
+  "topics": [
+   "aftermarket_parts",
+   "consumer_protection",
+   "misrepresentation"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "representing a used or rebuilt part as new",
+   "billing a reconditioned part as new"
+  ],
+  "quoteSafeExcerpts": [
+   "No dealer shall advertise, represent, or in any manner imply that a used, rebuilt or reconditioned part or component is new unless such part and all of the parts of any component are in fact new."
+  ]
+ },
+ "Cal. Civ. Code 3068": {
+  "topics": [
+   "repair_lien",
+   "storage_towing"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "customer will not pay for the repair and the car is sitting here, can I hold or sell it",
+   "customer refuses to pay the repair bill",
+   "can I keep the vehicle until the bill is paid",
+   "mechanic's lien on the car for repairs and storage",
+   "when does the repair lien arise and when is it lost",
+   "storage charges on a vehicle the customer abandoned at the shop",
+   "lien for storage and safekeeping of the vehicle"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Every person has a lien dependent upon possession for the compensation to which the person is legally entitled for making repairs or performing labor upon, and furnishing supplies or materials for, and for the storage, repair, or safekeeping of, and for the rental of parking space for, any vehicle of a type subject to registration under the Vehicle Code, subject to the limitations set forth in this chapter."
+  ]
+ },
+ "Cal. Civ. Code 3071": {
+  "topics": [
+   "repair_lien"
+  ],
+  "appliesTo": [
+   "repairers",
+   "consumers"
+  ],
+  "claimUseCases": [
+   "lien sale of an abandoned vehicle worth more than the threshold",
+   "how to sell a car the customer never picked up",
+   "DMV authorization for a lien sale",
+   "owner's right to a hearing before a lien sale"
+  ]
+ },
+ "Cal. Lab. Code 201": {
+  "topics": [
+   "final_paycheck",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "fired a tech, when is his final check due",
+   "final paycheck due immediately on termination",
+   "let a painter go today, when do I have to pay him",
+   "wages due at discharge"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) If an employer discharges an employee, the wages earned and unpaid at the time of discharge are due and payable immediately."
+  ]
+ },
+ "Cal. Lab. Code 202": {
+  "topics": [
+   "final_paycheck",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "tech quit yesterday, when is his final check due",
+   "employee quit without notice, final pay deadline",
+   "72 hours to pay an employee who quits",
+   "employee gave notice and quit, pay at the time of quitting"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) If an employee not having a written contract for a definite period quits his or her employment, his or her wages shall become due and payable not later than 72 hours thereafter, unless the employee has given 72 hours previous notice of his or her intention to quit, in which case the employee is entitled to his or her wages at the time of quitting."
+  ]
+ },
+ "Cal. Lab. Code 203": {
+  "topics": [
+   "final_paycheck",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "waiting time penalty for a late final paycheck",
+   "penalty for willfully failing to pay final wages",
+   "up to 30 days of wages as a penalty"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) If an employer willfully fails to pay, without abatement or reduction, in accordance with Sections 201, 201.3, 201.5, 201.6, 201.8, 201.9, 202, and 205.5, any wages of an employee who is discharged or who quits, the wages of the employee shall continue as a penalty from the due date thereof at the same rate until paid or until an action therefor is comme"
+  ]
+ },
+ "Cal. Lab. Code 221": {
+  "topics": [
+   "payroll_deductions",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "can I deduct the cost of a comeback from my painter's paycheck",
+   "charging a tech for a redo or a comeback",
+   "taking back wages already paid",
+   "deducting a broken tool or damaged part from pay",
+   "chargeback against a technician's wages",
+   "deduct a comeback from a paycheck",
+   "painter paycheck deduction for a comeback",
+   "can I take the cost of a redo out of a technician's pay"
+  ],
+  "quoteSafeExcerpts": [
+   "It shall be unlawful for any employer to collect or receive from an employee any part of wages theretofore paid by said employer to said employee."
+  ]
+ },
+ "Cal. Lab. Code 224": {
+  "topics": [
+   "payroll_deductions",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "what payroll deductions are allowed in California",
+   "deduction authorized in writing by the employee",
+   "deducting a comeback or shortage from wages",
+   "insurance premium or benefit deductions from pay",
+   "deduct the cost of a comeback from a painter's paycheck"
+  ],
+  "quoteSafeExcerpts": [
+   "The provisions of Sections 221, 222 and 223 shall in no way make it unlawful for an employer to withhold or divert any portion of an employee’s wages when the employer is required or empowered so to do by state or federal law or when a deduction is expressly authorized in writing by the employee to cover insurance premiums, hospital or medical dues, or other deductions not amounting to a rebate or deduction from the"
+  ]
+ },
+ "Cal. Lab. Code 226.2": {
+  "topics": [
+   "piece_rate",
+   "meal_rest_breaks",
+   "wage_claims",
+   "commission_pay"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "flat rate tech rest period pay",
+   "do I have to pay my flat-rate technicians separately for rest breaks",
+   "piece-rate employees paid for rest and recovery periods",
+   "nonproductive time pay for flat rate body techs",
+   "flag hour techs waiting for parts, is that paid time",
+   "piece rate pay stub must show rest period hours and nonproductive time",
+   "flat rate pay plan compliance in California",
+   "commission or piece rate technicians and rest breaks"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) For employees compensated on a piece-rate basis during a pay period, the following shall apply for that pay period:",
+   "(1) Employees shall be compensated for rest and recovery periods and other nonproductive time separate from any piece-rate compensation."
+  ]
+ },
+ "Cal. Lab. Code 226.7": {
+  "topics": [
+   "meal_rest_breaks",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "tech worked through lunch, what do I owe",
+   "missed meal or rest period premium pay",
+   "one hour of pay for a missed break",
+   "employer cannot require work during a meal or rest period"
+  ]
+ },
+ "Cal. Lab. Code 510": {
+  "topics": [
+   "overtime"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "overtime after eight hours in a day",
+   "daily overtime rules for shop employees",
+   "double time after twelve hours",
+   "seventh consecutive day overtime",
+   "tech worked ten hours today, what is the overtime"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Eight hours of labor constitutes a day’s work. Any work in excess of eight hours in one workday and any work in excess of 40 hours in any one workweek and the first eight hours worked on the seventh day of work in any one workweek shall be compensated at the rate of no less than one and one-half times the regular rate of pay for an employee. Any work in excess of 12 hours in one day shall be compensated at the rate of no less than twice the regular rate of pay for an employee."
+  ]
+ },
+ "Cal. Lab. Code 512": {
+  "topics": [
+   "meal_rest_breaks"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "meal period after five hours",
+   "second meal period after ten hours",
+   "can a tech waive the lunch break on a short day",
+   "30 minute meal break rules"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) An employer shall not employ an employee for a work period of more than five hours per day without providing the employee with a meal period of not less than 30 minutes, except that if the total work period per day of the employee is no more than six hours, the meal period may be waived by mutual consent of both the employer and employee."
+  ]
+ },
+ "Cal. Lab. Code 1194": {
+  "topics": [
+   "overtime",
+   "minimum_wage",
+   "wage_claims"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "employee suing for unpaid overtime or minimum wage",
+   "recovering unpaid wages with interest and attorney fees",
+   "minimum wage claim against the shop"
+  ]
+ },
+ "Cal. Lab. Code 2751": {
+  "topics": [
+   "commission_pay",
+   "piece_rate"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "commission pay plan has to be in writing",
+   "written commission agreement for an estimator or service writer",
+   "how commissions are computed and paid must be in a signed contract"
+  ]
+ },
+ "Cal. Lab. Code 2802": {
+  "topics": [
+   "expense_reimbursement",
+   "payroll_deductions"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "do I have to reimburse techs for their tools",
+   "employee expense reimbursement for tools, uniforms, mileage, or a cell phone",
+   "tech bought his own tools, does the shop owe him",
+   "reimbursing necessary business expenses"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) An employer shall indemnify his or her employee for all necessary expenditures or losses incurred by the employee in direct consequence of the discharge of his or her duties, or of his or her obedience to the directions of the employer, even though unlawful, unless the employee, at the time of obeying the directions, believed them to be unlawful."
+  ]
+ },
+ "Cal. Lab. Code 3700": {
+  "topics": [
+   "workers_comp"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "does the shop have to carry workers compensation insurance",
+   "workers comp coverage required for every employer",
+   "self-insurance certificate for workers compensation"
+  ]
+ },
+ "Cal. Lab. Code 3706": {
+  "topics": [
+   "workers_comp"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "injured tech at a shop with no workers comp insurance",
+   "uninsured employer can be sued for damages"
+  ]
+ },
+ "8 CCR 11090": {
+  "topics": [
+   "piece_rate",
+   "overtime",
+   "meal_rest_breaks",
+   "minimum_wage",
+   "payroll_deductions",
+   "expense_reimbursement"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "which wage order covers a body shop",
+   "wage order 9 transportation industry includes vehicle repair",
+   "rest period of ten minutes per four hours",
+   "meal period rules under the wage order",
+   "uniforms provided and maintained by the employer",
+   "can the shop require techs to provide their own hand tools",
+   "cash shortage or breakage deducted from wages",
+   "reporting time pay when a tech is sent home"
+  ],
+  "quoteSafeExcerpts": [
+   "(A) No employer shall employ any person for a work period of more than five (5) hours without a meal period of not less than 30 minutes, except that when a work period of not more than six (6) hours will complete the day's work the meal period may be waived by mutual consent of the employer and the employee.",
+   "(A) Every employer shall authorize and permit all employees to take rest periods, which insofar as practicable shall be in the middle of each work period. The authorized rest period time shall be based on the total hours worked daily at the rate of ten (10) minutes net rest time per four (4) hours or major fraction thereof.",
+   "(A) When uniforms are required by the employer to be worn by the employee as a condition of employment, such uniforms shall be provided and maintained by the employer. The term \"uniform\" includes wearing apparel and accessories of distinctive design or color."
+  ]
+ },
+ "8 CCR 3203": {
+  "topics": [
+   "safety_program"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "injury and illness prevention program requirements",
+   "IIPP for a body shop",
+   "written safety program required in California",
+   "Cal/OSHA safety program elements"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Effective July 1, 1991, every employer shall establish, implement and maintain an effective Injury and Illness Prevention Program (Program). The Program shall be in writing and, shall, at a minimum:"
+  ]
+ },
+ "8 CCR 5144": {
+  "topics": [
+   "respiratory_protection",
+   "ppe"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "respirator program for painters",
+   "respirator fit testing and medical evaluation requirements",
+   "supplied air respirator for isocyanate clear coat",
+   "respiratory protection program written requirements",
+   "employer must provide respirators when necessary"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) Respirators shall be provided by the employer when such equipment is necessary to protect the health of the employee. The employer shall provide the respirators which are applicable and suitable for the purpose intended. The employer shall be responsible for the establishment and maintenance of a respiratory protection program which shall include the requirements outlined in subsection (c)."
+  ]
+ },
+ "8 CCR 5153": {
+  "topics": [
+   "spray_booth",
+   "respiratory_protection",
+   "ppe"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "spraying outside the booth",
+   "spray coating must be done in a ventilated spray booth",
+   "ventilation running while spraying",
+   "PPE for spray painting operations"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) General. Spray coating operations whenever practicable shall be confined to properly designed, constructed and adequately ventilated spray booths or spray rooms which meet all the requirements of both this section and Article 137."
+  ]
+ },
+ "8 CCR 5155": {
+  "topics": [
+   "hazcom",
+   "respiratory_protection"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "isocyanate exposure limits",
+   "permissible exposure limits for paint chemicals",
+   "airborne contaminant limits in the paint shop"
+  ]
+ },
+ "8 CCR 5162": {
+  "topics": [
+   "safety_program",
+   "ppe"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "eyewash station required in the paint mixing room",
+   "emergency eyewash and shower equipment requirements"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Plumbed or self-contained eyewash or eye/facewash equipment which meets the requirements of sections 5, 7, or 9 of ANSI Z358.1-1981, Emergency Eyewash and Shower Equipment, incorporated herein by this reference, shall be provided at all work areas where, during routine operations or foreseeable emergencies, the eyes of an employee may come into contact with a substance whic"
+  ]
+ },
+ "8 CCR 5194": {
+  "topics": [
+   "hazcom"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "hazard communication program and safety data sheets",
+   "SDS binder requirements for paint and body materials",
+   "chemical labeling and employee training on hazards"
+  ]
+ },
+ "8 CCR 5446": {
+  "topics": [
+   "spray_booth"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "spray booth clearance from storage",
+   "three feet of clear space around the spray booth",
+   "spray booth construction requirements",
+   "booth interior must be smooth and cleanable",
+   "what does Cal/OSHA require of a paint booth"
+  ],
+  "quoteSafeExcerpts": [
+   "(a) Spray booths and connected ductwork shall be substantially constructed of steel, securely and rigidly supported, or of concrete or masonry, except that aluminum or other substantial noncombustible material may be used for intermittent or low volume spraying. Spray booths shall be designed to sweep or guide air currents toward the exhaust outlet.",
+   "(h) Spray booths shall be so installed that all portions are readily accessible for cleaning. A clear space of not less than three feet on all sides shall be kept free from storage or combustible construction."
+  ]
+ },
+ "8 CCR 5450": {
+  "topics": [
+   "spray_booth"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "spray booth exhaust and ventilation requirements",
+   "independent exhaust duct for each spray booth"
+  ]
+ },
+ "8 CCR 5451": {
+  "topics": [
+   "spray_booth",
+   "fire_protection"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "storing paint and solvent near the booth",
+   "flammable liquid storage in the paint shop"
+  ]
+ },
+ "8 CCR 5452": {
+  "topics": [
+   "spray_booth",
+   "fire_protection"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "sprinklers and fire protection for the spray area",
+   "fire suppression in the paint booth"
+  ]
+ },
+ "8 CCR 5461": {
+  "topics": [
+   "spray_booth",
+   "hazcom",
+   "respiratory_protection"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "two-part paint and organic peroxide handling",
+   "dual component coatings safety rules",
+   "spraying catalyzed materials safely"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) Organic peroxide pressure tank inserts shall be constructed of stainless steel, polyethylene, or other chemically nonreactive materials."
+  ]
+ },
+ "8 CCR 6151": {
+  "topics": [
+   "fire_protection"
+  ],
+  "appliesTo": [
+   "employers",
+   "employees"
+  ],
+  "claimUseCases": [
+   "fire extinguisher requirements for the shop",
+   "portable fire extinguisher placement and inspection"
+  ]
+ }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@repairmcp/state-ca",
+  "version": "0.0.0",
+  "description": "California state law vertical for RepairMCP: insurance claims practices (Ins. Code 758.5 anti-steering and 758.6 anti-capping, the 790.03(h) unfair claims catalog, the Fair Claims Settlement Practices Regulations at 10 CCR 2695 incl. the 2695.8 auto standards, the 2695.81 labor rate survey rule, and the Auto Body Repair Consumer Bill of Rights), the Automotive Repair Act and BAR regulations (estimates, authorization, teardown, invoices, replaced parts, the 16 CCR 3365 OEM-or-industry-spec repair standard, aftermarket crash parts), the repair and storage lien, Cal/OSHA spray-coating, respirator, and hazcom orders, and employment rules (final pay, piece-rate rest and nonproductive time, meal and rest periods, overtime, expense reimbursement, Wage Order 9), captured verbatim from the Legislature, the Department of Industrial Relations, and the Legal Information Institute's mirror of the California Code of Regulations.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}

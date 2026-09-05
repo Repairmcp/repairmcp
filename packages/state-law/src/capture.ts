@@ -40,6 +40,14 @@ export interface FetchOpts {
    * sources-tac.ts, the only package that passes this.
    */
   headers?: Record<string, string>;
+  /**
+   * Floor on the pause before THIS fetch, when the publisher asks for more
+   * than the io-wide delay. Added at CA: leginfo.legislature.ca.gov and the
+   * LII CCR mirror both state a 10-second Crawl-delay in robots.txt, and the
+   * project owner's decision to fetch them at all was conditioned on
+   * honoring it. Replays from --from-dir never wait.
+   */
+  minDelayMs?: number;
 }
 
 export interface CaptureIo {
@@ -127,6 +135,7 @@ export function makeCaptureIo(opts: {
     rawName?: string,
     userAgent?: string,
     extraHeaders?: Record<string, string>,
+    minDelayMs?: number,
   ): Promise<string> {
     if (rawName && opts.readRaw) {
       const saved = opts.readRaw(rawName);
@@ -135,7 +144,7 @@ export function makeCaptureIo(opts: {
         return saved;
       }
     }
-    if (fetchedOnce) await sleep(delayMs);
+    if (fetchedOnce) await sleep(Math.max(delayMs, minDelayMs ?? 0));
     fetchedOnce = true;
     log(`fetching ${url}`);
     const res = await fetchImpl(url, {
@@ -155,10 +164,17 @@ export function makeCaptureIo(opts: {
 
   return {
     fetchText: (url, o) =>
-      fetchRaw(url, o?.accept ?? 'text/html', o?.rawName, o?.userAgent, o?.headers),
+      fetchRaw(url, o?.accept ?? 'text/html', o?.rawName, o?.userAgent, o?.headers, o?.minDelayMs),
     fetchJson: async (url, o) =>
       JSON.parse(
-        await fetchRaw(url, o?.accept ?? 'application/json', o?.rawName, o?.userAgent, o?.headers),
+        await fetchRaw(
+          url,
+          o?.accept ?? 'application/json',
+          o?.rawName,
+          o?.userAgent,
+          o?.headers,
+          o?.minDelayMs,
+        ),
       ),
     fetchBinary: async (url, o) => {
       const rawName = o?.rawName;
