@@ -226,8 +226,8 @@
   "claimUseCases": [
    "how long does the insurer have to accept or deny the claim",
    "40 days to accept or deny",
-   "insurer has not paid after accepting the claim",
-   "30 days to pay once the claim is accepted",
+   "insurer accepted the claim but payment never came",
+   "30 days to tender payment once the claim is accepted",
    "insurer keeps asking for more documentation to stall the claim",
    "claim decision deadline",
    "insurer must investigate the claim thoroughly and fairly",
@@ -265,19 +265,20 @@
    "total loss valuation of a comparable automobile",
    "insurer lowballed the actual cash value on the total loss",
    "insurer told the customer our shop does bad work",
-   "adjuster badmouthing the shop the customer chose",
+   "insurer badmouthing the shop the customer chose",
    "insurer suggesting a different shop after the customer already chose ours",
    "customer told to drive an unreasonable distance for an inspection or repair",
    "insurer wrote the estimate below accepted trade standards",
-   "insurer estimate ignores OEM procedures and repair standards",
    "carrier wrote the estimate with aftermarket parts and says that is all they cover",
    "aftermarket crash parts must be equal in kind, quality, safety, fit, and performance",
-   "insurer must pay to modify aftermarket parts that do not fit",
+   "insurer must cover modifying aftermarket parts that fit poorly",
    "betterment or depreciation deducted without itemizing it",
-   "insurer paid the total loss but will not pay the storage charges",
+   "insurer settled the total loss but disputes the storage charges",
    "reasonable towing and storage charges after a covered loss",
    "insurer must give notice before cutting off storage",
-   "third party claimant told to file on their own policy"
+   "third party claimant told to file on their own policy",
+   "insurer estimate must allow repairs per accepted trade standards and the BAR repair standard",
+   "adjuster wrote the estimate without the necessary operations"
   ],
   "quoteSafeExcerpts": [
    "(1) require that an automobile be repaired at a specific repair shop; or,",
@@ -553,7 +554,11 @@
    "adjuster says the OEM procedure is not necessary",
    "insurer will not pay for the OEM procedure",
    "OEM procedure is not necessary according to the adjuster",
-   "manufacturer repair procedure denied by the insurer"
+   "manufacturer repair procedure denied by the insurer",
+   "adjuster says the OEM procedure is not necessary and will not pay for it",
+   "insurer refuses OEM repair procedures as unnecessary",
+   "OEM repair procedure not paid by the insurer",
+   "body shop must follow OEM service specifications"
   ],
   "quoteSafeExcerpts": [
    "The accepted trade standards for good and workmanlike auto body and frame repairs shall include, but not be limited to, the following:",
@@ -910,12 +915,17 @@
    "uniforms provided and maintained by the employer",
    "can the shop require techs to provide their own hand tools",
    "cash shortage or breakage deducted from wages",
-   "reporting time pay when a tech is sent home"
+   "reporting time pay when a tech is sent home",
+   "deducting a comeback, breakage, or damaged part from a technician's wages",
+   "no deduction for breakage or loss of equipment unless dishonest, willful, or grossly negligent",
+   "can the shop require techs earning twice minimum wage to provide their own hand tools"
   ],
   "quoteSafeExcerpts": [
    "(A) No employer shall employ any person for a work period of more than five (5) hours without a meal period of not less than 30 minutes, except that when a work period of not more than six (6) hours will complete the day's work the meal period may be waived by mutual consent of the employer and the employee.",
    "(A) Every employer shall authorize and permit all employees to take rest periods, which insofar as practicable shall be in the middle of each work period. The authorized rest period time shall be based on the total hours worked daily at the rate of ten (10) minutes net rest time per four (4) hours or major fraction thereof.",
-   "(A) When uniforms are required by the employer to be worn by the employee as a condition of employment, such uniforms shall be provided and maintained by the employer. The term \"uniform\" includes wearing apparel and accessories of distinctive design or color."
+   "(A) When uniforms are required by the employer to be worn by the employee as a condition of employment, such uniforms shall be provided and maintained by the employer. The term \"uniform\" includes wearing apparel and accessories of distinctive design or color.",
+   "No employer shall make any deduction from the wage or require any reimbursement from an employee for any cash shortage, breakage, or loss of equipment, unless it can be shown that the shortage, breakage, or loss is caused by a dishonest or willful act, or by the gross negligence of the employee.",
+   "(B) When tools or equipment are required by the employer or are necessary to the performance of a job, such tools and equipment shall be provided and maintained by the employer, except that an employee whose wages are at least two (2) times the minimum wage provided herein may be required to provide and maintain hand tools and equipment customarily required by the trade or craft."
   ]
  },
  "8 CCR 3203": {

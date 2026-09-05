@@ -109,10 +109,16 @@ describe('launch demo criteria — the expert gauntlet', () => {
   test('accept, deny, pay deadlines: 2695.7 first', () => {
     expect(top('how long does the insurer have to accept or deny the claim and pay it', 1)).toEqual(['2695.7']);
   });
-  test('OEM procedure denied: 16 CCR 3365 in the top two, with 2695.8', () => {
+  test('OEM procedure denied: 16 CCR 3365 leads — the standard the insurer\'s estimate must meet — with 2695.8 second', () => {
     const t = top('adjuster says the OEM procedure is not necessary and will not pay for it', 2);
-    expect(t).toContain('3365');
-    expect(t).toContain('2695.8');
+    expect(t).toEqual(['3365', '2695.8']);
+    expect(top('insurer refuses to pay for OEM repair procedures', 1)).toEqual(['3365']);
+  });
+  test('comeback chargeback: Wage Order 9\'s breakage rule is quotable alongside 221 and 224', () => {
+    const r = corpus.findSupporting("can I deduct the cost of a comeback from my painter's paycheck", { limit: 3 });
+    const wo9 = r.hits.find((h) => h.section.cite === '11090');
+    expect(wo9).toBeDefined();
+    expect(corpus.annotationFor(wo9!.section)?.quoteSafeExcerpts?.some((e) => e.includes('breakage, or loss of equipment'))).toBe(true);
   });
   test('aftermarket parts pushed: 2695.8 or 9875.1 in the top three', () => {
     const t = top('carrier wrote the estimate with aftermarket parts and says that is all they cover', 3);
