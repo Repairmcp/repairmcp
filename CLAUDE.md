@@ -296,6 +296,61 @@ apps/state-ca-server/ @repairmcp/state-ca-server — Worker, ca.repairmcp.com,
                       domain breakdown — no currency pin exists because none
                       of the three surfaces states one
 
+packages/state-fl/    @repairmcp/state-fl — Florida vertical (pure corpus, TWO
+                      publishers, THREE domains; state #6, the first of the
+                      population-ordered run FL → NY → MN → PA → OH → IL → MI →
+                      NC → MA → GA decided 2026-09-09)
+  src/parse-statutes.ts  Online Sunshine (leg.state.fl.us) one-page-per-section
+                      parser: the statute is a SECOND complete HTML document
+                      nested in div#statutes; div.Section / span.SectionNumber /
+                      span.CatchlineText (Florida PRINTS catchlines — headings
+                      are source text) / nested Subsection-Paragraph divs /
+                      div.History. Absence is HTTP 200 + "cannot be found" +
+                      no div.Section. Anchors strip WITHOUT a space so
+                      "s. 713.78(11)" stays verbatim
+  src/capture-statutes.ts  one fetch per cite at the io-wide 2 s pause (robots
+                      allows; the Senate mirror asks 10 s and is cross-check
+                      only); the EDITION tripwire — every page prints
+                      "The 2026 Florida Statutes" in its h2, pinned by
+                      FL_STATUTES_EDITION (identity.ts) INCLUDING any
+                      special-session suffix the site prints in the same slot;
+                      first page must match the pin, every later page must
+                      match the first
+  src/parse-fac.ts    flrules.org: the chapter page (tr.results rows → cite,
+                      title, effective date, and the readFile.asp `tid`), the
+                      rule card (Effective Date + the full Rulemaking
+                      Authority/History line in HTML), and the document text
+  src/capture-fac.ts  two-tier: chapter page resolves the notice id, the card
+                      states the history, the Word 97 .doc holds the text (NO
+                      HTML text view exists). `tid` is the version shortcut
+                      (skip the document when unchanged AND the manifest still
+                      names the rule — the CO ccrRuleVersionId rule);
+                      cross-checks: card date vs row date, card notice vs row
+                      notice, the document's first line must open with the
+                      cite, the document's history dates must equal the card's
+  src/doc-text.ts     word-extractor behind a dynamic import() — the CO
+                      pdf-text.ts pattern; nothing the worker imports reaches it
+  src/identity.ts     two codes (Fla. Stat., Fla. Admin. Code); statute cites
+                      are chapter.section pairs the factory misreads, so FL
+                      resolves everything itself; bare cites by EXACT number
+                      (FL_CITE_CODES from the manifests); statute citations
+                      carry the EDITION ("Fla. Stat. 626.9743, 2026 edition" —
+                      Florida prints NO per-section effective dates, only a
+                      session-law history), FAC citations carry real dates;
+                      named aliases: Motor Vehicle Repair Act, FDUTPA, Unfair
+                      Insurance Trade Practices Act, Crash Parts, Workers'
+                      Compensation Law, Adjuster Code of Ethics
+  data/               fl-law-corpus.json (46 sections, 370 KB: insurance 12 /
+                      repair_law 22 / employment 12) + annotations
+  test/               74 tests incl. the demo gauntlet (storage cut-off → 626.9743,
+                      bad faith → 624.155, sell the car → 713.585, stop-work
+                      order → 440.107), the edition pin, and full-manifest
+                      capture fixtures with an injected document reader
+
+apps/state-fl-server/ @repairmcp/state-fl-server — Worker, fl.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      statutesEdition + the three-domain breakdown
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -337,7 +392,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -392,13 +447,16 @@ curl -s https://nhtsa.repairmcp.com/health          # worker + upstream probe + 
 **State law servers** — Washington (`apps/state-wa-server/`, 670 WAC/RCW
 sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections),
 Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), Texas
-(`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections), and
+(`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections),
 California (`apps/state-ca-server/`, 97 statute/CCR/Cal-OSHA sections across
-four domains). Pure corpus: the data ships in each bundle, so a corpus
+four domains), and Florida (`apps/state-fl-server/`, 46 statute/FAC
+sections; the FAC text is read out of Word 97 documents at capture, ~2
+minutes end to end). Pure corpus: the data ships in each bundle, so a corpus
 refresh IS a deploy — re-run the capture, run the tests (the substring,
 demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
-TX_STATUTES_CURRENCY; California has no pin because none of its surfaces
-states currency — are the acceptance gate), deploy from the state's app.
+TX_STATUTES_CURRENCY, FL FL_STATUTES_EDITION; California has no pin because
+none of its surfaces states currency — are the acceptance gate), deploy from
+the state's app.
 A California capture takes ~20 minutes: leginfo and the LII mirror each ask
 for a 10-second crawl delay and the capture honors it (`--save-raw` once,
 then `--from-dir` for every re-parse).
@@ -411,6 +469,7 @@ wrangler dev                                         # from the state's app dir
 wrangler deploy                                      # → wa. / mt. / co. / tx. / ca.repairmcp.com
 curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
 curl -s https://ca.repairmcp.com/health              # corpus meta + domains + captureSources
+curl -s https://fl.repairmcp.com/health              # corpus meta + domains + statutesEdition
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -657,7 +716,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | CA vertical | ✅ live | 2026-09-04: `https://ca.repairmcp.com/mcp` deployed (deployment `1e08a259`) and verified on the wire — `/health` reports 97 sections, captured 2026-09-05 (UTC), captureSources leginfo 49 / dir 16 / lii 32, domains insurance 23 / repair_law 39 / safety 17 / employment 18; the paint-and-materials cap query → Ins. Code 758.6 first at 0.616 with the verbatim "Insurers shall not engage in capping" excerpt; 16 CCR 3365 fetches verbatim with shortForm "16 CCR 3365, effective 11/19/1997"; the connector search on steering → 758.5 first; WAF confirmed on the hostname, exactly 20 pass then 429s. 97 verbatim sections from THREE surfaces — the Legislature's article/chapter text views (leginfo.legislature.ca.gov; its robots.txt disallows all agents and the project owner chose to fetch politely at its 10 s crawl delay, enforced in code), the Department of Industrial Relations' own Title 8 pages, and Cornell LII's mirror of the CCR for Titles 10 and 16 and Wage Order 9 (the official publisher, Westlaw calregs, answers non-browser requests with a Cloudflare challenge; the project owner chose the mirror over a hollow corpus, and the provenance is stated on /legal, in the source note, in every tool description, and per section). Headliners no other shipped state has: Ins. Code 758.6 (no capping paint and materials), 10 CCR 2695.81 (the standardized labor rate survey), 16 CCR 3365 (auto body and frame repairs per OEM or nationally recognized specifications), Lab. Code 226.2 (piece-rate rest and nonproductive time pay). Honest absences in the tool descriptions and the site card: no private action under 790.03 (Moradi-Shalal), no prompt-payment interest remedy, no statutory total-loss percentage, no mandatory appraisal statute, and the piece-rate question for flat-rate plans is for counsel. Site flips to seven sources; /legal names the three surfaces and why. Open: connector gates in the project owner's clients; the mirror's lag on freshly amended rules is the residual risk. |
 
-**Test totals:** 890 passing (77 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 73 state-ca + 193 ingestion). 0 failing.
+| FL vertical | ✅ live | 2026-09-09: `https://fl.repairmcp.com/mcp` deployed (deployment `93034495`) and verified on the wire — `/health` reports 46 sections, captured 2026-09-09, statutesEdition "The 2026 Florida Statutes", domains insurance 12 / repair_law 22 / employment 12; "insurer cut off storage payments on the total loss without any notice" → Fla. Stat. 626.9743 first at 0.563 with the verbatim 72-hour excerpt; bad faith → 624.155 first; `s. 559.909` fetches with shortForm "Fla. Stat. 559.909, 2026 edition"; the connector search on aftermarket parts → 501.33, 626.9743, 559.909; 69B-220.201 fetches with "effective 4/21/2025". 46 verbatim sections from TWO publishers — Online Sunshine (one page per section; Florida prints catchlines, so headings are source text, and prints NO per-section effective dates, so every statute citation carries the annual edition, pinned) and flrules.org (rule cards in HTML; the rule TEXT only as Word 97 .doc downloads, read with word-extractor behind a dynamic import and versioned by the adopting notice id). Headliners: 626.9743 (parts equivalent in kind and quality; restoration to pre-loss condition when the insurer requires a shop; the estimate copy; 72 hours' notice before storage payments stop; itemized betterment), 624.155 (a statutory PRIVATE right of action for bad faith after the 60-day notice — the opposite of California), 319.30(3) (the 80 percent total-loss test), 627.4265 (20 days to pay a written settlement, then 12 percent interest), 69B-220.201 (adjuster ethics: no steering for consideration; a breach is an unfair claims settlement practice). Two corrections the capture forced on the kickoff draft, both recorded: 627.4265 DOES carry interest (from a written settlement only), and 69B-220.201's 2025 (3)(m) estimate rules are residential-only. Honest absences in the tool descriptions and the site card: no anti-steering statute in the CA/TX sense, no labor rate rule, no paint-and-materials rule, no state OSHA plan, no final-paycheck or break statute; 627.70131 is a property-insurance section. Site flips to eight sources; /legal names both publishers. **Open: the zone WAF rate limit returned zero 429s on fl., ca., AND deg. under 30-request bursts at launch** — it is not firing on any hostname (see Backlog); connector gates in the project owner's clients. |
+
+**Test totals:** 979 passing (91 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -840,6 +901,26 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Backlog (deferred until called)
 
+- **The zone WAF rate limit is not firing — check it first.** At the FL launch
+  (2026-09-09) 30 parallel `POST /mcp` requests from one IP returned 30×200 on
+  `fl.`, `ca.`, and `deg.repairmcp.com` alike; every earlier launch saw 429s
+  at ~20/10 s. Nothing in this repo changed the rule (it lives in the
+  dashboard: Security → WAF → Rate limiting rules). Either the rule was
+  disabled/expired, its action changed from Block, or its expression no longer
+  matches `/mcp`. Re-verify in the dashboard and burst-test again; until then
+  every corpus is an open, unrated door.
+- **Next states, in order** (decided 2026-09-09, by vehicles on the road ×
+  shop-usable law × publisher capturability): NY (Reg 64 / 11 NYCRR 216 is
+  the strongest insurer-conduct rule anywhere, but NYCRR's official host is
+  Westlaw — a CA-style provenance decision is needed; DFS publishes Reg 64
+  itself), MN (72A.201 subd. 6, revisor.mn.gov is the cleanest publisher in
+  the country), PA, OH, IL, MI, NC, MA, GA (Lexis-hosted; TN and NJ share
+  that problem). `docs/FL-VERTICAL-KICKOFF.md` records the reasoning.
+- **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
+  the project owner's clients and run the gauntlet's shop-phrasing queries);
+  Florida's edition rollover lands every July/August — the pin will fail the
+  first drift check after it and the refresh is the FL-LAW-ATTENTION checklist.
+
 - ~~Resolve the `/grid/get/all` 200-row response.~~ **Resolved 2026-08-03**: transient
   throttle, not an endpoint change. One polite fetch that morning returned 5,777,228
   bytes, `count: 22674`, 22,661 unique db_ids, max 41745 — fully recovered. No
@@ -982,6 +1063,29 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 ---
 
 ## Known gotchas
+
+- **Online Sunshine answers an unknown section with HTTP 200** and the
+  sentence "The statute you have selected cannot be found." — no
+  `div.Section`, no 404. The statute itself is a SECOND complete HTML
+  document (its own `<!DOCTYPE>`) nested inside the page; the parser slices
+  from `div.Section` and never trusts the outer chrome. The edition `<h2>`
+  has an empty slot where special-session suffixes print; the pin captures
+  the whole phrase so a mid-year "(including 2026 Special Session A)" fails
+  loudly instead of shipping under the wrong currency line.
+- **flrules.org has NO HTML view of rule text.** The rule card is HTML
+  (effective date, history line, the download link) but the text exists only
+  as a Word 97 `.doc` (`application/msword`); `type=2` returns a system
+  message. `word-extractor` reads it (pure JS over the OLE container) behind
+  a dynamic import; the parser refuses a document whose first line does not
+  open with the requested rule number and one whose history dates differ
+  from the card's. The download `tid` changes with every amendment — resolve
+  it from the chapter page each capture, never hardcode it.
+- **The FAC notice-id shortcut hides a parser fix.** A `--from-dir` replay
+  with an existing corpus reuses every FAC section whose `tid` is unchanged,
+  so a parse-fac.ts change does NOT reach the corpus until the corpus file is
+  deleted (or the manifest changes). That is the shortcut working, not a bug —
+  the first FL capture's anchor-stripping fix was invisible for exactly this
+  reason.
 
 - **leginfo answers an unknown section with HTTP 200 and an EMPTY
   `single_law_section` div**, and answers a section the Legislature prints in

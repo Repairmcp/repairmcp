@@ -1,0 +1,26 @@
+{
+  "name": "@repairmcp/state-fl",
+  "version": "0.0.0",
+  "description": "Florida state law vertical for RepairMCP: insurance claims practices (Fla. Stat. 626.9743 motor vehicle claim settlement practices, 624.155 the civil remedy for bad faith, the 626.9541(1)(i) unfair claim settlement practices catalog, 627.4265 payment of settlement within 20 days, 319.30 the 80 percent total loss threshold, the adjuster ethics rule at Fla. Admin. Code 69B-220.201 and the prompt-investigation standards at 69O-166.024), the Florida Motor Vehicle Repair Act (written estimates, the disclosure statement, charges over the estimate, invoices, records, the possessory lien and the bond to release it, unlawful acts and remedies), the labor lien and vehicle sale, towing and storage liens, aftermarket crash parts disclosure, the Deceptive and Unfair Trade Practices Act, and employment rules (minimum wage, the legal day's work, unpaid wage fees, E-Verify, the private whistleblower act, workers' compensation coverage and stop-work orders), captured verbatim from the Legislature's Online Sunshine and the Florida Administrative Code.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "word-extractor": "^1.0.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}

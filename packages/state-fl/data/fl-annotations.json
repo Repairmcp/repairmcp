@@ -1,0 +1,706 @@
+{
+ "Fla. Stat. 626.9743": {
+  "topics": ["fair_settlement", "aftermarket_parts", "total_loss", "valuation_dispute", "storage_towing", "repair_facility_choice", "steering", "estimate_dispute", "short_pay", "supplement_handling"],
+  "appliesTo": ["insurers", "repairers", "claimants", "consumers"],
+  "claimUseCases": [
+   "insurer says the customer has to use their shop",
+   "adjuster steering the customer to a network shop",
+   "insurer requires a particular repair shop and the repair came back wrong",
+   "insurer required their shop so they owe pre-loss condition at no extra cost",
+   "adjuster told the third-party claimant to go through their own insurance",
+   "carrier pushing the claimant onto their own collision coverage to avoid paying",
+   "carrier wrote the estimate with aftermarket parts",
+   "aftermarket parts pushed that do not fit or match",
+   "insurer requires used or aftermarket parts not equivalent in kind and quality",
+   "replacement parts must be equivalent in fit appearance and performance",
+   "insurer lowballed the actual cash value on the total loss",
+   "total loss valuation method comparable vehicles guidebook database dealer quotes",
+   "insurer deducted betterment and depreciation without itemizing it",
+   "betterment deduction must be itemized and explained in writing",
+   "carrier will not send the customer a copy of their estimate",
+   "insured is entitled to a copy of the insurer's estimate the settlement is based on",
+   "insurer cut off storage payments without notice",
+   "storage charges stopped with no 72 hour notice",
+   "insurer stopped paying storage on the total loss",
+   "insurer will not pay sales tax on the total loss replacement",
+   "sales tax on the total loss or on repair parts"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) An insurer may not, when liability and damages owed under the policy are reasonably clear, recommend that a third-party claimant make a claim under his or her own policy solely to avoid paying the claim under the policy issued by that insurer.",
+   "(3) An insurer that elects to repair a motor vehicle and specifically requires a particular repair shop for vehicle repairs shall cause the damaged vehicle to be restored to its physical condition as to performance and appearance immediately prior to the loss at no additional cost to the insured or third-party claimant other than as stated in the policy.",
+   "(4) An insurer may not require the use of replacement parts in the repair of a motor vehicle which are not at least equivalent in kind and quality to the damaged parts prior to the loss in terms of fit, appearance, and performance.",
+   "Deductions shall be itemized and specific as to dollar amount and shall accurately reflect the value assigned to the betterment or depreciation. The basis for any deduction shall be explained to the claimant in writing, if requested, and a copy of the explanation shall be maintained with the insurer’s claim file.",
+   "(7) Every insurer shall, if partial losses are settled on the basis of a written estimate prepared by or for the insurer, supply the insured a copy of the estimate upon which the settlement is based.",
+   "(8) Every insurer shall provide notice to an insured before termination of payment for previously authorized storage charges, and the notice shall provide 72 hours for the insured to remove the vehicle from storage before terminating payment of the storage charges."
+  ]
+ },
+ "Fla. Stat. 624.155": {
+  "topics": ["bad_faith", "fair_settlement", "claim_denial", "short_pay", "supplement_handling"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "can I sue the insurer for bad faith",
+   "can the customer sue the insurance company for bad faith",
+   "bad faith claim against the carrier",
+   "civil remedy notice before suing the insurer",
+   "60 day notice to the department before a bad faith lawsuit",
+   "insurer not attempting in good faith to settle the claim",
+   "insurer refuses to settle when they clearly owe it",
+   "carrier stalling on a claim that is reasonably clear",
+   "private right of action against an insurer in Florida",
+   "unfair claim settlement practice lawsuit"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Any person may bring a civil action against an insurer when such person is damaged:",
+   "1. Not attempting in good faith to settle claims when, under all the circumstances, it could and should have done so, had it acted fairly and honestly toward its insured and with due regard for her or his interests;",
+   "Notwithstanding the provisions of the above to the contrary, a person pursuing a remedy under this section need not prove that such act was committed or performed with such frequency as to indicate a general business practice.",
+   "(3)(a) As a condition precedent to bringing an action under this section, the department and the authorized insurer must have been given 60 days’ written notice of the violation.",
+   "(c) No action shall lie if, within 60 days after the insurer receives notice from the department in accordance with this subsection, the damages are paid or the circumstances giving rise to the violation are corrected."
+  ]
+ },
+ "Fla. Stat. 626.9541": {
+  "topics": ["fair_settlement", "misrepresentation", "claim_denial", "prompt_investigation", "short_pay", "supplement_handling"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "unfair claim settlement practices list",
+   "insurer denied the claim without investigating",
+   "claim denied with no reasonable investigation",
+   "adjuster misrepresented the policy coverage",
+   "insurer will not explain in writing why the claim was denied",
+   "carrier will not give a written explanation for the short pay or compromise offer",
+   "insurer ignoring communications about the claim",
+   "claim dragging with no acknowledgment from the carrier",
+   "supplement has been sitting for weeks with no response",
+   "insurer will not say whether the claim is covered",
+   "insurer keeps asking for more information without saying why"
+  ],
+  "quoteSafeExcerpts": [
+   "a. Failing to adopt and implement standards for the proper investigation of claims;",
+   "b. Misrepresenting pertinent facts or insurance policy provisions relating to coverages at issue;",
+   "c. Failing to acknowledge and act promptly upon communications with respect to claims;",
+   "d. Denying claims without conducting reasonable investigations based upon available information;",
+   "f. Failing to promptly provide a reasonable explanation in writing to the insured of the basis in the insurance policy, in relation to the facts or applicable law, for denial of a claim or for the offer of a compromise settlement;",
+   "g. Failing to promptly notify the insured of any additional information necessary for the processing of a claim;"
+  ]
+ },
+ "Fla. Stat. 626.877": {
+  "topics": ["adjuster_conduct", "fair_settlement"],
+  "appliesTo": ["insurers"],
+  "claimUseCases": [
+   "adjuster is not following the policy",
+   "adjuster must adjust the claim according to the contract and the law",
+   "adjuster ignoring policy terms"
+  ],
+  "quoteSafeExcerpts": [
+   "Every adjuster shall adjust or investigate every claim, damage, or loss made or occurring under an insurance contract, in accordance with the terms and conditions of the contract and of the applicable laws of this state."
+  ]
+ },
+ "Fla. Stat. 626.878": {
+  "topics": ["adjuster_conduct", "fair_settlement"],
+  "appliesTo": ["insurers"],
+  "claimUseCases": [
+   "adjuster code of ethics",
+   "adjuster conflict of interest",
+   "unlicensed adjuster writing estimates",
+   "person adjusting claims with a suspended license"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) An adjuster shall subscribe to the code of ethics specified in the rules of the department.",
+   "A person who provides these services while the person’s license is revoked or suspended acts as an unlicensed adjuster."
+  ]
+ },
+ "Fla. Stat. 627.4265": {
+  "topics": ["settlement_payment", "fair_settlement", "short_pay"],
+  "appliesTo": ["insurers", "claimants", "consumers"],
+  "claimUseCases": [
+   "settled but not paid",
+   "claim settled in writing but the check has not come",
+   "how long does the insurer have to pay after a settlement",
+   "insurer agreed to the amount and still has not paid",
+   "20 days to pay a settlement",
+   "interest on a late settlement payment"
+  ],
+  "quoteSafeExcerpts": [
+   "In any case in which a person and an insurer have agreed in writing to the settlement of a claim, the insurer shall tender payment according to the terms of the agreement no later than 20 days after such settlement is reached.",
+   "if the payment is not tendered within 20 days, or such other date as the agreement may provide, it shall bear interest at a rate of 12 percent per year from the date of the agreement"
+  ]
+ },
+ "Fla. Stat. 627.70131": {
+  "topics": ["prompt_investigation", "supplement_handling", "fair_settlement"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "insurer has not acknowledged the claim communication",
+   "how many days does the insurer have to acknowledge a communication",
+   "insurer must begin investigating after proof of loss",
+   "property insurance claim acknowledgment and investigation deadlines"
+  ],
+  "quoteSafeExcerpts": [
+   "(1)(a) Upon an insurer’s receiving a communication with respect to a claim, the insurer shall, within 7 calendar days, review and acknowledge receipt of such communication unless payment is made within that period of time or unless the failure to acknowledge is caused by factors beyond the control of the insurer."
+  ]
+ },
+ "Fla. Stat. 627.7288": {
+  "topics": ["glass_claims"],
+  "appliesTo": ["insurers", "consumers", "repairers"],
+  "claimUseCases": [
+   "windshield deductible",
+   "does the deductible apply to windshield replacement",
+   "glass claim under comprehensive with no deductible",
+   "customer charged a deductible on a windshield"
+  ],
+  "quoteSafeExcerpts": [
+   "The deductible provisions of any policy of motor vehicle insurance, delivered or issued in this state by an authorized insurer, providing comprehensive coverage or combined additional coverage shall not be applicable to damage to the windshield of any motor vehicle covered under such policy."
+  ]
+ },
+ "Fla. Stat. 319.30": {
+  "topics": ["total_loss", "valuation_dispute", "storage_towing"],
+  "appliesTo": ["insurers", "consumers", "repairers"],
+  "claimUseCases": [
+   "when is it legally a total loss in Florida",
+   "total loss threshold percentage",
+   "80 percent rule for totaling a vehicle",
+   "insurer totaled the car when the repair cost was under 80 percent",
+   "owner and insurer agree to repair instead of total",
+   "salvage title after a total loss",
+   "certificate of destruction",
+   "total loss vehicle title brand"
+  ],
+  "quoteSafeExcerpts": [
+   "(3)(a)1. As used in this section, a motor vehicle or mobile home is a “total loss”:",
+   "a. When an insurance company pays the vehicle owner to replace the wrecked or damaged vehicle with one of like kind and quality or when an insurance company pays the owner upon the theft of the motor vehicle or mobile home; or",
+   "b. When an uninsured motor vehicle or mobile home is wrecked or damaged and the cost, at the time of loss, of repairing or rebuilding the vehicle is 80 percent or more of the cost to the owner of replacing the wrecked or damaged motor vehicle or mobile home with one of like kind and quality.",
+   "2. A motor vehicle or mobile home shall not be considered a “total loss” if the insurance company and owner of a motor vehicle or mobile home agree to repair, rather than to replace, the motor vehicle or mobile home."
+  ]
+ },
+ "Fla. Admin. Code 69O-166.021": {
+  "topics": ["fair_settlement"],
+  "appliesTo": ["insurers", "claimants"],
+  "claimUseCases": [
+   "who counts as a claimant or first-party claimant under the claims rules",
+   "definitions for the insurer claims practices rules",
+   "what counts as notification of a claim"
+  ],
+  "quoteSafeExcerpts": [
+   "(8) \"Notification of a claim\" means any notice to an insurer or its agent by a claimant or an insured that reasonably apprises the insurer that a loss has occurred."
+  ]
+ },
+ "Fla. Admin. Code 69O-166.024": {
+  "topics": ["prompt_investigation", "supplement_handling", "fair_settlement", "claim_denial"],
+  "appliesTo": ["insurers", "claimants", "repairers"],
+  "claimUseCases": [
+   "claim dragging with no acknowledgment from the carrier",
+   "insurer has not acknowledged our communication about the claim",
+   "how many days does the insurer have to acknowledge a claim communication",
+   "14 days to acknowledge a claim communication",
+   "insurer has not started investigating the claim",
+   "supplement sent two weeks ago and no response",
+   "adjuster ignoring emails about the supplement",
+   "insurer must begin investigating within 10 working days of proof of loss"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Upon the insurer's receiving a communication with respect to a claim, it shall, within 14 calendar days, review and acknowledge receipt of such communication unless payment is made within that period of time or unless the failure to acknowledge is caused by factors beyond the control of the insurer which reasonably prevent such acknowledgement.",
+   "(3) Unless otherwise provided by the policy of insurance or by statutes, such insurer shall within 10 working days of its receipt of proof of loss statements begin such investigation as is reasonably necessary, unless the failure to begin such investigation is caused by factors beyond the control of the insurer which reasonably prevent the commencement of such investigation."
+  ]
+ },
+ "Fla. Admin. Code 69B-220.201": {
+  "topics": ["adjuster_conduct", "steering", "misrepresentation", "estimate_dispute", "fair_settlement", "repair_facility_choice"],
+  "appliesTo": ["insurers", "claimants", "repairers"],
+  "claimUseCases": [
+   "adjuster steering the customer to a network shop",
+   "adjuster referring the customer to a shop that pays the adjuster",
+   "adjuster has a financial interest in the shop they recommend",
+   "adjuster kickback for referrals",
+   "adjuster code of ethics",
+   "adjuster not adjusting the claim according to the contract",
+   "adjuster treating our customer differently from others",
+   "adjuster ethics complaint to the department",
+   "breach of the adjuster ethics rule is an unfair claims settlement practice"
+  ],
+  "quoteSafeExcerpts": [
+   "(b) A breach of any provision of this rule constitutes an unfair claims settlement practice.",
+   "An adjuster shall put the duty for fair and honest treatment of the claimant above the adjuster's own interests in every instance.",
+   "(a) An adjuster shall not directly or indirectly refer or steer any claimant needing repairs or other services in connection with a loss to any person with whom the adjuster has an undisclosed financial interest, or who will or is reasonably anticipated to provide the adjuster any direct or indirect compensation for the referral or for any resulting business.",
+   "2. An adjuster shall adjust all claims strictly in accordance with the insurance contract."
+  ]
+ },
+ "Fla. Stat. 559.901": {
+  "topics": ["consumer_protection"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": ["what is the Florida Motor Vehicle Repair Act called"]
+ },
+ "Fla. Stat. 559.902": {
+  "topics": ["consumer_protection", "shop_registration"],
+  "appliesTo": ["repairers"],
+  "claimUseCases": [
+   "does the repair act apply to my shop",
+   "which shops are exempt from the Motor Vehicle Repair Act",
+   "fleet shop exempt from registration"
+  ],
+  "quoteSafeExcerpts": [
+   "This act shall apply to all motor vehicle repair shops in Florida, except:"
+  ]
+ },
+ "Fla. Stat. 559.903": {
+  "topics": ["consumer_protection", "estimate_authorization"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "who is the customer under the repair act",
+   "who can authorize repairs on the estimate",
+   "does body work and painting count as motor vehicle repair",
+   "ADAS calibration counts as motor vehicle repair",
+   "what is the final estimate"
+  ],
+  "quoteSafeExcerpts": [
+   "(7) “Motor vehicle repair” means all maintenance of and modifications and repairs to motor vehicles, and diagnostic work incident thereto, including, but not limited to, the rebuilding or restoring of rebuilt vehicles, body work, painting, warranty work, calibration or recalibration of advanced driver assistance systems, and other work customarily undertaken by motor vehicle repair shops.",
+   "(5) “Final estimate” means the last estimate approved by the customer either in writing or orally, as evidenced by the written repair estimate."
+  ]
+ },
+ "Fla. Stat. 559.904": {
+  "topics": ["shop_registration"],
+  "appliesTo": ["repairers"],
+  "claimUseCases": [
+   "do I have to register my body shop with the state",
+   "motor vehicle repair shop registration",
+   "registration fee for a repair shop",
+   "registering a second location",
+   "mobile repair shop registration"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Each motor vehicle repair shop engaged or attempting to engage in the business of motor vehicle repair work must register with the department prior to doing business in this state."
+  ]
+ },
+ "Fla. Stat. 559.905": {
+  "topics": ["estimate_authorization", "consumer_protection", "supplement_handling"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "when do I have to give a written estimate",
+   "written estimate required over 150 dollars",
+   "what has to be on the written repair estimate",
+   "written estimate disclosure statement the customer signs",
+   "customer must check one of the estimate statements and sign",
+   "shop supplies charge statement on the estimate",
+   "teardown charge disclosed before diagnostic work",
+   "flat rate or hourly rate statement on the estimate",
+   "customer dropped the car off after hours without signing an estimate"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) When any customer requests a motor vehicle repair shop to perform repair work on a motor vehicle, the cost of which repair work will exceed $150 to the customer, the shop shall prepare a written repair estimate, which is a form setting forth the estimated cost of repair work, including diagnostic work, before effecting any diagnostic work or repair.",
+   "(g) A statement as to whether the customer is being charged according to a flat rate or an hourly rate, or both.",
+   "“This charge represents costs and profits to the motor vehicle repair facility for miscellaneous shop supplies or waste disposal.”"
+  ]
+ },
+ "Fla. Stat. 559.907": {
+  "topics": ["estimate_authorization", "consumer_protection"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "can I charge for writing an estimate",
+   "charging a fee for the estimate",
+   "estimate fee must be disclosed first",
+   "making the customer waive their rights before we repair the car"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) No motor vehicle repair shop shall charge for making a repair price estimate unless, prior to making the price estimate, the shop:",
+   "(2) It shall be unlawful for any motor vehicle repair shop to require that any person waive her or his rights provided in this part as a precondition to the repair of her or his vehicle by the shop."
+  ]
+ },
+ "Fla. Stat. 559.909": {
+  "topics": ["estimate_authorization", "supplement_handling", "replaced_parts", "repair_lien", "consumer_protection", "storage_towing"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "repairs will cost more than the estimate",
+   "charges over the written estimate need authorization",
+   "how much can the final bill exceed the estimate",
+   "customer did not authorize the additional repairs beyond the original estimate",
+   "customer cancelled the repair after teardown",
+   "can I charge for teardown and reassembly if the customer cancels",
+   "customer refuses to pay for unauthorized repairs and wants the car",
+   "can I hold the car for charges the customer did not authorize",
+   "customer wants the old parts back",
+   "customer wants to inspect the replaced parts"
+  ],
+  "quoteSafeExcerpts": [
+   "the customer shall be promptly notified by telephone, telegraph, mail, or other means of the additional repair work and estimated cost thereof. A customer so notified shall, orally or in writing, authorize, modify, or cancel the order for repair.",
+   "After cancellation of the repair order, the shop may charge for the cost of teardown, the cost of parts and labor to replace items that were destroyed by teardown, and the cost to reassemble the component or the vehicle, provided the customer was notified of these possible costs in the estimate prior to commencement of the diagnostic work.",
+   "(3) It shall be unlawful for a motor vehicle repair shop to charge more than the written estimate plus $10 or 10 percent, whichever is greater, but not to exceed $50, unless the motor vehicle repair shop has obtained authorization to exceed the written estimate in accordance with subsection (1).",
+   "(4) It shall be unlawful for any motor vehicle repair shop to fail to return any customer’s motor vehicle because the customer has refused to pay for unauthorized repairs or because the customer has refused to pay for repair charges in excess of the final estimate in violation of this section.",
+   "(5) Upon request made at the time the repair work is authorized by the customer, the customer is entitled to inspect parts removed from her or his vehicle or, if the shop has no warranty arrangement or exchange parts program with a manufacturer, supplier, or distributor, have them returned to her or him."
+  ]
+ },
+ "Fla. Stat. 559.911": {
+  "topics": ["invoice_records", "replaced_parts", "aftermarket_parts"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "what has to be on the final invoice",
+   "invoice requirements for a repair shop",
+   "invoice must say which parts are used or rebuilt",
+   "invoice must show the shop registration number",
+   "warranty statement on the invoice"
+  ],
+  "quoteSafeExcerpts": [
+   "The motor vehicle repair shop shall provide each customer, upon completion of any repair, with a legible copy of an invoice for such repair.",
+   "(4) A statement identifying any replacement part as being used, rebuilt, or reconditioned, as the case may be."
+  ]
+ },
+ "Fla. Stat. 559.915": {
+  "topics": ["invoice_records"],
+  "appliesTo": ["repairers"],
+  "claimUseCases": [
+   "how long do I have to keep repair records",
+   "repair shop record retention",
+   "keeping copies of estimates and invoices",
+   "customer wants copies of their repair records"
+  ],
+  "quoteSafeExcerpts": [
+   "A customer’s records shall be available to the customer for inspection and copying for a period of at least 12 months."
+  ]
+ },
+ "Fla. Stat. 559.916": {
+  "topics": ["consumer_protection", "shop_registration"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "sign I have to post in the shop",
+   "consumer notice sign required in a repair shop",
+   "registration number in advertising",
+   "do I have to put my registration number in ads"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) All motor vehicle repair shops required to register under the provisions of this part must include the registration number from the certificate issued by the department in any advertisements, announcements, or listings relating to motor vehicle repair which are placed in a newspaper, magazine, or directory."
+  ]
+ },
+ "Fla. Stat. 559.917": {
+  "topics": ["repair_lien", "storage_towing"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "customer posted a bond to get the car released",
+   "bond to release the repair shop lien",
+   "customer disputes the bill and wants the car back",
+   "clerk of court certificate ordering release of the vehicle",
+   "lienor has 60 days to sue on the bond",
+   "we refused to release the car after the bond was posted"
+  ],
+  "quoteSafeExcerpts": [
+   "The bond shall be in the amount stated on the invoice required by s. 559.911, plus accrued storage charges, if any, less any amount paid to the motor vehicle repair shop as indicated on the invoice.",
+   "(b) The lienor shall have 60 days to file suit to recover the bond. The prevailing party in that action may be entitled to damages plus court costs and reasonable attorney fees. If the lienor fails to file suit within 60 days after the posting of such bond, the bond shall be discharged by the clerk."
+  ]
+ },
+ "Fla. Stat. 559.919": {
+  "topics": ["repair_lien", "shop_registration"],
+  "appliesTo": ["repairers"],
+  "claimUseCases": [
+   "unregistered shop cannot enforce a lien",
+   "can a shop that is not registered hold the car",
+   "lien enforcement requires registration and a written estimate"
+  ],
+  "quoteSafeExcerpts": [
+   "No motor vehicle repair shop may refuse to return a customer’s motor vehicle by virtue of any miscellaneous lien, nor may it enforce such a lien in any other fashion if it has failed to substantially comply with the provisions of this part."
+  ]
+ },
+ "Fla. Stat. 559.920": {
+  "topics": ["consumer_protection", "misrepresentation", "estimate_authorization", "replaced_parts", "aftermarket_parts"],
+  "appliesTo": ["repairers", "consumers", "insurers"],
+  "claimUseCases": [
+   "unlawful acts by a repair shop",
+   "charging for repairs the customer did not authorize",
+   "misrepresenting that repairs were done",
+   "substituting used or salvaged parts without notice",
+   "used parts substituted without telling the owner and the insurer",
+   "subcontracting repair work without telling the customer",
+   "sublet work without the customer's consent",
+   "departing from accepted practices and professional standards",
+   "repairing a rebuilt vehicle outside the manufacturer's repair procedures",
+   "shop working out of a location not on the registration"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) Make or charge for repairs that have not been expressly or impliedly authorized by the customer.",
+   "(10) Substitute used, rebuilt, salvaged, or straightened parts for new replacement parts without notice to the motor vehicle owner and to her or his insurer if the cost of repair is to be paid pursuant to an insurance policy and the identity of the insurer or its claims adjuster is disclosed to the motor vehicle repair shop.",
+   "(13) Willfully depart from or disregard accepted practices and professional standards.",
+   "(14) Have repair work subcontracted without the knowledge or consent of the customer unless the motor vehicle repair shop or employee thereof demonstrates that the customer could not reasonably have been notified."
+  ]
+ },
+ "Fla. Stat. 559.921": {
+  "topics": ["consumer_protection", "repair_lien", "shop_registration"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "customer suing the shop under the repair act",
+   "customer can sue for damages attorney fees and costs",
+   "department fines for repair act violations",
+   "registration revoked or suspended",
+   "penalties for violating the Motor Vehicle Repair Act",
+   "customer's remedies against a repair shop"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Any customer injured by a violation of this part may bring an action in the appropriate court for relief. The prevailing party in that action may be entitled to damages plus court costs and reasonable attorney’s fees. The customer may also bring an action for injunctive relief in the circuit court."
+  ]
+ },
+ "Fla. Stat. 713.58": {
+  "topics": ["repair_lien", "storage_towing"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "customer will not pay, can I hold the car",
+   "customer won't pay for the repair and the car is sitting here",
+   "mechanic's lien on the vehicle for labor",
+   "possessory lien for repair work",
+   "customer took the car without paying",
+   "customer's check bounced after they picked up the car",
+   "stopped payment on the check for the repair"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) In favor of persons performing labor or services for any other person, upon the personal property of the latter upon which the labor or services is performed, or which is used in the business, occupation, or employment in which the labor or services is performed.",
+   "(2) It is unlawful for any person, knowingly, willfully, and with intent to defraud, to remove any property upon which a lien has accrued under this section without first making full payment to the person performing labor or services of all sums due and payable for such labor or services or without first having the written consent of such person so performing the labor or services so to remove such property."
+  ]
+ },
+ "Fla. Stat. 713.585": {
+  "topics": ["repair_lien", "storage_towing"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "sell the car to enforce the lien",
+   "can I sell an abandoned vehicle the customer never picked up",
+   "selling a customer's vehicle for an unpaid repair bill",
+   "notice of lien to the owner and lienholder by certified mail",
+   "how soon can I sell the vehicle after the repair",
+   "60 days after the repair before a lien sale",
+   "public sale of the vehicle and depositing the proceeds with the clerk",
+   "owner disputes the lien sale in court"
+  ],
+  "quoteSafeExcerpts": [
+   "A person claiming a lien under s. 713.58 for performing labor or services on a motor vehicle may enforce such lien by sale of the vehicle in accordance with the following procedures:",
+   "(a) Be sent to the registered owner, the customer, and all other persons claiming an interest therein or lien thereon within 7 business days, excluding Saturday and Sunday, after the date on which storage charges begin to accrue on the vehicle. However, in no event shall the notice of lien be sent less than 30 days before the sale of the motor vehicle.",
+   "(3) A vehicle may not be sold earlier than 60 days after completion of the repair work.",
+   "(8) A vehicle subject to lien enforcement pursuant to this section must be sold by the lienor at public sale."
+  ]
+ },
+ "Fla. Stat. 713.78": {
+  "topics": ["storage_towing", "repair_lien", "total_loss"],
+  "appliesTo": ["repairers", "consumers", "insurers"],
+  "claimUseCases": [
+   "towing and storage charges on a vehicle",
+   "what can a tow company charge for storage",
+   "storage lien on a towed vehicle",
+   "insurer will not pay the storage on a towed total loss",
+   "notice of lien to the insurance company on a stored vehicle",
+   "how long before a stored vehicle can be sold",
+   "35 days before selling a stored vehicle",
+   "storage charges barred for failing to send notice",
+   "insurance company representative wants to inspect the towed vehicle",
+   "releasing personal property from a towed vehicle",
+   "administrative fee to release a vehicle from the lien"
+  ],
+  "quoteSafeExcerpts": [
+   "(9) Failure to make good faith efforts to comply with the notice requirements of this section precludes the imposition of any storage charges against the vehicle or vessel. If a lienor fails to provide notice to a person claiming a lien on a vehicle or vessel in accordance with subsection (4), the lienor may not charge the person for more than 5 days of storage, but such failure does not affect charges made for towing the vehicle or vessel or the priority of liens on the vehicle or vessel."
+  ]
+ },
+ "Fla. Stat. 501.32": {
+  "topics": ["aftermarket_parts"],
+  "appliesTo": ["insurers", "repairers", "consumers"],
+  "claimUseCases": [
+   "what counts as an aftermarket crash part",
+   "definition of nonoriginal equipment manufacturer crash parts",
+   "aftermarket sheet metal and plastic parts"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) “Aftermarket crash part” means a replacement for any of the nonmechanical sheet metal or plastic parts which generally constitute the exterior of a motor vehicle, including inner and outer panels.",
+   "(3) “Nonoriginal equipment manufacturer aftermarket crash part” means an aftermarket crash part made by any manufacturer other than the original vehicle manufacturer or her or his supplier."
+  ]
+ },
+ "Fla. Stat. 501.33": {
+  "topics": ["aftermarket_parts", "estimate_authorization"],
+  "appliesTo": ["insurers", "repairers", "consumers"],
+  "claimUseCases": [
+   "carrier wrote the estimate with aftermarket parts",
+   "aftermarket parts pushed on the estimate",
+   "estimate must identify each aftermarket crash part",
+   "aftermarket crash parts disclosure on the estimate",
+   "required disclosure statement when aftermarket parts are used",
+   "who warrants the aftermarket parts",
+   "insurer estimate with non-OEM parts and no disclosure"
+  ],
+  "quoteSafeExcerpts": [
+   "In all instances where nonoriginal equipment manufacturer aftermarket crash parts are used in preparing an estimate for repairs, the written estimate prepared by the insurer or the repair facility, or both, shall clearly identify each such part.",
+   "THIS ESTIMATE HAS BEEN PREPARED BASED ON THE USE OF CRASH PARTS SUPPLIED BY A SOURCE OTHER THAN THE MANUFACTURER OF YOUR MOTOR VEHICLE. THE AFTERMARKET CRASH PARTS USED IN THE PREPARATION OF THIS ESTIMATE ARE WARRANTED BY THE MANUFACTURER OR DISTRIBUTOR OF SUCH PARTS RATHER THAN THE MANUFACTURER OF YOUR VEHICLE."
+  ]
+ },
+ "Fla. Stat. 501.34": {
+  "topics": ["aftermarket_parts"],
+  "appliesTo": ["insurers", "repairers"],
+  "claimUseCases": [
+   "who enforces the aftermarket crash parts law",
+   "penalty for not disclosing aftermarket crash parts"
+  ]
+ },
+ "Fla. Stat. 501.204": {
+  "topics": ["consumer_protection", "misrepresentation"],
+  "appliesTo": ["repairers", "consumers", "insurers"],
+  "claimUseCases": [
+   "deceptive and unfair trade practices",
+   "FDUTPA claim against a business",
+   "unfair or deceptive act in trade or commerce",
+   "customer says our shop committed an unfair trade practice"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Unfair methods of competition, unconscionable acts or practices, and unfair or deceptive acts or practices in the conduct of any trade or commerce are hereby declared unlawful."
+  ]
+ },
+ "Fla. Stat. 501.211": {
+  "topics": ["consumer_protection"],
+  "appliesTo": ["repairers", "consumers"],
+  "claimUseCases": [
+   "can the customer sue under FDUTPA",
+   "private lawsuit for a deceptive trade practice",
+   "actual damages attorney fees under the deceptive practices act",
+   "injunction against a deceptive practice"
+  ],
+  "quoteSafeExcerpts": [
+   "(2) In any action brought by a person who has suffered a loss as a result of a violation of this part, such person may recover actual damages, plus attorney’s fees and court costs as provided in s. 501.2105."
+  ]
+ },
+ "Fla. Stat. 448.01": {
+  "topics": ["overtime", "wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "how many hours is a legal day's work in Florida",
+   "extra pay for working more than 10 hours a day",
+   "state overtime law for manual labor",
+   "tech worked a 12 hour day and wants extra pay"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Ten hours of labor shall be a legal day’s work, and when any person employed to perform manual labor of any kind by the day, week, month or year renders 10 hours of labor, he or she shall be considered to have performed a legal day’s work, unless a written contract has been signed by the person so employed and the employer, requiring a less or greater number of hours of labor to be performed daily.",
+   "(2) Unless such written contract has been made, the person employed shall be entitled to extra pay for all work performed by the requirement of his or her employer in excess of 10 hours’ labor daily."
+  ]
+ },
+ "Fla. Stat. 448.08": {
+  "topics": ["wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "tech is suing for unpaid wages and attorney fees",
+   "attorney fees in an unpaid wage lawsuit",
+   "former employee claims we owe back wages"
+  ],
+  "quoteSafeExcerpts": [
+   "The court may award to the prevailing party in an action for unpaid wages costs of the action and a reasonable attorney’s fee."
+  ]
+ },
+ "Fla. Stat. 448.095": {
+  "topics": ["employment_eligibility"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "do I have to use E-Verify",
+   "E-Verify requirement for private employers",
+   "employment eligibility verification for new hires",
+   "I-9 and E-Verify for a body shop with 25 employees"
+  ]
+ },
+ "Fla. Stat. 448.101": {
+  "topics": ["whistleblower"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "whistleblower act definitions",
+   "what counts as retaliatory personnel action"
+  ]
+ },
+ "Fla. Stat. 448.102": {
+  "topics": ["whistleblower"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "employee reported us to the state and now claims retaliation",
+   "can I fire a tech who complained to OSHA or the department",
+   "retaliation for refusing to do something illegal",
+   "employee threatened to report a violation",
+   "whistleblower protection for private employees"
+  ],
+  "quoteSafeExcerpts": [
+   "An employer may not take any retaliatory personnel action against an employee because the employee has:",
+   "(3) Objected to, or refused to participate in, any activity, policy, or practice of the employer which is in violation of a law, rule, or regulation."
+  ]
+ },
+ "Fla. Stat. 448.103": {
+  "topics": ["whistleblower"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "employee suing for retaliation under the whistleblower act",
+   "remedies for a whistleblower retaliation claim",
+   "reinstatement back pay for retaliation"
+  ]
+ },
+ "Fla. Stat. 448.110": {
+  "topics": ["minimum_wage", "wage_claims"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "what is the Florida minimum wage",
+   "state minimum wage and the annual adjustment",
+   "minimum wage for a body shop employee",
+   "flat rate tech made less than minimum wage this week",
+   "minimum wage claim and notice to the employer",
+   "Florida Minimum Wage Act"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) This section may be cited as the “Florida Minimum Wage Act.”",
+   "Only those individuals entitled to receive the federal minimum wage under the federal Fair Labor Standards Act, as amended, and its implementing regulations shall be eligible to receive the state minimum wage pursuant to s. 24, Art. X of the State Constitution and this section."
+  ]
+ },
+ "Fla. Stat. 440.02": {
+  "topics": ["workers_comp", "independent_contractor"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "is my 1099 tech an employee or an independent contractor",
+   "independent contractor definition for workers comp",
+   "does a subcontracted painter count as an employee",
+   "who counts as an employee under workers compensation",
+   "how many employees before workers comp is required",
+   "workers compensation definitions"
+  ],
+  "quoteSafeExcerpts": [
+   "a. In order to meet the definition of independent contractor, at least four of the following criteria must be met:"
+  ]
+ },
+ "Fla. Stat. 440.10": {
+  "topics": ["workers_comp", "independent_contractor"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "do I have to carry workers comp for my techs",
+   "employer liable for workers compensation",
+   "1099 tech got hurt in the shop and we have no comp",
+   "contractor liable for a subcontractor's employees",
+   "workers comp coverage requirement for a body shop"
+  ],
+  "quoteSafeExcerpts": [
+   "(1)(a) Every employer coming within the provisions of this chapter shall be liable for, and shall secure, the payment to his or her employees, or any physician, surgeon, or pharmacist providing services under the provisions of s. 440.13, of the compensation payable under ss. 440.13, 440.15, and 440.16."
+  ]
+ },
+ "Fla. Stat. 440.105": {
+  "topics": ["workers_comp"],
+  "appliesTo": ["employers", "employees"],
+  "claimUseCases": [
+   "workers comp fraud",
+   "misclassifying employees to avoid comp premiums",
+   "employee faked an injury claim",
+   "prohibited acts under workers compensation"
+  ]
+ },
+ "Fla. Stat. 440.107": {
+  "topics": ["workers_comp"],
+  "appliesTo": ["employers"],
+  "claimUseCases": [
+   "stop-work order for no workers comp",
+   "state shut the shop down for not having workers comp",
+   "stop work order penalty",
+   "department investigator wants to see our payroll and comp records",
+   "understating payroll to lower the comp premium",
+   "penalty for failing to secure workers compensation"
+  ],
+  "quoteSafeExcerpts": [
+   "(g) Issue stop-work orders, penalty assessment orders, and any other orders necessary for the administration of this section."
+  ]
+ },
+ "Fla. Stat. 440.38": {
+  "topics": ["workers_comp"],
+  "appliesTo": ["employers"],
+  "claimUseCases": [
+   "how do I secure workers compensation coverage",
+   "workers comp insurance or self insurance",
+   "out of state comp policy covering Florida employees",
+   "Florida endorsement on a workers comp policy"
+  ],
+  "quoteSafeExcerpts": [
+   "(1) Every employer shall secure the payment of compensation under this chapter:",
+   "(7) Any employer who meets the requirements of subsection (1) through a policy of insurance issued outside of this state must at all times, with respect to all employees working in this state, maintain the required coverage under a Florida endorsement using Florida rates and rules pursuant to payroll reporting that accurately reflects the work performed in this state by such employees."
+  ]
+ }
+}
