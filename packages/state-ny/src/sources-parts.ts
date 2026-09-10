@@ -56,7 +56,7 @@ export const NY_PART142_SOURCE: NyPdfPartSource = {
   split: {
     head: /^§\s*(142-[12]\.\d{1,2})\s+([A-Z][^\n]*?)\.?$/,
     bodyStart: /^§\s*142-1\.1\b/,
-    bodyEnd: /^§\s*142-3\.1\b/,
+    bodyEnd: /^SUBPART\s+142-3\b/i,
     // SUBPART banners and their "Sec. …"/bare-cite contents lines between a
     // section's body and the next head are structural, not substantive text
     // (see PartSplitSpec.skipFrom in parse-pdf-part.ts) — they are removed
@@ -67,8 +67,10 @@ export const NY_PART142_SOURCE: NyPdfPartSource = {
     // (a cite, optionally "Sec. "-prefixed, followed by more text) or an
     // all-caps banner line (the SUBPART heading itself, which may wrap).
     // REGULATIONS is dropped earlier by dropLines and never reaches this
-    // check, but the regex admits it anyway.
-    skipOnly: /^(?:Sec\.\s+)?142-[123]\.\d{1,2}\s+\S|^[A-Z0-9 ,;:'()\-’]{3,}$/,
+    // check, but the regex admits it anyway. The real booklet's extraction
+    // prints the "Sec." contents-list header on its OWN line, separate
+    // from the cite that follows it — bare "Sec." must be admitted too.
+    skipOnly: /^(?:Sec\.\s+)?142-[123]\.\d{1,2}\s+\S|^Sec\.$|^[A-Z0-9 ,;:'()\-’]{3,}$/,
     dropLines: [/^Part 142 - Page \d+$/, /^REGULATIONS$/],
   },
   mustContain: ['§ 142-2.4 Additional rate for split shift and spread of hours.', 'spread of hours exceeds 10 hours'],

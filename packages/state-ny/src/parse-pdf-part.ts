@@ -62,7 +62,13 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
   if (start < 0) throw new Error('No body start marker in the booklet text — template drift, or the PDF did not extract.');
   let end = lines.length;
   if (spec.bodyEnd) {
-    const e = lines.findIndex((l, i) => i > start && spec.bodyEnd!.test(l));
+    // The LAST match, not the first: CR 142's Subpart 142-2 banner text
+    // itself wraps onto a line reading "SUBPART 142-3" ("...COVERED BY THE
+    // PROVISIONS OF / SUBPART 142-3"), well before the real Subpart 142-3
+    // banner that actually ends the body. The first occurrence is prose;
+    // the structural transition is always the last one printed.
+    let e = -1;
+    for (let i = start + 1; i < lines.length; i++) if (spec.bodyEnd!.test(lines[i]!)) e = i;
     if (e > start) end = e;
   }
   const body = lines.slice(start, end);

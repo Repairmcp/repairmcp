@@ -82,11 +82,24 @@ export function parseDfsHtml(html: string, expected: { kind: 'ogc' | 'circular';
 
   let issueDate: string | undefined;
   if (expected.kind === 'ogc') {
-    const sentence = lines.find((l) => /issued the following opinion on/i.test(l));
+    const sentence = lines.find((l) => /issued the following (?:informal )?opinion on/i.test(l));
     issueDate = sentence ? longDateToIso(sentence) : undefined;
   } else {
     const idx = lines.findIndex((l) => new RegExp(`^Circular Letter No\\. ${expected.number.replace(/[()]/g, '\\$&')}$`).test(l));
-    issueDate = idx >= 0 ? longDateToIso(lines[idx + 1] ?? '') : undefined;
+    // The dateline sits somewhere in the letterhead block around the
+    // "Circular Letter No. X" line, but not always adjacent to it: most
+    // pages print it on the line right after, while Circular Letter 11
+    // (1991) (verified 2026-09-10) prints "September 5, 1991", then
+    // "SUBJECT: INSURANCE", then the cite line — the date TWO lines
+    // before. Scan a small window around the cite line rather than
+    // assuming a fixed offset, preferring the line closest to it.
+    if (idx >= 0) {
+      const window = [1, -1, 2, -2, 3, -3].map((offset) => lines[idx + offset]);
+      for (const candidate of window) {
+        issueDate = candidate === undefined ? undefined : longDateToIso(candidate);
+        if (issueDate) break;
+      }
+    }
   }
   if (!issueDate) throw new NyDfsParseError(`${wanted}: no issue date found on the page.`);
 

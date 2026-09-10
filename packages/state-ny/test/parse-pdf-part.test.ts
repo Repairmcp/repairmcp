@@ -38,8 +38,19 @@ export const CR142_TEXT = [
   'PART 142', 'Subpart 142-1 Coverage', 'Sec. 142-1.1 Coverage of Part.',
   '§ 142-1.1 Coverage of Part',
   'This Part shall apply to all employees.',
-  'SUBPART 142-2 PROVISIONS APPLICABLE TO ALL EMPLOYEES',
-  'Sec. 142-2.1 Basic minimum hourly wage rate and allowances',
+  // The real CR 142 extraction wraps the Subpart 142-2 banner sentence
+  // across several bare lines, and that wrapped sentence itself contains
+  // the literal text "SUBPART 142-3" (it is explaining what 142-2 does
+  // NOT cover) — a false-positive match for the bodyEnd/skipFrom markers
+  // that must not end the body or leak into skipOnly's line-shape check.
+  // The contents list's "Sec." header also prints on its OWN line in the
+  // real PDF, separate from the cite that follows.
+  'SUBPART 142-2',
+  'PROVISIONS APPLICABLE TO ALL EMPLOYEES SUBJECT TO THIS PART, EXCEPT',
+  'EMPLOYEES IN NONPROFITMAKING INSTITUTIONS COVERED BY THE PROVISIONS OF',
+  'SUBPART 142-3',
+  'Sec.',
+  '142-2.1 Basic minimum hourly wage rate and allowances',
   '142-2.2 Overtime rate',
   '142-2.3 Call-in pay',
   'REGULATIONS',
@@ -50,6 +61,8 @@ export const CR142_TEXT = [
     }
     return `§ 142-2.${n} Title ${n}.\nBody ${n}.`;
   }),
+  'SUBPART 142-3',
+  'PROVISIONS APPLICABLE TO EMPLOYEES IN NONPROFITMAKING INSTITUTIONS',
   '§ 142-3.1 Basic minimum hourly wage rate.', 'Nonprofit body.',
 ].join('\n');
 
@@ -97,8 +110,8 @@ describe('splitPartText', () => {
     // region: not a contents entry and not an all-caps banner line, so
     // skipOnly must reject it rather than silently discarding it.
     const rogue = CR142_TEXT.replace(
-      'Sec. 142-2.1 Basic minimum hourly wage rate and allowances',
-      'Sec. 142-2.1 Basic minimum hourly wage rate and allowances\nEmployers must post this order where employees can see it.',
+      '142-2.1 Basic minimum hourly wage rate and allowances',
+      '142-2.1 Basic minimum hourly wage rate and allowances\nEmployers must post this order where employees can see it.',
     );
     expect(() => splitPartText(rogue, NY_PART142_SOURCE.split)).toThrow(/not contents-shaped/);
   });
