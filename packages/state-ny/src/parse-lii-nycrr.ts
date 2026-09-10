@@ -36,9 +36,12 @@ export interface ParsedNycrrSection {
 }
 
 function clean(html: string): string {
-  return decodeEntities(html.replace(/<[^>]+>/g, ' '))
+  return decodeEntities(
+    html
+      .replace(/<[^>]+>(?=[,.;:)])/g, '')
+      .replace(/<[^>]+>/g, ' '),
+  )
     .replace(/\s+/g, ' ')
-    .replace(/ +([,.;:)])/g, '$1')
     .trim();
 }
 

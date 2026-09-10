@@ -48,6 +48,10 @@ describe('parseLiiNycrrHtml', () => {
   test('(Repealed) in the heading is flagged', () => {
     expect(parseLiiNycrrHtml(liiPage({ cite: '216.13', heading: 'Mediation (Repealed)' }), { title: '11', cite: '216.13' }).repealed).toBe(true);
   });
+  test('a genuine source space before punctuation survives — clean() only closes the tag-boundary gap, not real prose spacing', () => {
+    const p = parseLiiNycrrHtml(liiPage({ text: '<p>paragraph one , with a spaced comma</p>' }), { title: '11', cite: '216.7' });
+    expect(p.text).toBe('paragraph one , with a spaced comma');
+  });
 });
 
 describe('parseLiiNycrrPartIndex', () => {
