@@ -10,6 +10,9 @@
 > the cite instead of one). The zone WAF rate limit returned zero 429s on
 > ny.repairmcp.com across 30 parallel requests — the fourth hostname after
 > fl., ca., and deg. where it does not fire (CLAUDE.md Backlog, first entry).
+> The display cite for guidance carries the code word "DFS Guidance" (e.g.
+> "DFS Guidance OGC Opinion 04-06-03") — a deviation from the original §4
+> draft, accepted.
 
 Written 2026-09-10. Pattern follows WA → MT → CO → TX → CA → FL: a state
 package on `@repairmcp/state-law`, a Worker at `ny.repairmcp.com`,
@@ -301,7 +304,8 @@ citation. The New York headliners, in demo order:
   Law`, `N.Y. Lien Law`, `N.Y. Lab. Law`, `N.Y. Workers' Comp. Law`,
   `11 NYCRR`, `15 NYCRR`, `12 NYCRR`, `DFS Guidance`. Display cites
   "N.Y. Ins. Law 2610", "11 NYCRR 216.7", "15 NYCRR 82.5", "12 NYCRR
-  142-2.4", "DFS OGC Opinion 04-06-03", "DFS Circular Letter 16 (2000)".
+  142-2.4", "DFS Guidance OGC Opinion 04-06-03", "DFS Guidance Circular
+  Letter 16 (2000)".
 - Statute section numbers repeat across codes (2 exists in Workers' Comp.
   Law and could in any code; 160–162 exist in Labor Law and elsewhere),
   so a bare number is NOT unique. `NY_CITE_CODES` is built from the
@@ -328,9 +332,9 @@ citation. The New York headliners, in demo order:
   Senate's revision date); 11 NYCRR "11 NYCRR 216.7, effective 6/9/2021"
   (newest Register `eff.`), or no date when the mirror has no history;
   15 NYCRR "15 NYCRR 82.5, CR-82 (5/26)" (the pinned booklet edition);
-  12 NYCRR "12 NYCRR 142-2.4, effective 6/24/2020"; guidance "DFS OGC
-  Opinion 04-06-03, issued 6/3/2004" and "DFS Circular Letter 16 (2000),
-  issued 5/10/2000, withdrawn 12/4/2003".
+  12 NYCRR "12 NYCRR 142-2.4, effective 6/24/2020"; guidance "DFS
+  Guidance OGC Opinion 04-06-03, issued 6/8/2004" and "DFS Guidance
+  Circular Letter 16 (2000), issued 5/10/2000, withdrawn 12/4/2003".
 - `NY_CR82_EDITION` is pinned by a test against corpus meta so a
   reissued booklet fails at re-capture and a human reads what changed.
 
@@ -381,7 +385,10 @@ Demo gauntlet (shop phrasing; the annotation vocabulary is the bridge):
 14. "call-in pay / spread of hours" → 142-2.3 / 142-2.4 first
 15. "1099 tech and comp" → WKC 2 / 10 top 3; "no comp policy" → 52 first
 16. exact cite short-circuit; "Regulation 64" and "Article 12-A" listings;
-    a bare "2" resolves to a listing, not a guess — structural
+    the shipped manifest has no bare-number collisions, so a bare "2"
+    resolves to Workers' Comp. Law 2; the two-claimant rule (resolve to
+    null, word the code) is a guard for a future manifest and is tested
+    conditionally — structural
 
 Deploy: `ny.repairmcp.com` custom domain, `workers_dev: false`,
 burst-test the zone WAF rule on the new hostname (and re-check the

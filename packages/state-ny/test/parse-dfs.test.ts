@@ -59,4 +59,15 @@ describe('parseDfsHtml', () => {
   test('a page with no dateline fails', () => {
     expect(() => parseDfsHtml(ogcPage({ date: 'sometime' }), { kind: 'ogc', number: '04-06-03' })).toThrow(/issue date/);
   });
+  test('a withdrawn circular letter whose only nearby date is the withdrawal banner (no real dateline) fails rather than adopting the withdrawal date', () => {
+    const html = `<html><head><title>Insurance Circular Letter No. 16 (2000): Application of Section 2610(b) of the Insurance Law | Department of Financial Services</title></head><body>` +
+      `<div class="body-area"><div class="body-area-in">` +
+      `<p><strong>NOTE: WITHDRAWN EFFECTIVE DECEMBER 4, 2003</strong></p>` +
+      `<p>Circular Letter No. 16 (2000)</p>` +
+      `<p>SUBJECT: INSURANCE</p>` +
+      `<table><tr><td>TO:</td><td>All Motor Vehicle Self-insurers</td></tr></table>` +
+      `<p>This is to advise all insurers of the decision issued by Judge Casey.</p>` +
+      `</div></div></body></html>`;
+    expect(() => parseDfsHtml(html, { kind: 'circular', number: '16 (2000)' })).toThrow(/issue date/);
+  });
 });

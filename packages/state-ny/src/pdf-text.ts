@@ -1,8 +1,8 @@
 /**
  * The one place unpdf is loaded. Kept out of the barrel (like capture-*), and
  * imported dynamically so no bundle path can pull a PDF library into a Worker.
- * Both PDF captures — the DOI bulletin and every CCR series document — come
- * through here.
+ * Both PDF captures — the DMV CR-82 booklet and the DOL CR 142 booklet —
+ * come through here.
  *
  * `extractText(pdf, { mergePages: false })` really does return `text` as a
  * string ARRAY, one entry per page, and with `mergePages: true` really does

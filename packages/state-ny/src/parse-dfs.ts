@@ -96,7 +96,8 @@ export function parseDfsHtml(html: string, expected: { kind: 'ogc' | 'circular';
     if (idx >= 0) {
       const window = [1, -1, 2, -2, 3, -3].map((offset) => lines[idx + offset]);
       for (const candidate of window) {
-        issueDate = candidate === undefined ? undefined : longDateToIso(candidate);
+        if (candidate === undefined || /^NOTE:\s*WITHDRAWN/i.test(candidate)) continue;
+        issueDate = longDateToIso(candidate);
         if (issueDate) break;
       }
     }
