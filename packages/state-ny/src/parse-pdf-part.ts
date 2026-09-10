@@ -34,11 +34,16 @@
  * the line; the region closes at the next section head) or `skipMaxLines`
  * with `skipUntil` (the region closes at the first line matching
  * `skipUntil`, and exceeding `skipMaxLines` lines without closing fails
- * naming the region). Reaching the end of the body while still skipping
- * fails UNLESS the body itself was truncated by `bodyEnd` — a skip region
- * legitimately ending exactly at `bodyEnd` is fine, because every line it
- * discarded already passed `skipOnly` (or, under `skipUntil`, `bodyEnd`
- * itself is what cut the region off before its own close line appeared).
+ * naming the region). A `skipFrom` match while a region is already open is
+ * just another discarded line — it never restarts the region or resets
+ * `skipLineCount` (the real CR-82 sidebar has a second bare "Sec." partway
+ * through). Reaching the end of the body while still skipping fails UNLESS
+ * the region is `skipOnly` AND the body itself was truncated by `bodyEnd` —
+ * that is the only case where every discarded line is already known-good
+ * (each passed the `skipOnly` shape check). A `skipUntil` region that
+ * reaches `bodyEnd`, or the true end of the body, without its own close
+ * marker still fails: `bodyEnd` cutting the region off is not the same as
+ * the region finding its end marker.
  */
 export interface PartSplitSpec {
   /** Anchored to a whole line: ^…$ with the m flag. Group 1 = cite, group 2 = title. */
@@ -132,13 +137,17 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
       out.push(current);
       continue;
     }
-    if (spec.skipFrom && spec.skipFrom.test(line)) {
+    if (!skipping && spec.skipFrom && spec.skipFrom.test(line)) {
       skipping = true;
       skipStartLine = line;
       skipLineCount = 0;
       continue;
     }
     if (skipping) {
+      // A skipFrom match while already skipping (the real CR-82 sidebar has
+      // a second bare "Sec.") is just another discarded line — it must not
+      // restart the region or reset skipLineCount, or a recurring pattern
+      // could keep the region open indefinitely.
       skipLineCount++;
       if (spec.skipMaxLines && skipLineCount > spec.skipMaxLines) {
         throw new Error(`Skip region after "${skipStartLine}" exceeds ${spec.skipMaxLines} lines without closing — a close marker was missed or real text is being dropped.`);
@@ -157,8 +166,19 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
     if (!current) throw new Error(`Body text before the first section head: "${line.slice(0, 60)}".`);
     current.text = current.text ? `${current.text}\n${line}` : line;
   }
-  if (skipping && !truncatedAtBodyEnd) {
-    throw new Error(`Skip region after "${skipStartLine}" ran to the end of the body without a section head.`);
+  if (skipping) {
+    // Ending exactly at bodyEnd is only a legitimate close for a skipOnly
+    // region — every line it discarded already passed the shape check. A
+    // skipUntil region reaching bodyEnd (or the true end of the body)
+    // without its own close marker must still throw: bodyEnd cutting the
+    // region off is not the same as the region finding its end marker.
+    if (truncatedAtBodyEnd && spec.skipOnly !== undefined) {
+      // fine — see above.
+    } else if (truncatedAtBodyEnd) {
+      throw new Error(`Skip region after "${skipStartLine}" never reached its end marker before the body ended.`);
+    } else {
+      throw new Error(`Skip region after "${skipStartLine}" ran to the end of the body without a section head.`);
+    }
   }
   return out;
 }

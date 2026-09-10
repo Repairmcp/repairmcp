@@ -161,6 +161,37 @@ describe('splitPartText', () => {
     ].join('\n');
     expect(() => splitPartText(longSidebar, NY_PART82_SOURCE.split)).toThrow(/exceeds/);
   });
+  test('a recurring skipFrom match inside an already-open region does not reset skipMaxLines', () => {
+    // The real CR-82 sidebar has a second bare "Sec." partway through; a
+    // region whose skipFrom pattern recurs every 10 lines with no closing
+    // marker for 45 lines must still throw once skipMaxLines (40) is
+    // exceeded — the repeated match must not restart the count.
+    const recurringSidebar = [
+      'Section 82.1 Introduction.',
+      'Chapter 946 of the Laws of 1974 created article 12-A of the Vehicle and Traffic Law.',
+      '82.2 Definitions.',
+      'The following definitions shall apply to this Part:',
+      'Sec.',
+      ...Array.from({ length: 45 }, (_, i) => ((i + 1) % 10 === 0 ? 'Sec.' : `filler line ${i + 1}`)),
+      '(b) Estimate. The cost of parts.',
+    ].join('\n');
+    expect(() => splitPartText(recurringSidebar, NY_PART82_SOURCE.split)).toThrow(/exceeds/);
+  });
+  test('a skipUntil region that reaches bodyEnd without its close marker throws even though the body was truncated', () => {
+    // The sidebar's closing "...in this document in any way." line is
+    // absent, but APPENDIX A (bodyEnd) follows within skipMaxLines — the
+    // bodyEnd-truncation exemption applies only to skipOnly regions, so
+    // this must still fail rather than silently accepting the truncation.
+    const missingClose = [
+      'Section 82.1 Introduction.',
+      '82.2 Definitions.',
+      'The following definitions shall apply to this Part:',
+      'Sec.',
+      ...Array.from({ length: 10 }, (_, i) => `filler line ${i + 1}`),
+      'APPENDIX A - Official Indoor Repair Shop Sign',
+    ].join('\n');
+    expect(() => splitPartText(missingClose, NY_PART82_SOURCE.split)).toThrow(/never reached its end marker/);
+  });
   test('a spec with skipFrom but neither skipOnly nor skipUntil fails loudly', () => {
     expect(() => splitPartText(CR82_TEXT, { ...NY_PART82_SOURCE.split, skipUntil: undefined, skipOnly: undefined })).toThrow(/exactly one of skipOnly or skipUntil/);
   });
