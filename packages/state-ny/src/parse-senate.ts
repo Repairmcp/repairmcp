@@ -68,6 +68,11 @@ export function parseSenateHtml(html: string): ParsedSenatePage {
     }
     throw new NySenateParseError('No nys-openleg-result-text div — template drift, or not a statute page.');
   }
+  if (/<div/i.test(textMatch[1]!)) {
+    throw new NySenateParseError(
+      'The text region contains a nested <div> — template drift; re-derive the parser from the saved raw before capturing.',
+    );
+  }
   const banner = BANNER.exec(html);
   if (!banner) throw new NySenateParseError('No "Viewing most recent revision (from …)" banner — template drift.');
   const headline = HEADLINE.exec(html);

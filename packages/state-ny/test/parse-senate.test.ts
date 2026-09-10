@@ -51,4 +51,9 @@ describe('parseSenateHtml', () => {
   test('a body whose lead does not name the headline cite fails', () => {
     expect(() => parseSenateHtml(senatePage({ body: '  &sect; 2601. Something else.' }))).toThrow(/opens with/);
   });
+  test('a nested <div> inside the text region is template drift, not silent truncation', () => {
+    expect(() =>
+      parseSenateHtml(senatePage({ body: '  &sect; 2610. Collision or comprehensive coverage on motor vehicles; claims; repairs. <div class="x">inner</div> more text' })),
+    ).toThrow(/nested <div>/);
+  });
 });
