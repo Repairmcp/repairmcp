@@ -63,6 +63,12 @@ export const NY_PART142_SOURCE: NyPdfPartSource = {
     // by skipFrom below, not by dropLines. REGULATIONS is the running head
     // that can still appear inside a section's body pages.
     skipFrom: /^SUBPART\s/i,
+    // Every line discarded in the skip region must be a contents entry
+    // (a cite, optionally "Sec. "-prefixed, followed by more text) or an
+    // all-caps banner line (the SUBPART heading itself, which may wrap).
+    // REGULATIONS is dropped earlier by dropLines and never reaches this
+    // check, but the regex admits it anyway.
+    skipOnly: /^(?:Sec\.\s+)?142-[123]\.\d{1,2}\s+\S|^[A-Z0-9 ,;:'()\-’]{3,}$/,
     dropLines: [/^Part 142 - Page \d+$/, /^REGULATIONS$/],
   },
   mustContain: ['§ 142-2.4 Additional rate for split shift and spread of hours.', 'spread of hours exceeds 10 hours'],

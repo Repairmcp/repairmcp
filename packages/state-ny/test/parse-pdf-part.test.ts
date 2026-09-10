@@ -92,4 +92,24 @@ describe('splitPartText', () => {
   test('a body with no start marker fails loudly', () => {
     expect(() => splitPartText('just text', NY_PART82_SOURCE.split)).toThrow(/body start/);
   });
+  test('skipOnly rejects a non-contents-shaped line inside the skip region', () => {
+    // A real prose sentence in mixed case sitting inside the SUBPART skip
+    // region: not a contents entry and not an all-caps banner line, so
+    // skipOnly must reject it rather than silently discarding it.
+    const rogue = CR142_TEXT.replace(
+      'Sec. 142-2.1 Basic minimum hourly wage rate and allowances',
+      'Sec. 142-2.1 Basic minimum hourly wage rate and allowances\nEmployers must post this order where employees can see it.',
+    );
+    expect(() => splitPartText(rogue, NY_PART142_SOURCE.split)).toThrow(/not contents-shaped/);
+  });
+  test('skipOnly fails loudly when the skip region runs to the end of the body', () => {
+    // The SUBPART banner is the last thing in the body — no section head
+    // follows it, so the split must fail rather than silently drop text.
+    const noHeadAfterBanner = [
+      '§ 142-1.1 Coverage of Part',
+      'This Part shall apply to all employees.',
+      'SUBPART 142-2 PROVISIONS APPLICABLE TO ALL EMPLOYEES',
+    ].join('\n');
+    expect(() => splitPartText(noHeadAfterBanner, NY_PART142_SOURCE.split)).toThrow(/ran to the end of the body/);
+  });
 });

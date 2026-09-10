@@ -17,6 +17,13 @@
  * last section body and the next subpart's first head — not a fixed set of
  * lines `dropLines` can name individually. `skipFrom` discards everything
  * from the banner line up to (not including) the next section head.
+ *
+ * The skip region is unbounded by construction — a false-positive
+ * `skipFrom` match inside real prose, or a missed head after a real banner,
+ * would otherwise silently drop body text with no signal. `skipOnly`
+ * closes that hole: every line discarded inside a skip region must match
+ * it, or the split fails naming the line (and fails naming the region if
+ * the body ends while still skipping). Required whenever `skipFrom` is set.
  */
 export interface PartSplitSpec {
   /** Anchored to a whole line: ^…$ with the m flag. Group 1 = cite, group 2 = title. */
@@ -28,6 +35,11 @@ export interface PartSplitSpec {
   dropLines: readonly RegExp[];
   /** From a line matching this, discard every line up to (not including) the next section head. */
   skipFrom?: RegExp;
+  /**
+   * Every line discarded inside a skipFrom region must match this, or the
+   * split fails naming the line. Required whenever `skipFrom` is set.
+   */
+  skipOnly?: RegExp;
 }
 
 export interface SplitSection {
@@ -37,6 +49,9 @@ export interface SplitSection {
 }
 
 export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] {
+  if (spec.skipFrom && !spec.skipOnly) {
+    throw new Error('PartSplitSpec.skipFrom is set without skipOnly — a skip region with no bound on what it may discard.');
+  }
   const lines = raw
     .replace(/\r/g, '')
     .split('\n')
@@ -55,21 +70,34 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
   const out: SplitSection[] = [];
   let current: SplitSection | undefined;
   let skipping = false;
+  let skipStartLine: string | undefined;
   for (const line of body) {
     const head = spec.head.exec(line);
     if (head) {
       skipping = false;
+      skipStartLine = undefined;
       current = { cite: head[1]!, heading: head[2]!.trim(), text: '' };
       out.push(current);
       continue;
     }
     if (spec.skipFrom && spec.skipFrom.test(line)) {
       skipping = true;
+      skipStartLine = line;
       continue;
     }
-    if (skipping) continue;
+    if (skipping) {
+      if (!spec.skipOnly!.test(line)) {
+        throw new Error(
+          `Skip region after "${skipStartLine}" contains a line that is not contents-shaped: "${line}" — a section head was missed or real text was about to be dropped.`,
+        );
+      }
+      continue;
+    }
     if (!current) throw new Error(`Body text before the first section head: "${line.slice(0, 60)}".`);
     current.text = current.text ? `${current.text}\n${line}` : line;
+  }
+  if (skipping) {
+    throw new Error(`Skip region after "${skipStartLine}" ran to the end of the body without a section head.`);
   }
   return out;
 }
