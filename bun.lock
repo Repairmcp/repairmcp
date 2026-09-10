@@ -97,6 +97,19 @@
         "wrangler": "^4.118.0",
       },
     },
+    "apps/state-ny-server": {
+      "name": "@repairmcp/state-ny-server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-ny": "workspace:*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260730.1",
+        "wrangler": "^4.118.0",
+      },
+    },
     "apps/state-tx-server": {
       "name": "@repairmcp/state-tx-server",
       "version": "0.0.0",
@@ -442,6 +455,8 @@
     "@repairmcp/state-mt-server": ["@repairmcp/state-mt-server@workspace:apps/state-mt-server"],
 
     "@repairmcp/state-ny": ["@repairmcp/state-ny@workspace:packages/state-ny"],
+
+    "@repairmcp/state-ny-server": ["@repairmcp/state-ny-server@workspace:apps/state-ny-server"],
 
     "@repairmcp/state-tx": ["@repairmcp/state-tx@workspace:packages/state-tx"],
 
