@@ -33,14 +33,21 @@ describe('captureNyPdfParts', () => {
     expect(s142[0]?.sourceUrl).toBe(NY_PART142_SOURCE.pageUrl);
   });
   test('a missing section fails naming the cite', async () => {
-    const io = buildPartsIo({ [NY_PART82_SOURCE.pdfUrl]: CR82_TEXT.replace('82.18 Title 18.', '82.18x Title 18.') });
-    await expect(captureNyPdfParts(io, { extractText: io.extract })).rejects.toThrow(/15 NYCRR: expected \[.*82\.18/);
+    const io = buildPartsIo({ [NY_PART82_SOURCE.pdfUrl]: CR82_TEXT.replace('82.19 Title 19.', '82.19x Title 19.') });
+    await expect(captureNyPdfParts(io, { extractText: io.extract })).rejects.toThrow(/15 NYCRR: expected \[.*82\.19/);
   });
   test('a mustContain miss fails as an extraction problem', async () => {
-    // NOTE: deliberately NOT the unmodified CR142_TEXT — see task-4-report.md
-    // "Deviations from the brief" for why. The shared CR142_TEXT/CR82_TEXT
-    // fixture constants themselves are untouched.
-    const io = buildPartsIo({ [NY_PART142_SOURCE.pdfUrl]: CR142_TEXT.replace('This Part shall apply to all employees.', 'This Part shall apply to all covered workers.') });
+    // This test's own inline override strips the "spread of hours exceeds
+    // 10 hours" sentence that NY_PART142_SOURCE.mustContain requires, so the
+    // capture fails for the tripwire reason rather than a cite mismatch (the
+    // 82 booklet still uses the shared, unmodified CR82_TEXT and passes).
+    // The shared CR142_TEXT constant used by every other test is untouched.
+    const io = buildPartsIo({
+      [NY_PART142_SOURCE.pdfUrl]: CR142_TEXT.replace(
+        'An employee shall receive one additional hour of pay at the basic minimum hourly rate when the spread of hours exceeds 10 hours in a day.',
+        'An employee shall receive one additional hour of pay at the basic minimum hourly rate when the workday is extended.',
+      ),
+    });
     await expect(captureNyPdfParts(io, { extractText: io.extract })).rejects.toThrow(/did not extract faithfully/);
   });
   test('a non-PDF download is refused before extraction', async () => {

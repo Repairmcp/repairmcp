@@ -41,7 +41,7 @@ export const NY_PART82_SOURCE: NyPdfPartSource = {
     bodyEnd: /^APPENDIX A\b/,
     dropLines: [/^Part 82 - Page \d+$/],
   },
-  mustContain: ['Chapter 946 of the Laws of 1974 created article 12-A of the Vehicle and Traffic Law.', 'The following definitions shall apply to this Part:'],
+  mustContain: ['82.5 Obligations of the repair shop.', 'estimate in writing', '82.18 Insurers and repair shops.'],
 };
 
 export const NY_PART142_SOURCE: NyPdfPartSource = {
@@ -57,9 +57,15 @@ export const NY_PART142_SOURCE: NyPdfPartSource = {
     head: /^§\s*(142-[12]\.\d{1,2})\s+([A-Z][^\n]*?)\.?$/,
     bodyStart: /^§\s*142-1\.1\b/,
     bodyEnd: /^§\s*142-3\.1\b/,
-    dropLines: [/^Part 142 - Page \d+$/, /^REGULATIONS$/, /^SUBPART\s/i, /^Sec\.\s/],
+    // SUBPART banners and their "Sec. …"/bare-cite contents lines between a
+    // section's body and the next head are structural, not substantive text
+    // (see PartSplitSpec.skipFrom in parse-pdf-part.ts) — they are removed
+    // by skipFrom below, not by dropLines. REGULATIONS is the running head
+    // that can still appear inside a section's body pages.
+    skipFrom: /^SUBPART\s/i,
+    dropLines: [/^Part 142 - Page \d+$/, /^REGULATIONS$/],
   },
-  mustContain: ['This Part shall apply to all employees.'],
+  mustContain: ['§ 142-2.4 Additional rate for split shift and spread of hours.', 'spread of hours exceeds 10 hours'],
 };
 
 export const NY_PDF_PART_SOURCES = [NY_PART82_SOURCE, NY_PART142_SOURCE] as const;

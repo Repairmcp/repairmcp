@@ -17,7 +17,16 @@ export const CR82_TEXT = [
   '(a) Day. Means calendar day.',
   'Part 82 - Page 1',
   '(b) Estimate. The repair shop\'s determination of the cost of parts.',
-  ...Array.from({ length: 17 }, (_, i) => `82.${i + 3} Title ${i + 3}.\nBody ${i + 3}.`),
+  ...Array.from({ length: 17 }, (_, i) => {
+    const n = i + 3;
+    if (n === 5) {
+      return '82.5 Obligations of the repair shop.\nEvery repair shop shall furnish the customer an estimate in writing before beginning repairs.';
+    }
+    if (n === 18) {
+      return '82.18 Insurers and repair shops.\nBody 18.';
+    }
+    return `82.${n} Title ${n}.\nBody ${n}.`;
+  }),
   'Part 82 - Page 16',
   'APPENDIX A - Official Indoor Repair Shop Sign',
   'NOTICE TO CONSUMERS',
@@ -29,8 +38,18 @@ export const CR142_TEXT = [
   'PART 142', 'Subpart 142-1 Coverage', 'Sec. 142-1.1 Coverage of Part.',
   '§ 142-1.1 Coverage of Part',
   'This Part shall apply to all employees.',
-  'SUBPART 142-2', 'Sec. 142-2.1 Basic minimum hourly wage rate and allowances',
-  ...Array.from({ length: 23 }, (_, i) => `§ 142-2.${i + 1} Title ${i + 1}.\nBody ${i + 1}.`),
+  'SUBPART 142-2 PROVISIONS APPLICABLE TO ALL EMPLOYEES',
+  'Sec. 142-2.1 Basic minimum hourly wage rate and allowances',
+  '142-2.2 Overtime rate',
+  '142-2.3 Call-in pay',
+  'REGULATIONS',
+  ...Array.from({ length: 23 }, (_, i) => {
+    const n = i + 1;
+    if (n === 4) {
+      return '§ 142-2.4 Additional rate for split shift and spread of hours.\nAn employee shall receive one additional hour of pay at the basic minimum hourly rate when the spread of hours exceeds 10 hours in a day.';
+    }
+    return `§ 142-2.${n} Title ${n}.\nBody ${n}.`;
+  }),
   '§ 142-3.1 Basic minimum hourly wage rate.', 'Nonprofit body.',
 ].join('\n');
 
@@ -40,6 +59,8 @@ describe('splitPartText', () => {
     expect(s.map((x) => x.cite)).toEqual(NY_PART82_SOURCE.cites);
     expect(s[0]).toEqual({ cite: '82.1', heading: 'Introduction.', text: 'Chapter 946 of the Laws of 1974 created article 12-A of the Vehicle and Traffic Law.\nThis Part is promulgated to realize those purposes.' });
     expect(s[1]!.text).toBe('The following definitions shall apply to this Part:\n(a) Day. Means calendar day.\n(b) Estimate. The repair shop\'s determination of the cost of parts.');
+    expect(s[4]).toEqual({ cite: '82.5', heading: 'Obligations of the repair shop.', text: 'Every repair shop shall furnish the customer an estimate in writing before beginning repairs.' });
+    expect(s[17]!.heading).toBe('Insurers and repair shops.');
     expect(s[18]!.text).toBe('Body 19.');
     expect(JSON.stringify(s)).not.toContain('APPENDIX');
     expect(JSON.stringify(s)).not.toContain('Part 82 - Page');
@@ -48,8 +69,19 @@ describe('splitPartText', () => {
     const s = splitPartText(CR142_TEXT, NY_PART142_SOURCE.split);
     expect(s.map((x) => x.cite)).toEqual(NY_PART142_SOURCE.cites);
     expect(s[0]).toEqual({ cite: '142-1.1', heading: 'Coverage of Part', text: 'This Part shall apply to all employees.' });
+    // The SUBPART banner and its Sec./bare-cite contents lines sit between
+    // 142-1.1's body and 142-2.1's head — skipFrom must discard all of them,
+    // leaving each section's text as exactly its own body line.
+    expect(s[1]).toEqual({
+      cite: '142-2.1',
+      heading: 'Title 1',
+      text: 'Body 1.',
+    });
     expect(s[23]!.cite).toBe('142-2.23');
     expect(JSON.stringify(s)).not.toContain('Nonprofit body');
+    expect(JSON.stringify(s)).not.toContain('SUBPART');
+    expect(JSON.stringify(s)).not.toContain('Sec. 142-2.1');
+    expect(JSON.stringify(s)).not.toContain('142-2.2 Overtime rate');
   });
   test('the cover readers', () => {
     expect(readCr82Edition(CR82_TEXT)).toBe('CR-82 (5/26)');
