@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { NY_CITE_CODES, NY_CR82_EDITION, displayCite, formatNyCitation, nyId, parseNyId, resolveNyCitationQuery } from '../src/identity.js';
+import { NY_CITE_CODES, NY_CR82_EDITION, displayCite, formatNyCitation, nyId, nyStateIdentity, parseNyId, resolveNyCitationQuery } from '../src/identity.js';
 import type { NySection } from '../src/schema.js';
 
 const statute: NySection = { cite: '2610', code: 'N.Y. Ins. Law', chapter: 'art. 26', chapterTitle: 'Unfair Claim Settlement Practices; Other Misconduct', heading: 'Collision or comprehensive coverage on motor vehicles; claims; repairs', text: '§ 2610. …', effectiveDate: '2017-06-23', domain: 'insurance', sourceUrl: 'https://www.nysenate.gov/legislation/laws/ISC/2610', captureSource: 'senate' };
@@ -52,6 +52,10 @@ describe('resolveNyCitationQuery', () => {
     expect(parseNyId('dfs guidance:Circular Letter 16 (2000)')).toEqual({ code: 'DFS Guidance', cite: 'Circular Letter 16 (2000)' });
     expect(resolveNyCitationQuery('11 nycrr:216.7')).toEqual({ kind: 'section', code: '11 NYCRR', cite: '216.7' });
     expect(parseNyId('fla. stat.:1')).toBeNull();
+  });
+  test('the exported identity object parses ids through parseNyId, not the shared factory default', () => {
+    expect(nyStateIdentity.parseId('n.y. ins. law:2610')).toEqual({ code: 'N.Y. Ins. Law', cite: '2610' });
+    expect(nyStateIdentity.parseId('dfs guidance:Circular Letter 16 (2000)')).toEqual({ code: 'DFS Guidance', cite: 'Circular Letter 16 (2000)' });
   });
   test('prose is not a citation', () => {
     for (const q of ['the adjuster will not come out', 'weekly pay for painters', '']) expect(resolveNyCitationQuery(q)).toBeNull();

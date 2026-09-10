@@ -177,11 +177,6 @@ export function resolveNyCitationQuery(query: string): CitationQuery {
   return null;
 }
 
-export const nyStateIdentity: StateIdentity = { ...factory, resolveCitationQuery: resolveNyCitationQuery };
-
-export function nyId(code: NyCode, cite: string): string {
-  return nyStateIdentity.id(code, cite);
-}
 export function parseNyId(id: string): { code: NyCode; cite: string } | null {
   const idx = id.indexOf(':');
   if (idx <= 0) return null;
@@ -189,6 +184,12 @@ export function parseNyId(id: string): { code: NyCode; cite: string } | null {
   const cite = id.slice(idx + 1).trim();
   const code = NY_CODES.find((c) => c.toLowerCase() === codePart);
   return code && cite ? { code, cite } : null;
+}
+
+export const nyStateIdentity: StateIdentity = { ...factory, resolveCitationQuery: resolveNyCitationQuery, parseId: parseNyId };
+
+export function nyId(code: NyCode, cite: string): string {
+  return nyStateIdentity.id(code, cite);
 }
 export function displayCite(section: Pick<NySection, 'code' | 'cite'>): string {
   return nyStateIdentity.displayCite(section);
