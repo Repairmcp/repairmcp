@@ -1,0 +1,26 @@
+{
+  "name": "@repairmcp/state-ny",
+  "version": "0.0.0",
+  "description": "New York state law vertical for RepairMCP: Insurance Law 2601, 2610 (no required or suggested repair shop), 3411 and Regulation 64 (11 NYCRR 216: acknowledgment within 15 business days, inspection within six business days, good-faith negotiation of motor vehicle physical damage claims, total loss valuation), DFS opinions and circular letters on steering and Regulation 64, the Motor Vehicle Repair Shop Registration Act (Veh. & Traf. Law art. 12-A) and 15 NYCRR Part 82, the bailee's lien on motor vehicles and its sale, General Business Law 349/350, and employment rules (weekly pay for manual workers, deductions, wage notices, meal periods, one day of rest, 12 NYCRR 142, workers' compensation), captured verbatim from the Senate's public site, the DMV and DOL booklets, the Legal Information Institute's NYCRR mirror, and DFS.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "unpdf": "^1.3.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}
