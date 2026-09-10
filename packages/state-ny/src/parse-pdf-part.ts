@@ -18,28 +18,61 @@
  * lines `dropLines` can name individually. `skipFrom` discards everything
  * from the banner line up to (not including) the next section head.
  *
- * The skip region is unbounded by construction — a false-positive
- * `skipFrom` match inside real prose, or a missed head after a real banner,
- * would otherwise silently drop body text with no signal. `skipOnly`
- * closes that hole: every line discarded inside a skip region must match
- * it, or the split fails naming the line (and fails naming the region if
- * the body ends while still skipping). Required whenever `skipFrom` is set.
+ * CR-82 prints a different shape: page 6 interrupts 82.2's own definitions
+ * with a sidebar (the running "Sec." contents list, then the "PART 82 /
+ * MOTOR VEHICLE REPAIR SHOP / (Statutory authority: ...)" title block, then
+ * DMV's "Please note: ..." formatting disclaimer) that ends with a fixed
+ * closing sentence rather than the next section head — `skipUntil` is an
+ * INCLUSIVE end marker: the region ends at (and discards) the first line
+ * matching it, and normal body text resumes on the next line.
+ *
+ * A skip region is unbounded by construction unless closed some other way
+ * — a false-positive `skipFrom` match inside real prose, or a missed close,
+ * would otherwise silently drop body text with no signal. Exactly one of
+ * two closing rules must be given whenever `skipFrom` is set: `skipOnly`
+ * (every discarded line must be contents-shaped, or the split fails naming
+ * the line; the region closes at the next section head) or `skipMaxLines`
+ * with `skipUntil` (the region closes at the first line matching
+ * `skipUntil`, and exceeding `skipMaxLines` lines without closing fails
+ * naming the region). Reaching the end of the body while still skipping
+ * fails UNLESS the body itself was truncated by `bodyEnd` — a skip region
+ * legitimately ending exactly at `bodyEnd` is fine, because every line it
+ * discarded already passed `skipOnly` (or, under `skipUntil`, `bodyEnd`
+ * itself is what cut the region off before its own close line appeared).
  */
 export interface PartSplitSpec {
   /** Anchored to a whole line: ^…$ with the m flag. Group 1 = cite, group 2 = title. */
   head: RegExp;
   /** The line the body begins at (the first head, as printed). */
   bodyStart: RegExp;
-  /** The line the body ends before (e.g. APPENDIX), when the booklet has trailing matter. */
+  /**
+   * The line the body ends before (e.g. APPENDIX, or the unique next-Subpart
+   * head), when the booklet has trailing matter. Matched as the FIRST
+   * occurrence after bodyStart — a banner PHRASE can recur (wrapped into
+   * earlier prose describing what it excludes); the marker here must be a
+   * line that is structurally unique, not merely the common case.
+   */
   bodyEnd?: RegExp;
   dropLines: readonly RegExp[];
-  /** From a line matching this, discard every line up to (not including) the next section head. */
+  /** From a line matching this, discard lines until the region closes (see skipOnly / skipUntil). */
   skipFrom?: RegExp;
   /**
-   * Every line discarded inside a skipFrom region must match this, or the
-   * split fails naming the line. Required whenever `skipFrom` is set.
+   * Closing rule: every line discarded inside a skipFrom region must match
+   * this, or the split fails naming the line; the region closes at the next
+   * section head. Mutually exclusive with skipUntil — exactly one is
+   * required whenever skipFrom is set.
    */
   skipOnly?: RegExp;
+  /**
+   * Closing rule: the skip region ends at (and discards) the first line
+   * matching this — an INCLUSIVE end marker, unlike bodyEnd. No shape
+   * check runs on the lines in between. Mutually exclusive with skipOnly —
+   * exactly one is required whenever skipFrom is set. Pair with
+   * skipMaxLines so a missed close fails loudly instead of running away.
+   */
+  skipUntil?: RegExp;
+  /** With skipUntil: throw naming the region if it exceeds this many lines without closing. */
+  skipMaxLines?: number;
 }
 
 export interface SplitSection {
@@ -49,8 +82,12 @@ export interface SplitSection {
 }
 
 export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] {
-  if (spec.skipFrom && !spec.skipOnly) {
-    throw new Error('PartSplitSpec.skipFrom is set without skipOnly — a skip region with no bound on what it may discard.');
+  if (spec.skipFrom) {
+    const hasOnly = !!spec.skipOnly;
+    const hasUntil = !!spec.skipUntil;
+    if (hasOnly === hasUntil) {
+      throw new Error('PartSplitSpec.skipFrom requires exactly one of skipOnly or skipUntil — a skip region with no bound (or two conflicting bounds) on what it may discard.');
+    }
   }
   const lines = raw
     .replace(/\r/g, '')
@@ -61,15 +98,23 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
   const start = lines.findIndex((l) => spec.bodyStart.test(l));
   if (start < 0) throw new Error('No body start marker in the booklet text — template drift, or the PDF did not extract.');
   let end = lines.length;
+  let truncatedAtBodyEnd = false;
   if (spec.bodyEnd) {
-    // The LAST match, not the first: CR 142's Subpart 142-2 banner text
-    // itself wraps onto a line reading "SUBPART 142-3" ("...COVERED BY THE
-    // PROVISIONS OF / SUBPART 142-3"), well before the real Subpart 142-3
-    // banner that actually ends the body. The first occurrence is prose;
-    // the structural transition is always the last one printed.
-    let e = -1;
-    for (let i = start + 1; i < lines.length; i++) if (spec.bodyEnd!.test(lines[i]!)) e = i;
-    if (e > start) end = e;
+    // The FIRST match after bodyStart. A banner PHRASE can recur — CR 142's
+    // Subpart 142-2 banner sentence itself wraps onto a line reading
+    // "SUBPART 142-3" ("...COVERED BY THE PROVISIONS OF / SUBPART 142-3"),
+    // well before the real Subpart 142-3 section — which is why bodyEnd is
+    // pinned to the unique `§ 142-3.1` head rather than the recurring
+    // banner text. A marker chosen to be structurally unique is safe to
+    // match on first occurrence; a marker that merely usually is unique
+    // (the banner phrase) is not.
+    for (let i = start + 1; i < lines.length; i++) {
+      if (spec.bodyEnd.test(lines[i]!)) {
+        end = i;
+        truncatedAtBodyEnd = true;
+        break;
+      }
+    }
   }
   const body = lines.slice(start, end);
 
@@ -77,6 +122,7 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
   let current: SplitSection | undefined;
   let skipping = false;
   let skipStartLine: string | undefined;
+  let skipLineCount = 0;
   for (const line of body) {
     const head = spec.head.exec(line);
     if (head) {
@@ -89,9 +135,18 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
     if (spec.skipFrom && spec.skipFrom.test(line)) {
       skipping = true;
       skipStartLine = line;
+      skipLineCount = 0;
       continue;
     }
     if (skipping) {
+      skipLineCount++;
+      if (spec.skipMaxLines && skipLineCount > spec.skipMaxLines) {
+        throw new Error(`Skip region after "${skipStartLine}" exceeds ${spec.skipMaxLines} lines without closing — a close marker was missed or real text is being dropped.`);
+      }
+      if (spec.skipUntil) {
+        if (spec.skipUntil.test(line)) skipping = false;
+        continue;
+      }
       if (!spec.skipOnly!.test(line)) {
         throw new Error(
           `Skip region after "${skipStartLine}" contains a line that is not contents-shaped: "${line}" — a section head was missed or real text was about to be dropped.`,
@@ -102,7 +157,7 @@ export function splitPartText(raw: string, spec: PartSplitSpec): SplitSection[] 
     if (!current) throw new Error(`Body text before the first section head: "${line.slice(0, 60)}".`);
     current.text = current.text ? `${current.text}\n${line}` : line;
   }
-  if (skipping) {
+  if (skipping && !truncatedAtBodyEnd) {
     throw new Error(`Skip region after "${skipStartLine}" ran to the end of the body without a section head.`);
   }
   return out;

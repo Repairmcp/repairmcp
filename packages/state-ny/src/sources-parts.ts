@@ -40,6 +40,21 @@ export const NY_PART82_SOURCE: NyPdfPartSource = {
     bodyStart: /^Section 82\.1 Introduction\.$/,
     bodyEnd: /^APPENDIX A\b/,
     dropLines: [/^Part 82 - Page \d+$/],
+    // Page 6 of the real booklet interrupts 82.2's own definitions with a
+    // sidebar: the running "Sec." contents list (all 19 entries, some
+    // wrapped onto a lowercase continuation line such as "registration" or
+    // "subcontractors", with a SECOND bare "Sec." partway through), the
+    // "PART 82 / MOTOR VEHICLE REPAIR SHOP / (Statutory authority: ...)"
+    // title block, then four "Please note: ..." sentences about DMV's
+    // non-official formatting. It occurs exactly once, between definitions
+    // (c) and (d). skipUntil is INCLUSIVE — the region ends at (and
+    // discards) the "...in this document in any way." line; normal body
+    // text resumes at "(d) Invoice.". skipMaxLines catches a missed close
+    // (the real sidebar is ~31 lines; 40 leaves room without being
+    // unbounded).
+    skipFrom: /^Sec\.$/,
+    skipUntil: /in this document in any way\.$/,
+    skipMaxLines: 40,
   },
   mustContain: ['82.5 Obligations of the repair shop.', 'estimate in writing', '82.18 Insurers and repair shops.'],
 };
@@ -56,12 +71,26 @@ export const NY_PART142_SOURCE: NyPdfPartSource = {
   split: {
     head: /^§\s*(142-[12]\.\d{1,2})\s+([A-Z][^\n]*?)\.?$/,
     bodyStart: /^§\s*142-1\.1\b/,
-    bodyEnd: /^SUBPART\s+142-3\b/i,
+    // The recurring banner PHRASE "SUBPART 142-3" is not safe to match on
+    // first occurrence: the Subpart 142-2 banner sentence itself wraps onto
+    // a line reading exactly "SUBPART 142-3" (it is explaining what 142-2
+    // does NOT cover), ~575 lines before the real Subpart 142-3 section.
+    // `§ 142-3.1` is the unique head that actually begins Subpart 3 — it
+    // only ever appears twice in the booklet: once in Subpart 3's own
+    // contents list (a bare "142-3.1 ..." cite line, no §, which the head
+    // regex above does not match) and once as the real section head, so
+    // matching the FIRST full `§ 142-3.1` line is safe.
+    bodyEnd: /^§\s*142-3\.1\b/,
     // SUBPART banners and their "Sec. …"/bare-cite contents lines between a
     // section's body and the next head are structural, not substantive text
     // (see PartSplitSpec.skipFrom in parse-pdf-part.ts) — they are removed
     // by skipFrom below, not by dropLines. REGULATIONS is the running head
-    // that can still appear inside a section's body pages.
+    // that can still appear inside a section's body pages. The trailing
+    // Subpart 142-3 banner and ITS OWN contents list (which also carries a
+    // bare "Sec." line and a "MINIMUM WAGE AND REGULATIONS" running head)
+    // sit inside this same skip region and are cut off by bodyEnd before
+    // a next section head ever appears — see splitPartText's
+    // truncatedAtBodyEnd handling.
     skipFrom: /^SUBPART\s/i,
     // Every line discarded in the skip region must be a contents entry
     // (a cite, optionally "Sec. "-prefixed, followed by more text) or an
