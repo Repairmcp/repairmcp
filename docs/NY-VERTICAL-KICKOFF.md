@@ -1,5 +1,16 @@
 # Kickoff spec: New York state vertical (state #7)
 
+> **Status 2026-09-10 (same day): SHIPPED** — `https://ny.repairmcp.com/mcp`
+> (version `9f9c249c-1b83-41fc-8e79-24a43acaf808`) live and verified on the
+> wire; see the NY row in CLAUDE.md's build status. The real capture forced
+> three parser fixes, no statute-article corrections: a bare "Sec." contents
+> line and a wrapped SUBPART banner in CR 142's `bodyEnd` matching, the CR-82
+> page-6 sidebar leaking into 15 NYCRR 82.2, and DFS phrasing gaps ("informal
+> opinion" wording and Circular Letter 11's dateline sitting two lines above
+> the cite instead of one). The zone WAF rate limit returned zero 429s on
+> ny.repairmcp.com across 30 parallel requests — the fourth hostname after
+> fl., ca., and deg. where it does not fire (CLAUDE.md Backlog, first entry).
+
 Written 2026-09-10. Pattern follows WA → MT → CO → TX → CA → FL: a state
 package on `@repairmcp/state-law`, a Worker at `ny.repairmcp.com`,
 registration in `scripts/state-registry.ts` so the 4-week drift checker

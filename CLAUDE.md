@@ -351,6 +351,54 @@ apps/state-fl-server/ @repairmcp/state-fl-server — Worker, fl.repairmcp.com,
                       same shape as the other state servers; /health adds
                       statutesEdition + the three-domain breakdown
 
+packages/state-ny/    @repairmcp/state-ny — New York vertical (pure corpus,
+                      FIVE publishers, THREE domains; state #7, second of
+                      the population-ordered run FL → NY → MN → PA → OH →
+                      IL → MI → NC → MA → GA)
+  src/parse-senate.ts  nysenate.gov one-page-per-section parser; absence is
+                      HTTP 200 with no law-section content, not a 404
+  src/capture-statutes.ts  one fetch per cite; the site is Cloudflare-fronted
+                      and answers a transient 403 on rare fetches — one retry
+                      clears it (two of 33 fetches in the real capture)
+  src/parse-lii-nycrr.ts  the Legal Information Institute's mirror of 11
+                      NYCRR Part 216 (Regulation 64) — the official publisher
+                      (Westlaw) blocks automated access, the CA/FL pattern;
+                      history arrives as `<effectivedate>` notes, NOT
+                      numbered Register entries, and most Part 216 sections
+                      (10 of 13) carry no date at all — absence of a date is
+                      the normal case here, not a parser gap
+  src/parse-pdf-part.ts  DMV (15 NYCRR Part 82, CR-82) and DOL (12 NYCRR
+                      Part 142, CR 142) booklet PDFs, read with the CO/FL
+                      pdf-text.ts pattern; CR-82 carries a `Part 82 - Page N`
+                      footer AND a page-6 sidebar (contents list + statutory
+                      authority + a formatting disclaimer) inline in the
+                      body text that `skipFrom`/`skipUntil`/`skipMaxLines`
+                      in `sources-parts.ts` cut out; CR 142 wraps its own
+                      Subpart banner text early, so `bodyEnd` matches the
+                      first real section head, not a recurring banner phrase
+  src/parse-dfs.ts    DFS guidance (OGC opinions, circular letters): six
+                      hand-picked documents on steering and total loss; one
+                      (Circular Letter 16, 2000) is captured WITHDRAWN
+                      (12/4/2003, post Allstate v. Serio) and the corpus
+                      states the withdrawal rather than letting it read as
+                      live guidance
+  src/identity.ts     CR82_EDITION pin ("CR-82 (5/26)") makes a DMV booklet
+                      reissue fail loudly; Part 142's effective date is
+                      pinned separately (2020-06-24, no rolling edition)
+  data/               ny-law-corpus.json (95 sections: insurance 22 /
+                      repair_law 34 / employment 39) + annotations
+  test/               93 tests incl. the demo gauntlet (weekly pay → Lab.
+                      Law 191, steering → Ins. Law 2610 with DFS OGC Opinion
+                      04-06-03 second, uninspected car → 11 NYCRR 216.7),
+                      the CR82 edition pin, and full-manifest capture
+                      fixtures over injected statute/LII/PDF/DFS readers
+
+apps/state-ny-server/ @repairmcp/state-ny-server — Worker, ny.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      cr82Edition + part142EffectiveDate + captureSources
+                      (senate/lii/dfs/dmv/dol counts) + the three-domain
+                      breakdown
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -392,7 +440,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl, ny) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -449,27 +497,30 @@ sections), Montana (`apps/state-mt-server/`, 119 MCA/ARM sections),
 Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), Texas
 (`apps/state-tx-server/`, 62 statute/TAC/TDI-bulletin sections),
 California (`apps/state-ca-server/`, 97 statute/CCR/Cal-OSHA sections across
-four domains), and Florida (`apps/state-fl-server/`, 46 statute/FAC
+four domains), Florida (`apps/state-fl-server/`, 46 statute/FAC
 sections; the FAC text is read out of Word 97 documents at capture, ~2
-minutes end to end). Pure corpus: the data ships in each bundle, so a corpus
+minutes end to end), and New York (`apps/state-ny-server/`, 95
+statute/CR-82/CR-142/Reg-64/DFS-guidance sections across five publishers).
+Pure corpus: the data ships in each bundle, so a corpus
 refresh IS a deploy — re-run the capture, run the tests (the substring,
 demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
-TX_STATUTES_CURRENCY, FL FL_STATUTES_EDITION; California has no pin because
-none of its surfaces states currency — are the acceptance gate), deploy from
-the state's app.
+TX_STATUTES_CURRENCY, FL FL_STATUTES_EDITION, NY CR82_EDITION; California has
+no pin because none of its surfaces states currency — are the acceptance
+gate), deploy from the state's app.
 A California capture takes ~20 minutes: leginfo and the LII mirror each ask
 for a 10-second crawl delay and the capture honors it (`--save-raw` once,
 then `--from-dir` for every re-parse).
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca)
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny)
 bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa. / mt. / co. / tx. / ca.repairmcp.com
+wrangler deploy                                      # → wa. / mt. / co. / tx. / ca. / fl. / ny.repairmcp.com
 curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
 curl -s https://ca.repairmcp.com/health              # corpus meta + domains + captureSources
 curl -s https://fl.repairmcp.com/health              # corpus meta + domains + statutesEdition
+curl -s https://ny.repairmcp.com/health              # corpus meta + domains + cr82Edition + captureSources
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -718,7 +769,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | FL vertical | ✅ live | 2026-09-09: `https://fl.repairmcp.com/mcp` deployed (deployment `93034495`) and verified on the wire — `/health` reports 46 sections, captured 2026-09-09, statutesEdition "The 2026 Florida Statutes", domains insurance 12 / repair_law 22 / employment 12; "insurer cut off storage payments on the total loss without any notice" → Fla. Stat. 626.9743 first at 0.563 with the verbatim 72-hour excerpt; bad faith → 624.155 first; `s. 559.909` fetches with shortForm "Fla. Stat. 559.909, 2026 edition"; the connector search on aftermarket parts → 501.33, 626.9743, 559.909; 69B-220.201 fetches with "effective 4/21/2025". 46 verbatim sections from TWO publishers — Online Sunshine (one page per section; Florida prints catchlines, so headings are source text, and prints NO per-section effective dates, so every statute citation carries the annual edition, pinned) and flrules.org (rule cards in HTML; the rule TEXT only as Word 97 .doc downloads, read with word-extractor behind a dynamic import and versioned by the adopting notice id). Headliners: 626.9743 (parts equivalent in kind and quality; restoration to pre-loss condition when the insurer requires a shop; the estimate copy; 72 hours' notice before storage payments stop; itemized betterment), 624.155 (a statutory PRIVATE right of action for bad faith after the 60-day notice — the opposite of California), 319.30(3) (the 80 percent total-loss test), 627.4265 (20 days to pay a written settlement, then 12 percent interest), 69B-220.201 (adjuster ethics: no steering for consideration; a breach is an unfair claims settlement practice). Two corrections the capture forced on the kickoff draft, both recorded: 627.4265 DOES carry interest (from a written settlement only), and 69B-220.201's 2025 (3)(m) estimate rules are residential-only. Honest absences in the tool descriptions and the site card: no anti-steering statute in the CA/TX sense, no labor rate rule, no paint-and-materials rule, no state OSHA plan, no final-paycheck or break statute; 627.70131 is a property-insurance section. Site flips to eight sources; /legal names both publishers. **Open: the zone WAF rate limit returned zero 429s on fl., ca., AND deg. under 30-request bursts at launch** — it is not firing on any hostname (see Backlog); connector gates in the project owner's clients. |
 
-**Test totals:** 979 passing (91 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 193 ingestion). 0 failing.
+| NY vertical | ✅ live | 2026-09-10: `https://ny.repairmcp.com/mcp` deployed (version `9f9c249c-1b83-41fc-8e79-24a43acaf808`) and verified on the wire — `/health` reports 95 sections, current through 2026-09-10, cr82Edition "CR-82 (5/26)", part142EffectiveDate 2020-06-24, captureSources senate 33 / lii 13 / dfs 6 / dmv 19 / dol 24, domains insurance 22 / repair_law 34 / employment 39; "my painter says he has to be paid every week" → N.Y. Lab. Law 191 first; the steering query ("adjuster is telling the customer to take it to their shop") → N.Y. Ins. Law 2610 first with DFS OGC Opinion 04-06-03 second; "insurer has not come out to look at the car in two weeks" → 11 NYCRR 216.7 first; `ny_get_authority` on "Circular Letter 16 (2000)" → shortForm ends "withdrawn 12/4/2003"; the connector search on an uninspected car → 216.7. 95 verbatim sections from FIVE publishers — the State Senate's public site (one page per statute, Cloudflare-fronted, two transient 403s in 33 fetches both cleared by one retry, absence is HTTP 200 with no law-section content), the DMV's CR-82 booklet PDF (15 NYCRR Part 82, edition-pinned "CR-82 (5/26)"), the Department of Labor's CR 142 booklet PDF (12 NYCRR Part 142, pinned effective date 2020-06-24), the Legal Information Institute's mirror of 11 NYCRR Part 216 / Regulation 64 (the official publisher, Westlaw, blocks automated access — the CA/FL pattern; history arrives as `<effectivedate>` notes rather than numbered Register entries, and 10 of 13 Part 216 sections carry no date at all), and DFS guidance (six hand-picked opinions and circular letters, one — Circular Letter 16 of 2000 — captured WITHDRAWN rather than left to read as live). Headliners no other shipped state has: Lab. Law 191 (weekly pay for manual workers, with the Vega liquidated-damages line under 198), Ins. Law 2610 (no required or suggested shop, with the DFS opinion on "certified" shop programs beside it), 11 NYCRR 216.7 (six business days to inspect, good faith negotiation, total loss valuation). Honest absences in the tool descriptions and the site card: no private lawsuit under the unfair claims settlement statute (Rocanova v. Equitable), the steering statute's recommendation clause narrowed by a court with the Department's own letter withdrawn, no crash parts statute, no total loss percentage, no state OSHA plan for private shops. Site flips to nine sources; /legal names all five NY publishers. WAF burst test: 30/30 returned HTTP 200, 0 returned 429 — the fourth hostname (after fl., ca., deg.) where the zone rate limit does not fire (see Backlog). Open: connector gates in the project owner's clients. |
+
+**Test totals:** 1072 passing (91 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 93 state-ny + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -910,16 +963,22 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   matches `/mcp`. Re-verify in the dashboard and burst-test again; until then
   every corpus is an open, unrated door.
 - **Next states, in order** (decided 2026-09-09, by vehicles on the road ×
-  shop-usable law × publisher capturability): NY (Reg 64 / 11 NYCRR 216 is
-  the strongest insurer-conduct rule anywhere, but NYCRR's official host is
-  Westlaw — a CA-style provenance decision is needed; DFS publishes Reg 64
-  itself), MN (72A.201 subd. 6, revisor.mn.gov is the cleanest publisher in
-  the country), PA, OH, IL, MI, NC, MA, GA (Lexis-hosted; TN and NJ share
-  that problem). `docs/FL-VERTICAL-KICKOFF.md` records the reasoning.
+  shop-usable law × publisher capturability): NY done. MN next (72A.201
+  subd. 6, revisor.mn.gov is the cleanest publisher in the country), then PA,
+  OH, IL, MI, NC, MA, GA (Lexis-hosted; TN and NJ share that problem).
+  `docs/FL-VERTICAL-KICKOFF.md` and `docs/NY-VERTICAL-KICKOFF.md` record the
+  reasoning.
 - **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
   the project owner's clients and run the gauntlet's shop-phrasing queries);
   Florida's edition rollover lands every July/August — the pin will fail the
   first drift check after it and the refresh is the FL-LAW-ATTENTION checklist.
+- **NY residuals:** connector gates (add `https://ny.repairmcp.com/mcp` in
+  the project owner's clients and run the gauntlet's shop-phrasing queries);
+  the generalized LII parser (`parse-lii-nycrr.ts`) is a state-law candidate
+  now that CA, FL's neighbor pattern, and NY all read a regulation mirror the
+  same shape — worth extracting the next time a state needs it; a second
+  code claiming a bare statute number turns that number's bare resolution
+  off, by design (NY's `NY_CITE_CODES` collision guard, same shape as CA's).
 
 - ~~Resolve the `/grid/get/all` 200-row response.~~ **Resolved 2026-08-03**: transient
   throttle, not an endpoint change. One polite fetch that morning returned 5,777,228
@@ -1086,6 +1145,34 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   deleted (or the manifest changes). That is the shortcut working, not a bug —
   the first FL capture's anchor-stripping fix was invisible for exactly this
   reason.
+- **nysenate.gov is Cloudflare-fronted and 403s transiently.** Two of 33
+  statute fetches in the real NY capture hit a bare 403 that cleared on the
+  single built-in retry; a 403 that survives the retry is a real block, not
+  noise, and should stop the capture rather than be silently skipped.
+- **nysenate.gov answers an unknown or unpublished section with HTTP 200**
+  and a page carrying no law-section content — same absence-as-200 shape as
+  Online Sunshine and leginfo. The parser refuses a page with no section
+  wrapper rather than trusting the status code.
+- **The LII mirror's history for 11 NYCRR Part 216 is `<effectivedate>`
+  notes, not numbered Register entries** the way CA's LII mirror carries
+  them. Ten of the thirteen Part 216 sections carry no date at all on the
+  mirror — that is the normal case for this surface, not a parser gap, and
+  downstream citation formatting treats the missing date as silence.
+- **CR-82's `Part 82 - Page N` footers and a page-6 sidebar sit inside the
+  PDF's own body text**, not in a header/footer stream `pdf-text.ts` can
+  strip structurally. The page-6 sidebar (a bare `Sec.` line, the 19-entry
+  contents list, `PART 82`, the statutory-authority line, and a four-sentence
+  DMV formatting disclaimer) interrupts 15 NYCRR 82.2 mid-definition; it is
+  cut with an explicit `skipFrom`/`skipUntil`/`skipMaxLines` region in
+  `sources-parts.ts`, not a generic footer strip, because the DOL's CR 142
+  booklet does not carry the same sidebar and a generic strip would either
+  miss CR-82's or over-trim CR 142's.
+- **`NySectionSchema`'s `.refine` (the `dfsStatus`/`dfsWithdrawnDate`
+  cross-check) did NOT force a switch to `.superRefine`**, despite the
+  kickoff flagging a possible zod-typing conflict with the shared
+  `StateLawCorpus`/`CorpusProfile` machinery. `tsc` compiled clean with
+  `.refine` as written, end to end through the real corpus and tool
+  wiring — worth knowing before "fixing" it preemptively on a future state.
 
 - **leginfo answers an unknown section with HTTP 200 and an EMPTY
   `single_law_section` div**, and answers a section the Legislature prints in
