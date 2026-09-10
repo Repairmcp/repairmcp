@@ -151,9 +151,13 @@ export function resolveNyCitationQuery(query: string): CitationQuery {
 
   for (const n of NAMED) if (n.re.test(upper)) return n.query;
 
-  const ogc = OGC.exec(upper);
-  if (ogc && /OGC|OPINION/.test(upper)) return { kind: 'section', code: 'DFS Guidance', cite: `OGC Opinion ${ogc[1]}` };
-  const cl = CIRCULAR.exec(upper);
+  // displayCite joins code and cite with a space ("DFS Guidance Circular Letter
+  // 16 (2000)"), and getSection round-trips through that exact string — strip
+  // the code word first so the OGC/CIRCULAR regexes see only the cite.
+  const dfsStripped = upper.replace(/^DFS\s+GUIDANCE\s+/, '');
+  const ogc = OGC.exec(dfsStripped);
+  if (ogc && /OGC|OPINION/.test(dfsStripped)) return { kind: 'section', code: 'DFS Guidance', cite: `OGC Opinion ${ogc[1]}` };
+  const cl = CIRCULAR.exec(dfsStripped);
   if (cl) return { kind: 'section', code: 'DFS Guidance', cite: `Circular Letter ${cl[1]} (${cl[2]})` };
 
   for (const w of CODE_WORDS) {

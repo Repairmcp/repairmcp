@@ -1,1 +1,801 @@
-{}
+{
+  "N.Y. Ins. Law 2601": {
+    "topics": [
+      "fair_settlement",
+      "misrepresentation",
+      "claim_denial",
+      "prompt_investigation",
+      "short_pay"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "can I sue the insurer for bad faith",
+      "insurer acting in bad faith on my claim",
+      "insurer misrepresented the policy to avoid paying",
+      "insurer failed to acknowledge my claim promptly",
+      "insurer will not investigate the claim",
+      "insurer offering way less than fair value hoping I sue",
+      "insurer compelling policyholders to sue to get paid fairly",
+      "unfair claim settlement practices by the insurer",
+      "insurer not settling in good faith even though liability is clear",
+      "insurer keeps lowballing hoping we give up",
+      "is there a lawsuit for unfair claims handling in New York",
+      "does New York let me sue my insurer for bad faith",
+      "insurer deflating cost data to lowball the claim",
+      "pattern of unfair claims practices by this insurer"
+    ],
+    "quoteSafeExcerpts": [
+      "No insurer doing business in this state shall engage in unfair claim settlement practices.",
+      "not attempting in good faith to effectuate prompt, fair and equitable settlements of claims submitted in which liability has become reasonably clear"
+    ]
+  },
+  "N.Y. Ins. Law 2610": {
+    "topics": [
+      "steering",
+      "repair_facility_choice",
+      "fair_settlement"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "claimants",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "adjuster is telling the customer to take it to their shop",
+      "insurer requiring repairs at their shop",
+      "insurer telling the customer where to get the car fixed",
+      "can the insurance company make my customer use a specific shop",
+      "adjuster recommending a repair shop without being asked",
+      "insurer pushing a certified shop on the customer",
+      "customer has the right to choose their own repair shop",
+      "insurer steering the claim to a network shop",
+      "does the customer have to use the insurer's preferred shop",
+      "insurer suggested a shop the customer never asked about",
+      "insurance company directing where the car gets fixed",
+      "insurer requiring a particular place or shop for repairs",
+      "adjuster recommended a shop before being asked to"
+    ],
+    "quoteSafeExcerpts": [
+      "no insurer providing collision or comprehensive coverage therefor shall require that repairs be made to such vehicle in a particular place or shop or by a particular concern",
+      "the insurer shall not, unless expressly requested by the insured, recommend or suggest repairs be made to such vehicle in a particular place or shop or by a particular concern"
+    ]
+  },
+  "N.Y. Ins. Law 3411": {
+    "topics": [
+      "inspection_photos",
+      "total_loss",
+      "valuation_dispute",
+      "fair_settlement"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "they want to keep the car for salvage",
+      "insurer wants to inspect the vehicle before settling",
+      "insurer requires inspection before covering physical damage",
+      "salvage title and inspection requirements",
+      "insurer withholding payment until vehicle inspected",
+      "physical damage insurance inspection requirement on private passenger vehicle",
+      "insurer wants to see the repaired car before final payment",
+      "does the insurer have to inspect the car before paying the claim",
+      "insurer requesting the repair invoice and certification of repairs"
+    ],
+    "quoteSafeExcerpts": [
+      "Payment of a physical damage claim shall not be conditioned upon the repair of the automobile",
+      "The insurer may request that the automobile be made available for inspection whether or not the automobile is repaired."
+    ]
+  },
+  "11 NYCRR 216.4": {
+    "topics": [
+      "prompt_investigation",
+      "supplement_handling",
+      "fair_settlement"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "filed the claim three weeks ago and nobody has acknowledged it",
+      "insurer has not acknowledged receipt of my claim",
+      "how long does the insurer have to acknowledge a claim",
+      "insurer ignoring my calls about the claim status",
+      "insurer slow to respond to my supplement request",
+      "insurer must reply to communications about the claim",
+      "no response from the insurer after filing the claim",
+      "insurer failed to acknowledge notice of loss",
+      "insurer has an internal complaint department for slow claims"
+    ],
+    "quoteSafeExcerpts": [
+      "Every insurer, upon notification of a claim, shall, within 15 business days, acknowledge the receipt of such notice.",
+      "An appropriate reply shall be made within 15 business days on all other pertinent communications."
+    ]
+  },
+  "11 NYCRR 216.5": {
+    "topics": [
+      "prompt_investigation",
+      "claim_denial",
+      "fair_settlement"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer has not started investigating my claim",
+      "insurer needs to begin its investigation of the claim",
+      "how long does the insurer have to start investigating",
+      "insurer requesting more documents before investigating",
+      "insurer stalling on investigating the claim",
+      "insurer suspects fraud and paused the investigation",
+      "filed the claim three weeks ago and nobody has acknowledged it"
+    ],
+    "quoteSafeExcerpts": [
+      "Every insurer shall establish procedures to commence an investigation of any claim filed by a claimant, or by a claimant's authorized representative, within 15 business days of notice of claim."
+    ]
+  },
+  "11 NYCRR 216.6": {
+    "topics": [
+      "fair_settlement",
+      "claim_denial",
+      "short_pay",
+      "estimate_dispute"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer offering less than fair value for the claim",
+      "insurer rejected the claim without explanation",
+      "insurer needs more time to decide on the claim",
+      "insurer denied part of the claim",
+      "claim remains unsettled for months",
+      "insurer disclaiming coverage without explaining why",
+      "insurer must pay an agreed amount within five business days"
+    ],
+    "quoteSafeExcerpts": [
+      "it shall be the duty of every insurer to offer claimants, or their authorized representatives, amounts which are fair and reasonable as shown by its investigation of the claim"
+    ]
+  },
+  "11 NYCRR 216.7": {
+    "topics": [
+      "fair_settlement",
+      "estimate_dispute",
+      "short_pay",
+      "supplement_handling",
+      "aftermarket_parts",
+      "total_loss",
+      "valuation_dispute",
+      "storage_towing",
+      "prompt_investigation",
+      "repair_facility_choice",
+      "inspection_photos"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "claimants",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "insurer has not come out to look at the car in two weeks",
+      "insurer has not inspected the damaged vehicle",
+      "carrier wrote the estimate with aftermarket parts on a two year old car",
+      "insurer used aftermarket crash parts on a newer vehicle",
+      "insurer lowballed the total loss value",
+      "insurer's total loss offer is too low",
+      "insurer used the wrong method to value the total loss",
+      "insurer will not negotiate the repair estimate in good faith",
+      "insurer inspecting the vehicle within six business days",
+      "designated representative negotiating the loss with the insurer",
+      "insurer specifying non-OEM crash parts without consent",
+      "insurer deducting betterment or depreciation from the repair estimate",
+      "insurer offering a lowball settlement on the collision claim",
+      "insurer failed to inspect within the six day window",
+      "how does the insurer value a total loss vehicle in New York",
+      "insurer's salvage retention and title branding requirements",
+      "insurer withholding the salvage title before releasing settlement funds",
+      "second inspection needed for hidden damage found during teardown",
+      "insurer disposal fee for hazardous waste paint materials",
+      "insurer refuses storage payment after totaling the vehicle"
+    ],
+    "quoteSafeExcerpts": [
+      "it shall have six business days following receipt of notice of claim to inspect the insured's damaged motor vehicle",
+      "The average of the retail values for a substantially similar vehicle as listed in two valuation manuals current at the date of loss",
+      "Negotiations must be conducted in good faith, with the basic goal of promptly arriving at an agreed price"
+    ]
+  },
+  "11 NYCRR 216.10": {
+    "topics": [
+      "third_party_claims",
+      "fair_settlement",
+      "prompt_investigation",
+      "estimate_dispute"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "our customer is the third party claimant and the other carrier is slow walking the property damage claim",
+      "third party claimant waiting on the at-fault driver's insurer",
+      "the other driver's insurance company won't acknowledge our customer's claim",
+      "third party property damage claim against another driver's insurer",
+      "at-fault party's insurer delaying the property damage claim",
+      "customer is not the policyholder but is owed for the damage",
+      "third party claim comparative negligence reduction",
+      "liability insurer slow to respond to the property damage claim"
+    ],
+    "quoteSafeExcerpts": [
+      "This section is applicable to claims arising under motor vehicle liability insurance contracts affording coverage for claims of property damage by third parties caused by the alleged negligence of the insured.",
+      "Within 15 business days of receipt of notice of claim, the insurer shall send either written acknowledgment of the receipt of notice of claim, or payment, to the claimant or the claimant's representative."
+    ]
+  },
+  "DFS Guidance OGC Opinion 04-06-03": {
+    "topics": [
+      "dfs_guidance",
+      "steering",
+      "repair_facility_choice"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "manufacturer requires certified shop and insurer pushed the customer there",
+      "insurer advised the owner to use a certified repair shop without being asked",
+      "can an insurer recommend a manufacturer certified shop unprompted",
+      "insurer volunteering shop information about manufacturer certification",
+      "OEM certified shop requirement and insurer steering",
+      "insurer telling the customer about a manufacturer's certified shop program"
+    ],
+    "quoteSafeExcerpts": [
+      "Such advice given by an insurer without a recommendation request from the insured owner is prohibited under Section 2610(b) of the Insurance Law.",
+      "the insurer may voluntarily advise the owner that the automobile manufacturer does have a certified repair shop requirement and suggest that the owner may wish to contact the manufacturer for further information."
+    ]
+  },
+  "DFS Guidance OGC Opinion 01-10-05": {
+    "topics": [
+      "dfs_guidance",
+      "total_loss",
+      "valuation_dispute"
+    ],
+    "appliesTo": [
+      "insurers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "total loss settlement offer limited to purchase price plus improvements",
+      "insurer limiting the total loss offer under the 180 day purchase price rule",
+      "vehicle bought below market value totaled shortly after purchase",
+      "extenuating circumstances for a higher total loss settlement",
+      "insurer lowballed the total loss value"
+    ],
+    "quoteSafeExcerpts": [
+      "the insurer's offer of a motor vehicle physical damage or property damage liability settlement may be limited"
+    ]
+  },
+  "DFS Guidance Circular Letter 16 (2000)": {
+    "topics": [
+      "dfs_guidance",
+      "steering"
+    ],
+    "appliesTo": [
+      "insurers"
+    ],
+    "quoteSafeExcerpts": [
+      "This is to advise all insurers licensed to write motor vehicle physical damage coverage in New York State of the decision issued by Judge Richard Conway Casey"
+    ]
+  },
+  "N.Y. Veh. & Traf. Law 398-C": {
+    "topics": [
+      "shop_registration"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "do I have to register my body shop with the state",
+      "motor vehicle repair shop registration requirement",
+      "registering a new location for the repair shop",
+      "operating an unregistered repair shop penalty",
+      "how much does shop registration cost in New York",
+      "registration certificate must be displayed in the shop",
+      "filing an amendment when the shop changes location"
+    ],
+    "quoteSafeExcerpts": [
+      "no person shall operate, or cause to have operated, a motor vehicle repair shop, unless such motor vehicle repair shop is registered in accordance with the provisions of this article"
+    ]
+  },
+  "N.Y. Veh. & Traf. Law 398-D": {
+    "topics": [
+      "estimate_authorization",
+      "replaced_parts",
+      "invoice_records",
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "do I need a written estimate and authorization before I start the repair",
+      "must provide a written estimate before doing the work",
+      "cannot charge more than the estimate without written consent",
+      "right to inspect replaced parts",
+      "posting the section 2610 disclosure notice",
+      "invoice must state whether parts are new used or aftermarket",
+      "estimator license required to write body repair estimates",
+      "right to receive replaced parts after the repair"
+    ],
+    "quoteSafeExcerpts": [
+      "Upon the request of any customer, a motor vehicle repair shop shall make an estimate in writing of the parts and labor necessary for a specific job and shall not charge for work done or parts supplied in excess of the estimate without the consent of such customer."
+    ]
+  },
+  "15 NYCRR 82.3": {
+    "topics": [
+      "shop_registration"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "do I have to register my body shop with the state",
+      "who counts as a motor vehicle repair shop for registration",
+      "is an in-house fleet repair shop exempt from registration",
+      "which repair activities are excluded from shop registration"
+    ],
+    "quoteSafeExcerpts": [
+      "Every motor vehicle repair shop is required to be registered with the commissioner."
+    ]
+  },
+  "15 NYCRR 82.5": {
+    "topics": [
+      "estimate_authorization",
+      "replaced_parts",
+      "invoice_records",
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "do I need a written estimate and authorization before I start the repair",
+      "work order must be authorized before starting the repair",
+      "invoice must list all parts and labor performed",
+      "written estimate required before starting the repair",
+      "oral authorization for repair work must be documented",
+      "estimate must disclose aftermarket versus OEM body parts",
+      "right to receive replaced parts on written request"
+    ],
+    "quoteSafeExcerpts": [
+      "The repair shop shall:",
+      "Not perform any services not authorized by the customer by a work order.",
+      "(g) Provide quality repairs;"
+    ]
+  },
+  "15 NYCRR 82.13": {
+    "topics": [
+      "quality_repairs",
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "shop is responsible for subcontracted repair work",
+      "does the shop have to bring the car back to pre-damage condition",
+      "shop lacks the equipment to perform the repair properly",
+      "quality repair standard for a body shop",
+      "shop sublet the repair and it came back wrong"
+    ],
+    "quoteSafeExcerpts": [
+      "A repair shop shall perform quality repairs.",
+      "A repair shop shall be responsible for work it subcontracts to others."
+    ]
+  },
+  "15 NYCRR 82.18": {
+    "topics": [
+      "estimate_dispute",
+      "fair_settlement",
+      "inspection_photos",
+      "quality_repairs"
+    ],
+    "appliesTo": [
+      "repairers",
+      "insurers"
+    ],
+    "claimUseCases": [
+      "insurance company wants to inspect the repaired vehicle",
+      "insurer requesting the certification of automobile repairs form",
+      "designated representative form combined with the estimate",
+      "insurer taking possession of a deployed airbag",
+      "repair facility refusing insurer inspection of the completed repair"
+    ],
+    "quoteSafeExcerpts": [
+      "The insurance company has a right to inspect the repaired motor vehicle.",
+      "a repair shop shall complete its\nportion of a \"Certification of Automobile Repair\", Insurance Department form NYS APD2, when\nrequested to do so by an insurance company."
+    ]
+  },
+  "N.Y. Lien Law 184": {
+    "topics": [
+      "repair_lien",
+      "storage_towing"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "can I keep the car if the customer will not pay the bill",
+      "customer won't pay and I want to keep the car until they do",
+      "customer will not pay, can I keep the car",
+      "possessory lien on a vehicle for unpaid repairs",
+      "shop holding the car until the bill is paid",
+      "lien for towing storage and repair charges",
+      "lien becomes void if the vehicle leaves possession",
+      "lienor detaining the vehicle for the sum due",
+      "lien amount capped by the written estimate"
+    ],
+    "quoteSafeExcerpts": [
+      "has a lien upon such motor vehicle, motor boat or aircraft for the sum due for such towing, storing, maintaining, keeping or repairing of such motor vehicle",
+      "any lien sought by such bailee for such service may not be in an amount in excess of the written estimate."
+    ]
+  },
+  "N.Y. Lien Law 200": {
+    "topics": [
+      "repair_lien"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "how do I sell an abandoned vehicle the customer never paid for",
+      "selling the vehicle to satisfy the repair lien",
+      "lienor can sell personal property to satisfy a lien",
+      "abandoned car left at the shop unpaid"
+    ],
+    "quoteSafeExcerpts": [
+      "A lien against personal property",
+      "may be satisfied by the sale of such property according to the provisions of this article."
+    ]
+  },
+  "N.Y. Lien Law 201": {
+    "topics": [
+      "repair_lien"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "how do I sell an abandoned vehicle the customer never paid for",
+      "notice of sale required before selling the lienor vehicle",
+      "notify the owner before selling the car for unpaid repairs",
+      "customer has ten days to dispute the lien before the sale"
+    ],
+    "quoteSafeExcerpts": [
+      "Before such sale is held the lienor shall serve a notice upon the owner"
+    ]
+  },
+  "N.Y. Gen. Bus. Law 349": {
+    "topics": [
+      "consumer_protection",
+      "misrepresentation"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers",
+      "insurers"
+    ],
+    "claimUseCases": [
+      "deceptive business practice in the repair or claims process",
+      "unfair or deceptive acts and practices claim",
+      "consumer harmed by a deceptive repair or insurance practice",
+      "attorney general enforcement of deceptive practices",
+      "private right of action for a deceptive practice"
+    ],
+    "quoteSafeExcerpts": [
+      "Unfair, deceptive, or abusive acts or practices in the conduct of any business, trade or commerce or in the furnishing of any service in this state are hereby declared unlawful."
+    ]
+  },
+  "N.Y. Lab. Law 160": {
+    "topics": [
+      "overtime",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "what counts as a legal day of work for techs",
+      "eight hour work day for shop employees",
+      "agreement for overwork at increased pay"
+    ],
+    "quoteSafeExcerpts": [
+      "Unless otherwise provided by law, the following number of hours shall constitute a legal day's work"
+    ]
+  },
+  "N.Y. Lab. Law 161": {
+    "topics": [
+      "one_day_rest"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "can I schedule a tech six days a week every week",
+      "one day of rest in seven for shop employees",
+      "twenty-four consecutive hours of rest each week",
+      "working seven days straight without a day off",
+      "designated day of rest before working on Sunday"
+    ],
+    "quoteSafeExcerpts": [
+      "shall, except as herein otherwise provided, allow every person employed in such establishment or in the care, custody or operation of any such elevator, at least twenty-four consecutive hours of rest in any calendar week"
+    ]
+  },
+  "N.Y. Lab. Law 162": {
+    "topics": [
+      "meal_periods"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "lunch breaks for techs",
+      "how long is the meal break required by law",
+      "thirty minute lunch break requirement",
+      "sixty minute noon meal period for factory workers",
+      "meal period for a shift that runs into the evening",
+      "shortened meal period permit"
+    ],
+    "quoteSafeExcerpts": [
+      "Every person employed in or in connection with a factory shall be allowed at least sixty minutes for the noon day meal.",
+      "Every person employed in or in connection with a mercantile or other establishment or occupation coming under the provisions of this chapter shall be allowed at least thirty minutes for the noon day meal"
+    ]
+  },
+  "N.Y. Lab. Law 191": {
+    "topics": [
+      "weekly_pay",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "my painter says he has to be paid every week, is that true",
+      "does a manual worker have to be paid weekly",
+      "tech is a manual worker and wants weekly pay",
+      "can the shop pay technicians biweekly instead of weekly",
+      "frequency of pay for a manual laborer in New York",
+      "shop paying manual workers semi-monthly instead of weekly",
+      "when does the shop have to pay a terminated employee",
+      "painter demanding weekly paychecks"
+    ],
+    "quoteSafeExcerpts": [
+      "A manual worker shall be paid weekly and not later than seven calendar days after the end of the week in which the wages are earned"
+    ]
+  },
+  "N.Y. Lab. Law 193": {
+    "topics": [
+      "deductions",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "can I charge a tech for a comeback out of his pay",
+      "deducting comeback or chargeback costs from a technician's wages",
+      "shop wants to deduct a mistake from the paycheck",
+      "unauthorized deduction from an employee's wages",
+      "deducting cash shortages from an employee's pay",
+      "employee never authorized the payroll deduction in writing",
+      "deducting the cost of a redo from commission pay"
+    ],
+    "quoteSafeExcerpts": [
+      "No employer shall make any deduction from the wages of an employee, except deductions which"
+    ]
+  },
+  "N.Y. Lab. Law 195": {
+    "topics": [
+      "wage_notice",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "wage notice required when hiring a new technician",
+      "pay statement required with every paycheck",
+      "payroll records the shop must keep",
+      "notify employees in writing of a pay rate change",
+      "wage theft prevention act notice requirements"
+    ],
+    "quoteSafeExcerpts": [
+      "provide his or her employees, in writing in English and in the language identified by each employee as the primary language of such employee, at the time of hiring, a notice containing the following information: the rate or rates of pay"
+    ]
+  },
+  "N.Y. Lab. Law 198": {
+    "topics": [
+      "wage_claims",
+      "weekly_pay"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "we pay techs every two weeks and one of them is threatening to sue",
+      "liquidated damages for underpaying wages",
+      "employee suing for unpaid wages and attorney fees",
+      "penalty for paying a manual worker late",
+      "liquidated damages for a weekly pay violation",
+      "commissioner assessing damages for unpaid wages",
+      "statute of limitations to bring a wage claim"
+    ],
+    "quoteSafeExcerpts": [
+      "the commissioner shall assess against the employer the full amount of any such underpayment, and an additional amount as liquidated damages, unless the employer proves a good faith basis for believing that its underpayment of wages was in compliance with the law"
+    ]
+  },
+  "N.Y. Lab. Law 652": {
+    "topics": [
+      "minimum_wage",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "what is the minimum wage for shop employees in New York",
+      "minimum wage rate by region in New York",
+      "paying a technician below minimum wage",
+      "minimum wage for downstate versus upstate shops"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer shall pay to each of its employees for each hour worked a wage of not less than:"
+    ]
+  },
+  "12 NYCRR 142-2.3": {
+    "topics": [
+      "call_in_pay"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "tech showed up and we sent him home, do I owe him anything",
+      "call-in pay for a technician sent home early",
+      "minimum hours owed when an employee reports for a shift",
+      "employee called in but there was no work available",
+      "shop sent the tech home after an hour, does he get paid for the shift"
+    ],
+    "quoteSafeExcerpts": [
+      "An employee who by request or permission of the employer reports for work on any day shall be paid for at\nleast four hours, or the number of hours in the regularly scheduled shift, whichever is less, at the basic minimum\nhourly wage."
+    ]
+  },
+  "12 NYCRR 142-2.4": {
+    "topics": [
+      "spread_of_hours"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "a twelve hour day spread of hours extra pay",
+      "spread of hours pay when the shift plus breaks exceeds ten hours",
+      "split shift extra pay requirement",
+      "technician worked a long spread of hours in one day",
+      "extra hour of pay for a long workday"
+    ],
+    "quoteSafeExcerpts": [
+      "An employee shall receive one hour's pay at the basic minimum hourly wage rate, in addition to the\nminimum wage required in this Part for any day in which:",
+      "the spread of hours exceeds 10 hours"
+    ]
+  },
+  "12 NYCRR 142-2.10": {
+    "topics": [
+      "deductions"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "deducting cash shortages from an employee's minimum wage pay",
+      "shop deducting breakage or spoilage from a paycheck",
+      "penalty deduction for lateness or quitting without notice",
+      "reducing the minimum wage by business expenses"
+    ],
+    "quoteSafeExcerpts": [
+      "Wages shall be subject to no deductions, except for allowances authorized in this Part, and except for\ndeductions authorized or required by law"
+    ]
+  },
+  "N.Y. Workers' Comp. Law 2": {
+    "topics": [
+      "workers_comp",
+      "independent_contractor"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "is my 1099 tech an employee for workers comp",
+      "independent contractor technician and workers compensation coverage",
+      "definition of employee under the workers compensation law",
+      "is a self-employed technician excluded from workers comp",
+      "1099 painter working in the shop and workers comp status"
+    ],
+    "quoteSafeExcerpts": [
+      "\"Employee\" means a person engaged in one of the occupations enumerated in section three of this article or who is in the service of an employer whose principal business is that of carrying on or conducting a hazardous employment"
+    ]
+  },
+  "N.Y. Workers' Comp. Law 10": {
+    "topics": [
+      "workers_comp"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "is my 1099 tech an employee for workers comp",
+      "employer liability to secure compensation for injured workers",
+      "does the shop have to cover an injured technician",
+      "workers compensation liability without regard to fault"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer subject to this chapter shall in accordance with this chapter, except as otherwise provided in section twenty-five-a hereof, secure compensation to his employees and pay or provide compensation for their disability or death from injury arising out of and in the course of the employment without regard to fault as a cause of the injury"
+    ]
+  },
+  "N.Y. Workers' Comp. Law 52": {
+    "topics": [
+      "workers_comp"
+    ],
+    "appliesTo": [
+      "repairers",
+      "employers"
+    ],
+    "claimUseCases": [
+      "what happens if the shop has no workers comp policy",
+      "penalty for failing to carry workers compensation insurance",
+      "shop never secured workers comp coverage",
+      "criminal penalty for an uninsured employer",
+      "fine for not having workers comp for shop employees"
+    ],
+    "quoteSafeExcerpts": [
+      "Failure to secure the payment of compensation for five or less employees within a twelve month period shall constitute a misdemeanor"
+    ]
+  }
+}
