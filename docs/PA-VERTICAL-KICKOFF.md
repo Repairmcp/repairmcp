@@ -1,7 +1,7 @@
 # Kickoff spec: Pennsylvania state vertical (state #8)
 
 > **Status 2026-09-14 (same day): SHIPPED** — `https://pa.repairmcp.com/mcp`
-> (deployment `baf2d24b-c670-4fb6-be4d-d1dbe435e7f0`, deployed
+> (deployment `baf2d24b-c670-4fb6-be4d-d1dbe435e7f0`, redeployed the same evening as `9902e7fb-5cce-4b44-8c17-5b0e67aa0f7b` after the final-review fixes; first deployed
 > 2026-09-14T20:34:58Z) live and verified on the wire; see the PA row in
 > CLAUDE.md's build status. `/health` reports 89 sections, current through
 > 2026-09-14, captured 2026-09-14, paCodeEffectiveThrough "56 Pa.B. 4026
