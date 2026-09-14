@@ -69,4 +69,8 @@ describe('captureConsolidated', () => {
     expect(s.effectiveDate).toBeUndefined();
     expect(s.historyNote).toBeUndefined();
   });
+  test('a named cite that captures no body text fails by name', async () => {
+    const io = buildConsolidatedIo({ pages: { [consolidatedChapterUrl(42, 83)]: chapterPage({ title: 42, chapter: 83, subchapters: [{ letter: 'G', name: 'X', sections: [{ cite: '8371', heading: 'Actions on insurance policies.', body: [] }] }] }) } });
+    await expect(captureConsolidated(io, PA_CONSOLIDATED_SOURCES)).rejects.toThrow(/8371 captured no body text/);
+  });
 });

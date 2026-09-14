@@ -5,10 +5,13 @@ const P = (inner: string, opts: { center?: boolean } = {}): string =>
   `<p style="text-align:${opts.center ? 'center' : 'left'};padding-left:0.0000in;text-indent:0.3016in;line-height:0.1610in;">${inner}</p>\n`;
 const B = (inner: string): string => `<b>${inner}</b>`;
 
+/** A plain body line, or `{ bold, rest }` for Pennsylvania's inline-bold subsection markers and defined terms: `<b>(a)&nbsp;&nbsp;General rule.--</b>rest`. */
+type BodyLine = string | { bold: string; rest: string };
+
 /** A WU01 chapter page in the real markup: title, chapter TOC, subchapter regions with Comment markers. */
 export function chapterPage(opts: {
   title: number; chapter: number; enactment?: string;
-  subchapters: Array<{ letter: string; name: string; enactment?: string; sections: Array<{ cite: string; heading: string; body: string[]; notes?: string[]; glosses?: string[] }> }>;
+  subchapters: Array<{ letter: string; name: string; enactment?: string; sections: Array<{ cite: string; heading: string; body: BodyLine[]; notes?: string[]; glosses?: string[] }> }>;
 }): string {
   const tt = String(opts.title).padStart(2, '0');
   let html = `<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter ${opts.chapter}. - Title ${tt} - VEHICLES</title></head><body>`;
@@ -26,7 +29,7 @@ export function chapterPage(opts: {
     for (const sec of s.sections) {
       html += `<div class="Comment">${tt}c${sec.cite}s</div>\n`;
       html += P(B(`&#167; ${sec.cite}. &nbsp;${sec.heading}`));
-      for (const line of sec.body) html += P(line);
+      for (const line of sec.body) html += typeof line === 'string' ? P(line) : P(`${B(line.bold)}${line.rest}`);
       for (const n of sec.notes ?? []) html += P(n);
       for (const g of sec.glosses ?? []) html += P(`${B(g.split(' ').slice(0, 2).join(' '))} &nbsp;${g.split(' ').slice(2).join(' ')}`);
       html += P(`${B('Cross References.')} &nbsp;Section ${sec.cite} is referred to in section 1 of this title.`);
@@ -84,5 +87,61 @@ describe('parseConsolidatedChapterHtml', () => {
   });
   test('a page with no bold § head at all fails by name', () => {
     expect(() => parseConsolidatedChapterHtml('<html><body><p>nothing</p></body></html>', { title: 75, chapter: 73 })).toThrow(/no section heads/);
+  });
+  test('an inline-bold subsection marker is body text, not a note', () => {
+    const inlineBoldPage = chapterPage({
+      title: 75, chapter: 73,
+      subchapters: [
+        { letter: 'A', name: 'ABANDONED VEHICLES AND SALVORS', sections: [
+          { cite: '7301', heading: 'Authorization of salvors.', body: [
+            { bold: '(a)&nbsp;&nbsp;General rule.--', rest: 'The department shall authorize ...' },
+          ] },
+        ] },
+      ],
+    });
+    const r = parseConsolidatedChapterHtml(inlineBoldPage, { title: 75, chapter: 73 });
+    const s = r.sections[0]!;
+    expect(s.text).toBe('(a) General rule.--The department shall authorize ...');
+    expect(s.text).not.toContain('Cross References');
+  });
+  test('a bold defined term opens a body paragraph', () => {
+    const definedTermPage = chapterPage({
+      title: 75, chapter: 73,
+      subchapters: [
+        { letter: 'A', name: 'ABANDONED VEHICLES AND SALVORS', sections: [
+          { cite: '7301', heading: 'Definitions.', body: [
+            { bold: '"Salvor."', rest: ' A person ...' },
+          ] },
+        ] },
+      ],
+    });
+    const r = parseConsolidatedChapterHtml(definedTermPage, { title: 75, chapter: 73 });
+    expect(r.sections[0]!.text).toBe('"Salvor." A person ...');
+  });
+  test('a duplicate head is a parse error', () => {
+    const dupPage = chapterPage({
+      title: 75, chapter: 73,
+      subchapters: [
+        { letter: 'A', name: 'ABANDONED VEHICLES AND SALVORS', sections: [
+          { cite: '7306', heading: 'Payment of costs upon reclaiming vehicle.', body: ['Body one.'] },
+          { cite: '7306', heading: 'Payment of costs upon reclaiming vehicle.', body: ['Body two.'] },
+        ] },
+      ],
+    });
+    expect(() => parseConsolidatedChapterHtml(dupPage, { title: 75, chapter: 73 })).toThrow(/appears twice/);
+  });
+  test('a decimal subchapter label (e.g. B.1) is recognized, not treated as a note', () => {
+    const decimalSubchapterPage = chapterPage({
+      title: 42, chapter: 83,
+      subchapters: [
+        { letter: 'B.1', name: 'SOME NAME', enactment: 'Subchapter B.1 was added December 9, 2002, P.L.1278, No.152, effective in 60 days.', sections: [
+          { cite: '8340', heading: 'Some catchline.', body: ['Body text.'] },
+        ] },
+      ],
+    });
+    const r = parseConsolidatedChapterHtml(decimalSubchapterPage, { title: 42, chapter: 83 });
+    const s = r.sections[0]!;
+    expect(s.subchapter).toBe('B.1');
+    expect(s.inheritedEnactment).toBe('Enactment. Subchapter B.1 was added December 9, 2002, P.L.1278, No.152, effective in 60 days.');
   });
 });

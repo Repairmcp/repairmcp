@@ -1,11 +1,15 @@
 /**
  * The consolidated-statute pipeline: one chapter page per distinct
  * (title, chapter) at the mirror's 5 s crawl delay, parsed once, selected
- * per manifest cite. Named cites hard-fail when absent or repealed; the
- * SUBCHAPTER label each section sits under is cross-checked against the
- * manifest so a renumbered subchapter cannot ship under the wrong chapter
- * value. The effective date is the newest of the section's own notes, else
- * the inherited Enactment note's, else absent (silence).
+ * per manifest cite. Named cites hard-fail when absent, repealed, or
+ * captured with no body text at all (the parser can only WARN on that —
+ * see parse-consolidated.ts — because an unnamed section legitimately
+ * being empty is not this package's business; a NAMED cite capturing
+ * empty is always a parser bug, never a valid corpus row); the SUBCHAPTER
+ * label each section sits under is cross-checked against the manifest so
+ * a renumbered subchapter cannot ship under the wrong chapter value. The
+ * effective date is the newest of the section's own notes, else the
+ * inherited Enactment note's, else absent (silence).
  */
 import type { CaptureIo } from '@repairmcp/state-law';
 import { newestConsolidatedEffectiveDate } from './history-dates.js';
@@ -42,6 +46,9 @@ export async function captureConsolidated(
       const s = byCite.get(cite);
       if (!s) throw new Error(`${label} was requested by name but is absent from the chapter ${src.chapter} page — renumbered or repealed upstream; correct the manifest after reading the page.`);
       if (s.repealed) throw new Error(`${label} was requested by name but its catchline reads "${s.heading}" (Repealed/Expired).`);
+      if (!s.text) {
+        throw new Error(`${label} captured no body text from the chapter ${src.chapter} page — the parser lost the section; re-derive from the saved raw before capturing.`);
+      }
       if (s.subchapter !== src.subchapter) {
         throw new Error(`${label} sits under SUBCHAPTER ${s.subchapter ?? '(none)'} but the manifest expects ${src.subchapter}. Correct the manifest after reading the page.`);
       }

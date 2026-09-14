@@ -1,7 +1,10 @@
 /**
  * Parser for the Legislature's static consolidated-statute CHAPTER pages
- * (legis.state.pa.us/WU01/LI/LI/CT/HTM/{TT}/00.{CCC}..HTM). VERIFIED against
- * Title 42 ch. 83, Title 75 ch. 11 and ch. 73 on 2026-09-14 (kickoff §3.1).
+ * (legis.state.pa.us/WU01/LI/LI/CT/HTM/{TT}/00.{CCC}..HTM). Verified against
+ * saved copies of Title 42 ch. 83, Title 75 ch. 11 and ch. 73 at review
+ * (2026-09-14) — the review pass is where the inline-bold
+ * subsection-marker shape documented below was found; the original
+ * capture-time read of the same three pages had missed it.
  *
  * One <p> per paragraph, hard-wrapped at ~80 columns inside the tag. A
  * section HEAD prints `<b>§ 7311. &nbsp;Catchline.</b>`; the chapter's and
@@ -10,14 +13,27 @@
  * rule). `<div class="Comment">75c7311s</div>` markers are the site's own
  * anchors and are removed before splitting so their text never leaks.
  *
- * After a head, body paragraphs run until the first NOTE: a parenthesized
- * history note `(Oct. 24, 2012, P.L.1431, No.178, eff. 60 days)` (kept,
- * verbatim), or any bold-labeled paragraph (`2012 Amendment.`, `Cross
- * References.`, `Special Provisions in Appendix.` …), or the next
- * subchapter label / TOC / head. `Enactment.` notes are read wherever they
- * appear: "Chapter N was added …" applies to every section without a
- * closer note; "Subchapter X was added …" applies to that subchapter's
- * sections. The date rule itself lives in history-dates.ts.
+ * After a head, body paragraphs run until the first NOTE. A paragraph that
+ * OPENS with a bold run is a note only when that bold run's decoded text
+ * does NOT itself open with "(" or a quotation mark (straight or curly):
+ * `2012 Amendment.`, `Cross References.`, `Special Provisions in
+ * Appendix.` (even split across several adjacent `<b>` tags — only the
+ * first run's opening character is tested), a subchapter title line, and
+ * their kin are notes and excluded from text. Pennsylvania prints
+ * subsection markers as INLINE bold in the same paragraph as their body —
+ * `<b>(a)&nbsp;&nbsp;General rule.--</b>The department shall authorize…` —
+ * so a bold run opening with "(" is body, label included. A bold run
+ * opening with a quotation mark is a defined term
+ * (`<b>"Salvor."</b>&nbsp;A person…`) and is body for the same reason. A
+ * standalone parenthesized history note `(Oct. 24, 2012, P.L.1431,
+ * No.178, eff. 60 days)` (never bold) is kept, verbatim. The next
+ * subchapter label / TOC / head also ends the body run. `Enactment.`
+ * notes are read wherever they appear, bold or not (some print via `<b>`,
+ * others via a plain-text run inside a bold-styled `<p>` — the check runs
+ * on stripped text either way): "Chapter N was added …" applies to every
+ * section without a closer note; "Subchapter X was added …" applies to
+ * that subchapter's sections (a subchapter letter may carry a decimal,
+ * e.g. "C.1", "F.1"). The date rule itself lives in history-dates.ts.
  */
 import { decodeEntities } from '@repairmcp/state-law';
 
@@ -42,8 +58,18 @@ export interface ParsedConsolidatedSection {
   repealed: boolean;
 }
 
+/**
+ * Tags are dropped WITHOUT inserting a space at the boundary: every real
+ * word-separating space on these pages already exists as a literal
+ * character (or `&nbsp;`) in the source, including across a bold run's own
+ * boundary — Pennsylvania prints `<b>(a)&nbsp;&nbsp;General rule.--</b>The
+ * department…` with no space before "The", and a synthetic one would be
+ * verbatim-text corruption, not tidiness. `\s+` afterward still collapses
+ * any genuine multi-space/newline run (source line wraps, doubled `&nbsp;`)
+ * to one.
+ */
 function stripToText(html: string): string {
-  return decodeEntities(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  return decodeEntities(html.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
 }
 
 function toPieces(html: string): { text: string; html: string }[] {
@@ -57,11 +83,27 @@ function toPieces(html: string): { text: string; html: string }[] {
 }
 
 const HEAD = /<b\b[^>]*>\s*(?:&#167;|&sect;|§)\s*(\d{1,4}(?:\.\d+)?)\.\s*(?:&nbsp;|\s)*([\s\S]*?)<\/b>/i;
-const SUBCHAPTER = /^SUBCHAPTER ([A-Z])$/;
+/** Subchapter letters occasionally carry a decimal, e.g. "SUBCHAPTER C.1", "SUBCHAPTER F.1". */
+const SUBCHAPTER = /^SUBCHAPTER ([A-Z](?:\.\d+)?)$/;
 const TOC_LINE = /^\d{1,4}(?:\.\d+)?\.\s+\S/;
 const HISTORY = /^\(.*P\.L\..*\)\.?$/;
-const BOLD_LABEL = /^\s*<p[^>]*>\s*<b\b/i;
 const REPEALED = /\((Repealed|Expired|Deleted by amendment|Reserved)\)\s*\.?\s*$/i;
+
+/** The paragraph's first bold run, when it opens the paragraph — decoded and trimmed. */
+const LEADING_BOLD = /^\s*<p\b[^>]*>\s*<b\b[^>]*>([\s\S]*?)<\/b>/i;
+function leadingBoldText(pieceHtml: string): string | undefined {
+  const m = LEADING_BOLD.exec(pieceHtml);
+  if (!m) return undefined;
+  return decodeEntities(m[1]!.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * A bold run opening with "(" is an inline subsection marker
+ * ("(a)  General rule.--"); one opening with a quotation mark (straight or
+ * curly) is a defined term ('"Salvor."'). Either makes the whole paragraph
+ * BODY text, not a note.
+ */
+const BODY_MARKER_OPENER = /^["“”'‘’(]/;
 
 export function parseConsolidatedChapterHtml(
   html: string,
@@ -108,7 +150,7 @@ export function parseConsolidatedChapterHtml(
     }
     if (/^Enactment\./.test(piece.text)) {
       push();
-      if (/\bSubchapter [A-Z] was added\b/.test(piece.text)) subchapterEnactment = piece.text;
+      if (/\bSubchapter [A-Z](?:\.\d+)? was added\b/.test(piece.text)) subchapterEnactment = piece.text;
       else if (/\bChapter \d+ was added\b/.test(piece.text)) chapterEnactment = piece.text;
       continue;
     }
@@ -122,8 +164,14 @@ export function parseConsolidatedChapterHtml(
       inNotes = true;
       continue;
     }
-    if (BOLD_LABEL.test(piece.html)) {
-      inNotes = true;
+    const boldOpener = leadingBoldText(piece.html);
+    if (boldOpener !== undefined) {
+      if (BODY_MARKER_OPENER.test(boldOpener)) {
+        inNotes = false;
+        current.text = current.text ? `${current.text}\n${piece.text}` : piece.text;
+      } else {
+        inNotes = true;
+      }
       continue;
     }
     if (inNotes) continue;
