@@ -254,6 +254,18 @@
         "bun-types": "^1.3.13",
       },
     },
+    "packages/state-pa": {
+      "name": "@repairmcp/state-pa",
+      "version": "0.0.0",
+      "dependencies": {
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-law": "workspace:*",
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "bun-types": "^1.3.13",
+      },
+    },
     "packages/state-tx": {
       "name": "@repairmcp/state-tx",
       "version": "0.0.0",
@@ -457,6 +469,8 @@
     "@repairmcp/state-ny": ["@repairmcp/state-ny@workspace:packages/state-ny"],
 
     "@repairmcp/state-ny-server": ["@repairmcp/state-ny-server@workspace:apps/state-ny-server"],
+
+    "@repairmcp/state-pa": ["@repairmcp/state-pa@workspace:packages/state-pa"],
 
     "@repairmcp/state-tx": ["@repairmcp/state-tx@workspace:packages/state-tx"],
 
