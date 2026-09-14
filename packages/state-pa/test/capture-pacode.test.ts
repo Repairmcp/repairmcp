@@ -61,4 +61,25 @@ describe('capturePacode', () => {
     const reserved = buildPacodeIo({ pages: { [pacodeChapterUrl(31, 62)]: pacodeChapterPage({ title: 31, chapter: 62, sections: [{ cite: '62.1', heading: 'Definitions.', body: ['x'] }, { cite: '62.2', heading: '[Reserved].', body: [] }, { cite: '62.3', heading: 'Standards.', body: ['x'] }] }) } });
     await expect(capturePacode(reserved, PA_PACODE_SOURCES)).rejects.toThrow(/62\.2 .*Reserved/);
   });
+  test('a Subchapter-named preamble adoption line (Chapter 9\'s real shape) is inherited by sections with no own Source line — review round 1, Finding 1', async () => {
+    const io = buildPacodeIo({
+      pages: {
+        [pacodeChapterUrl(34, 9)]: pacodeChapterPage({
+          title: 34, chapter: 9,
+          chapterSource: ['The provisions of this Subchapter A adopted August 26, 1961; amended through September 1, 1969, unless otherwise noted.'],
+          sections: [
+            { cite: '9.1', heading: 'Authorized deductions.', body: ['x'] },
+            { cite: '9.2', heading: 'Restrictions.', body: ['x'] },
+            { cite: '9.3', heading: 'Penalty.', body: ['x'] },
+          ],
+        }),
+      },
+    });
+    const r = await capturePacode(io, PA_PACODE_SOURCES);
+    for (const cite of ['9.1', '9.2', '9.3']) {
+      const s = r.sections.find((x) => x.cite === cite)!;
+      expect(s.effectiveDate).toBe('1969-09-01');
+      expect(s.historyNote).toBe('The provisions of this Subchapter A adopted August 26, 1961; amended through September 1, 1969, unless otherwise noted.');
+    }
+  });
 });

@@ -9,13 +9,29 @@
  * (indentation as &nbsp; runs), then labeled blocks `<p><CENTER><B>Source
  * </B></CENTER></P>` — Authority, Source, Notes of Decisions, Cross
  * References. Section text ends at the first label; "The provisions of
- * this § N …" lines under Authority/Source are kept as sourceLines; case
- * notes and cross references are dropped. The preamble before the first h4
- * carries the chapter TOC (ignored) and the chapter-level Source lines
- * ("The provisions of this Chapter 146 adopted …"), which sections without
- * their own history inherit (capture-pacode.ts). Every page states
- * "changes effective through 56 Pa.B. 4026 (July 4, 2026)"; a page that
- * does not is refused. Absence is HTTP 200 + "File not found."
+ * this § N …" lines under Authority/Source are kept as sourceLines ONLY
+ * when they name THAT section's own cite exactly (never a prefix match —
+ * "§ 9.4" must not swallow "§ 9.41", and a chunk that runs into the NEXT
+ * subchapter's own preamble block before the next h4 — real chapter 9,
+ * verified 2026-09-14: Subchapter A's last section 9.4 is directly
+ * followed, still inside its own chunk, by Subchapter B's "The provisions
+ * of this Subchapter B issued under …" / "… adopted …" pair before the
+ * 9.11 head — must not have those lines attributed to 9.4); case notes and
+ * cross references are always dropped regardless. The preamble before the
+ * first h4 carries the chapter TOC (ignored) and the chapter- OR
+ * SUBCHAPTER-level adoption/authority lines ("The provisions of this
+ * Chapter 146 adopted …", or "The provisions of this Subchapter A adopted
+ * …" for chapters printed in subchapters, e.g. Chapter 9), which sections
+ * without their own history inherit (capture-pacode.ts). Chapter 9 prints
+ * SIX subchapters (A–F), each with its own Authority/Source preamble block
+ * ahead of that subchapter's first section; only Subchapter A's block sits
+ * in the page-level preamble captured here, because only Subchapter A's
+ * cites (9.1–9.3) are in the manifest — Subchapters B–F's adoption blocks
+ * are not modeled and are never read by this parser (they never reach
+ * `chapterSourceLines`, which only sees the page-level preamble ahead of
+ * the FIRST h4). Every page states "changes effective through 56 Pa.B.
+ * 4026 (July 4, 2026)"; a page that does not is refused. Absence is HTTP
+ * 200 + "File not found."
  */
 import { decodeEntities } from '@repairmcp/state-law';
 
@@ -52,6 +68,28 @@ const HEAD_TEXT = /^§\s*(\d+\.\d+[a-z]?)\.\s*(.*)$/;
 const RANGE_RESERVED_HEAD = /^§\s*§\s*\d+\.\d+[a-z]?—\d+\.\d+[a-z]?\.\s*\{Reserved\}\.?$/i;
 const LABEL = /<center>\s*<b>\s*([^<]+?)\s*<\/b>\s*<\/center>/i;
 const PROVISIONS = /^The provisions of this /;
+/**
+ * The chapter- or subchapter-level preamble filter (Finding 1, review
+ * round 1): a chapter printed in subchapters (Chapter 9) states its
+ * adoption/authority lines as "The provisions of this Subchapter A …", not
+ * "Chapter 9 …" — both name forms count as the fallback every section
+ * without its own history inherits.
+ */
+const CHAPTER_OR_SUBCHAPTER = / (?:Chapter|Subchapter) [A-Z0-9]+ /;
+
+/**
+ * A section's OWN "The provisions of this § …" line names that section's
+ * exact cite — never a prefix ("§ 9.4" must not match a line naming
+ * "§ 9.41") and never a neighboring chapter/subchapter's own block ("this
+ * Subchapter B …") that happens to sit inside the same chunk ahead of the
+ * next h4 (Finding 2, review round 1). A leading double "§ §" is accepted
+ * defensively — never observed on a single section's own line across the
+ * five captured pages, but the range-block shape prints one.
+ */
+function ownProvisionsLine(cite: string): RegExp {
+  const escaped = cite.replace(/\./g, '\\.');
+  return new RegExp(`^The provisions of this §\\s*(?:§\\s*)?${escaped}(?![0-9a-z])`);
+}
 
 export function parsePacodeChapterHtml(
   html: string,
@@ -67,7 +105,7 @@ export function parsePacodeChapterHtml(
   const chapterSourceLines = preamble
     .split(/<p\b[^>]*>/i)
     .map(stripToText)
-    .filter((t) => PROVISIONS.test(t) && / Chapter \d+ /.test(t));
+    .filter((t) => PROVISIONS.test(t) && CHAPTER_OR_SUBCHAPTER.test(t));
 
   const sections: ParsedPacodeSection[] = [];
   for (const chunk of chunks.slice(1)) {
@@ -85,6 +123,7 @@ export function parsePacodeChapterHtml(
     const after = chunk.slice(h4.index + h4[0].length);
     const bodyLines: string[] = [];
     const sourceLines: string[] = [];
+    const ownLine = ownProvisionsLine(cite);
     let label: string | undefined;
     for (const piece of after.split(/<p\b[^>]*>/i)) {
       const lab = LABEL.exec(piece);
@@ -92,7 +131,7 @@ export function parsePacodeChapterHtml(
       const text = stripToText(piece);
       if (!text) continue;
       if (label === undefined) bodyLines.push(text);
-      else if ((label === 'Source' || label === 'Authority') && PROVISIONS.test(text)) sourceLines.push(text);
+      else if ((label === 'Source' || label === 'Authority') && ownLine.test(text)) sourceLines.push(text);
     }
     sections.push({ cite, heading, text: bodyLines.join('\n'), sourceLines, reserved: /^\[Reserved\]/i.test(heading) });
   }
