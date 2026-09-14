@@ -33,6 +33,16 @@ describe('resolvePaCitationQuery', () => {
     expect(resolvePaCitationQuery('WCA § 305')).toEqual({ kind: 'section', code: '77 P.S.', cite: '501' });
     expect(resolvePaCitationQuery('UIPA § 99')).toBeNull();
   });
+  test('act aliases with a trailing year, curly quotes, and an alias-plus-missing-section still resolve or null correctly', () => {
+    // Finding 1: the year in "... Act of 1968" must not be peeled off as a section number.
+    expect(resolvePaCitationQuery('The Minimum Wage Act of 1968')).toEqual({ kind: 'chapter', code: '43 P.S.', chapter: 'The Minimum Wage Act of 1968' });
+    expect(resolvePaCitationQuery('Minimum Wage Act of 1968')).toEqual({ kind: 'chapter', code: '43 P.S.', chapter: 'The Minimum Wage Act of 1968' });
+    // Finding 2: a curly apostrophe (U+2019) must resolve the same as a straight one.
+    expect(resolvePaCitationQuery('Workers’ Compensation Act')).toEqual({ kind: 'chapter', code: '77 P.S.', chapter: "Workers' Compensation Act" });
+    expect(resolvePaCitationQuery('WCA § 305')).toEqual({ kind: 'section', code: '77 P.S.', cite: '501' });
+    // An alias followed by a section number the act does not have still resolves to null.
+    expect(resolvePaCitationQuery('MWA § 999')).toBeNull();
+  });
   test('named aliases list their chapters', () => {
     expect(resolvePaCitationQuery('UIPA')).toEqual({ kind: 'chapter', code: '40 P.S.', chapter: 'Unfair Insurance Practices Act' });
     expect(resolvePaCitationQuery('the Unfair Insurance Practices Act')).toEqual({ kind: 'chapter', code: '40 P.S.', chapter: 'Unfair Insurance Practices Act' });

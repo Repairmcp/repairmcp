@@ -87,7 +87,11 @@ const CODE_WORDS: ReadonlyArray<{ re: RegExp; code: (n: string) => string }> = [
   { re: /^TITLE\s+(\d{2})(?=[\s§:]|$)/, code: (n) => `${n} Pa.C.S.` },
 ];
 
-const actByAlias = (code: PaCode, actNo: number): PaActCaptureSource => PA_ACT_SOURCES.find((a) => a.code === code && a.actNo === actNo)!;
+const actByAlias = (code: PaCode, actNo: number): PaActCaptureSource => {
+  const act = PA_ACT_SOURCES.find((a) => a.code === code && a.actNo === actNo);
+  if (!act) throw new Error(`No act ${actNo} under ${code} in PA_ACT_SOURCES`);
+  return act;
+};
 const ACT_ALIASES: ReadonlyArray<{ re: RegExp; act: PaActCaptureSource }> = [
   { re: /^(?:UIPA|UNFAIR INSURANCE PRACTICES ACT)$/, act: actByAlias('40 P.S.', 205) },
   { re: /^(?:MVPDAA|(?:MOTOR VEHICLE )?(?:PHYSICAL DAMAGE )?APPRAISER ACT)$/, act: actByAlias('63 P.S.', 367) },
@@ -110,12 +114,17 @@ const NAMED: ReadonlyArray<{ re: RegExp; query: NonNullable<CitationQuery> }> = 
   { re: /^SALVAGE VEHICLES?$/, query: { kind: 'chapter', code: '75 Pa.C.S.', chapter: 'ch. 11, subch. D' } },
 ];
 
+/** The two-pass strip removes a DOUBLED lead ("§ SEC. 5" — a stray keyword plus symbol both present) that a single pass would leave half-stripped. */
 function stripLead(s: string): string {
   return s.replace(/^(?:§+|SEC\.|SECTION|S\.)\s*/, '').replace(/^(?:§+|SEC\.|SECTION|S\.)\s*/, '').replace(/[,;.]\s*$/, '').trim();
 }
 
 export function resolvePaCitationQuery(query: string): CitationQuery {
-  const trimmed = query.trim().replace(/\s+/g, ' ');
+  const trimmed = query
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"');
   if (!trimmed) return null;
 
   if (trimmed.includes(':')) {
@@ -130,13 +139,19 @@ export function resolvePaCitationQuery(query: string): CitationQuery {
 
   for (const n of NAMED) if (n.re.test(upper)) return n.query;
 
-  // Act aliases: bare → the act's listing; with a section number → the P.S. cite.
+  // Act aliases: try the WHOLE string first (a name can itself end in a
+  // number, e.g. "MINIMUM WAGE ACT OF 1968" — splitting first would peel
+  // "1968" off as a section number and leave an alias no regex matches).
+  // Only when no alias claims the whole string do we split a trailing
+  // section number off and match the remaining name.
+  for (const a of ACT_ALIASES) {
+    if (a.re.test(upper)) return { kind: 'chapter', code: a.act.code, chapter: a.act.shortTitle };
+  }
   const actForm = /^(.+?)(?:\s+(?:§|SEC\.|SECTION)?\s*(\d+(?:\.\d+)?))?$/.exec(upper);
-  if (actForm) {
+  if (actForm && actForm[2]) {
     const name = actForm[1]!.replace(/\s+(?:§|SEC\.|SECTION)$/, '').trim();
     for (const a of ACT_ALIASES) {
       if (!a.re.test(name)) continue;
-      if (!actForm[2]) return { kind: 'chapter', code: a.act.code, chapter: a.act.shortTitle };
       const entry = a.act.sections.find((x) => x.actSection === actForm[2]);
       return entry ? { kind: 'section', code: a.act.code, cite: entry.psCite } : null;
     }
