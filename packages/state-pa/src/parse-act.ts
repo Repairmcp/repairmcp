@@ -16,7 +16,23 @@
  * catchline). Later <p>s are body paragraphs; a paragraph that is ONLY a
  * parenthesized history note "(10 amended July 14, 1977, P.L.82, No.30)" is
  * kept as historyNotes, not text. Inline notes "((a) amended …)" are part
- * of the printed text and stay.
+ * of the printed text and stay. A GENUINE standalone note is recognized
+ * STRUCTURALLY, not by length (a length cap was tried and failed real-page
+ * review — the WCA prints compound notes like "(318 amended Dec. 28, 1959,
+ * P.L.2034, No.747; repealed in part Apr. 28, 1978, P.L.202, No.53)" that
+ * run past any sane cap): the paragraph's ENTIRE decoded text must be one
+ * pair of parentheses (optional trailing period) enclosing one or more
+ * act-note CLAUSES joined by "; ", and nothing else. A clause is an
+ * optional subsection/definition token ("5", "2.1", "(a)", "(14)", "Def.",
+ * "318") followed by a verb (amended/added/repealed[, in part]/reenacted[
+ * and amended]/renumbered/deleted[ by amendment]/suspended/expired), a
+ * date, ", P.L." with an optional act-number (blank in "P.L. , No.62"),
+ * and ", No." with a number. A body subsection that opens with "(" and
+ * ends with an inline note ("(f) The court in any action… ((f) repealed in
+ * part Oct. 5, 1980, P.L.693, No.142)") has PROSE between its opening
+ * paren and its trailing note, so no clause can start right after the
+ * anchor's leading "(" — the whole match fails and the paragraph stays
+ * body, exactly as it must.
  *
  * A paragraph that OPENS with a bold run is dropped as a note (the
  * "Compiler's Note:" label being the only shape ever seen on the six
@@ -56,24 +72,28 @@ function stripToText(html: string): string {
 const REGION = /<div class="Comment">\d{8}u([0-9.]+)s<\/div>/g;
 const ANY_MARKER = /<div class="Comment">[^<]*<\/div>/;
 const HEAD = /^Section\s+(\d+(?:\.\d+)?)\.\s*(?:(.+?\.)--\s*)?([\s\S]*)$/;
-const HISTORY_ONLY = /^\(.*P\.L\..*\)\.?$/;
+
 /**
- * A GENUINE standalone note ("(10 amended July 14, 1977, P.L.82, No.30)",
- * "((14) amended July 7, 2006, P.L.363, No.78)", even the doubled
- * empty-subsection form "(b) ((b) repealed July 15, 2024, P.L. , No.62).")
- * is nothing but the citation, 40-52 chars on every manifest act. A body
- * subsection that merely ENDS with an inline note ("(b)  The appraiser
- * shall furnish a legible copy…((b) amended Apr. 14, 2016, P.L.79,
- * No.13)") also opens with "(" and closes with ")" containing "P.L.", so
- * HISTORY_ONLY alone (the brief's literal regex) matches both shapes —
- * verified against the six real act pages, where it silently swept whole
- * defined-term and subsection paragraphs (some 2000+ chars, e.g. 73 P.S.
- * 201-2's Pyramid Promotional Scheme definition) out of `text` and into
- * `historyNotes`. The real corpus shows a clean gap between the longest
- * true standalone note (52 chars) and the shortest true body paragraph
- * with a trailing inline note (188 chars); this cap sits in that gap.
+ * Fragments for the standalone-note structural test. Deliberately private
+ * to this file — history-dates.ts's ACT_NOTE regex does the analogous job
+ * (finding an amendment reference ANYWHERE in a section's text to date it)
+ * but is not reused here: that regex is not anchored and does not need to
+ * reject prose, so coupling the two would make either one harder to change
+ * for its own reason.
  */
-const MAX_STANDALONE_NOTE_LENGTH = 90;
+const NOTE_TOKEN = String.raw`(?:\([a-zA-Z0-9.]{1,12}\)|[a-zA-Z0-9.]{1,12})`;
+const NOTE_VERB = String.raw`(?:repealed(?:\s+in\s+part)?|reenacted(?:\s+and\s+amended)?|deleted(?:\s+by\s+amendment)?|amended|added|renumbered|suspended|expired)`;
+const NOTE_DATE = String.raw`[A-Z][a-z]{2,8}\.?\s+\d{1,2},\s+\d{4}`;
+/** "P.L.82, No.30" and the blank-number form "P.L. , No.62" both fit. */
+const NOTE_PL = String.raw`P\.L\.\s*\d*\s*,\s*No\.\s*\d+`;
+const NOTE_CLAUSE = String.raw`(?:${NOTE_TOKEN}\s+)?${NOTE_VERB}\s+${NOTE_DATE},\s*${NOTE_PL}`;
+/**
+ * The paragraph's entire decoded text, and nothing else, must be one pair
+ * of parentheses wrapping one or more `;`-joined clauses. Verified against
+ * all 41 manifest sections and, separately, every u{N}s region on all six
+ * saved pages — see the fix report for the full before/after diagnostic.
+ */
+const HISTORY_ONLY = new RegExp(String.raw`^\(${NOTE_CLAUSE}(?:;\s*${NOTE_CLAUSE})*\)\.?$`);
 const REPEALED_BODY = /^\([0-9.]+\s+repealed\b.*\)\.?$/;
 
 /** The paragraph's first bold run, when it opens the paragraph — decoded and trimmed. */
@@ -123,7 +143,7 @@ export function parseActHtml(html: string): {
     const historyNotes: string[] = [];
     if (lead) bodyLines.push(lead);
     for (const p of pieces.slice(1)) {
-      if (HISTORY_ONLY.test(p.text) && p.text.length <= MAX_STANDALONE_NOTE_LENGTH) { historyNotes.push(p.text); continue; }
+      if (HISTORY_ONLY.test(p.text)) { historyNotes.push(p.text); continue; }
       const bold = leadingBoldText(p.html);
       if (bold !== undefined && !BODY_MARKER_OPENER.test(bold)) continue;
       bodyLines.push(p.text);

@@ -3,10 +3,22 @@ import { ActParseError, parseActHtml } from '../src/parse-act.js';
 
 const P = (inner: string): string => `<p style="text-align:left;margin-left:0.0000in;text-indent:0.3035in;line-height:0.1610in;">${inner}</p>\n`;
 
+/**
+ * A body line is either plain text, or `{ bold, rest }` for a paragraph
+ * whose OPENING run is bold — rendered `<p ...><b>${bold}</b>${rest}</p>`
+ * with nothing synthesized between them, matching the real pages (e.g. an
+ * inline subsection marker `<b>(a)&nbsp;&nbsp;General rule.--</b>The
+ * department…`, or a bold-quoted defined term). Only meaningful for lines
+ * after the first — the first line is always folded into the section's
+ * head/lead, which the parser reads as plain decoded text regardless of
+ * markup.
+ */
+type BodyLine = string | { bold: string; rest: string };
+
 /** A WU01 act page in the real markup: title, header, contents region, one `u{N}s` region per section. */
 export function actPage(opts: {
   year: number; actNo: number; pl: number; date: string; cl: number; shortTitle: string;
-  sections: Array<{ n: string; catchline?: string; body: string[]; notes?: string[]; compilerNote?: string }>;
+  sections: Array<{ n: string; catchline?: string; body: BodyLine[]; notes?: string[]; compilerNote?: string }>;
 }): string {
   const key = `${opts.year}${String(opts.actNo).padStart(4, '0')}`;
   let html = `<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Act of ${opts.date},P.L. ${opts.pl}, No. ${opts.actNo} Cl. ${opts.cl} - ${opts.shortTitle.toUpperCase()} </title></head><body>`;
@@ -17,9 +29,10 @@ export function actPage(opts: {
   html += `<div class="Comment">${key}uh</div>\n` + P('The General Assembly hereby enacts as follows:');
   for (const s of opts.sections) {
     html += `<div class="Comment">${key}u${s.n}s</div>\n`;
-    const lead = s.catchline ? `Section ${s.n}.&nbsp;&nbsp;${s.catchline}--${s.body[0] ?? ''}` : `Section ${s.n}. &nbsp;${s.body[0] ?? ''}`;
+    const leadBody = typeof s.body[0] === 'string' ? s.body[0] : '';
+    const lead = s.catchline ? `Section ${s.n}.&nbsp;&nbsp;${s.catchline}--${leadBody}` : `Section ${s.n}. &nbsp;${leadBody}`;
     html += P(lead);
-    for (const line of s.body.slice(1)) html += P(line);
+    for (const line of s.body.slice(1)) html += P(typeof line === 'string' ? line : `<b>${line.bold}</b>${line.rest}`);
     for (const n of s.notes ?? []) html += P(n);
     if (s.compilerNote) html += P(`<b>Compiler's Note:</b> &nbsp;${s.compilerNote}`);
   }
@@ -41,6 +54,29 @@ const wca = actPage({
   sections: [
     { n: '104', body: ['The term "employe," as used in this act is declared to be synonymous with servant.'], notes: ['(104 amended June 18, 2019, P.L.115, No.16)'] },
     { n: '305', body: ['(a)&nbsp;&nbsp;(1)&nbsp;&nbsp;Every employer liable under this act to pay compensation shall insure the payment.'] },
+  ],
+});
+
+/** The real WCA §318 history note, verbatim — two clauses joined by "; ". */
+const WCA_318_NOTE = '(318 amended Dec. 28, 1959, P.L.2034, No.747; repealed in part Apr. 28, 1978, P.L.202, No.53)';
+/** A single-clause note padded well past any length a cap could safely use. */
+const LONG_SINGLE_CLAUSE_NOTE = '(123456789012 reenacted and amended September 28, 1999, P.L.12345678901234567890, No.12345678901234567890)';
+
+const notesAndBold = actPage({
+  year: 1999, actNo: 1, pl: 1, date: 'Jan. 1, 1999', cl: 99, shortTitle: 'Note and Bold Rules Test Act',
+  sections: [
+    { n: '1', catchline: 'Compound Note.', body: ['Lead text for section one.'], notes: [WCA_318_NOTE] },
+    { n: '2', catchline: 'Long Single Clause.', body: ['Lead text for section two.'], notes: [LONG_SINGLE_CLAUSE_NOTE] },
+    { n: '3', catchline: 'Prose With Inline Note.', body: [
+      'Lead text for section three.',
+      '(a) This subsection contains substantial prose that runs on for a while before ending with an inline amendment note about a wholly separate matter. ((a) amended July 14, 1977, P.L.82, No.30)',
+    ] },
+    { n: '4', catchline: 'Blank PL Note.', body: ['Lead text for section four.'], notes: ['((b) repealed July 15, 2024, P.L. , No.62).'] },
+    { n: '5', catchline: 'Bold Rules.', body: [
+      'Lead text for section five.',
+      { bold: '(a)&nbsp;&nbsp;General rule.--', rest: 'The department shall enforce this act.' },
+      { bold: '"Employer."', rest: '&nbsp;Includes every person, firm, partnership, association.' },
+    ], compilerNote: 'This explanatory note must not appear in text.' },
   ],
 });
 
@@ -80,5 +116,54 @@ describe('parseActHtml', () => {
   test('a page with no section regions or no title fails by name', () => {
     expect(() => parseActHtml('<html><head><title>x</title></head><body><p>Section 1. Foo.--bar</p></body></html>')).toThrow(/title line/);
     expect(() => parseActHtml(wpcl.replace(/<div class="Comment">1961\d+u[0-9.]+s<\/div>/g, ''))).toThrow(/no section regions/);
+  });
+});
+
+describe('the standalone-note structural rule', () => {
+  test('a compound note (multiple "; "-joined clauses, WCA 318 verbatim) is a standalone history note', () => {
+    const r = parseActHtml(notesAndBold);
+    const s1 = r.sections[0]!;
+    expect(s1.historyNotes).toEqual([WCA_318_NOTE]);
+    expect(s1.text).toBe('Lead text for section one.');
+    expect(s1.text).not.toContain('P.L.2034');
+  });
+  test('a single-clause note far longer than any length cap is still a standalone history note', () => {
+    expect(LONG_SINGLE_CLAUSE_NOTE.length).toBeGreaterThan(90);
+    const r = parseActHtml(notesAndBold);
+    const s2 = r.sections[1]!;
+    expect(s2.historyNotes).toEqual([LONG_SINGLE_CLAUSE_NOTE]);
+    expect(s2.text).toBe('Lead text for section two.');
+  });
+  test('a body subsection that merely ends with an inline note stays entirely in text', () => {
+    const r = parseActHtml(notesAndBold);
+    const s3 = r.sections[2]!;
+    expect(s3.historyNotes).toEqual([]);
+    expect(s3.text).toContain('This subsection contains substantial prose');
+    expect(s3.text).toContain('((a) amended July 14, 1977, P.L.82, No.30)');
+  });
+  test('the blank-P.L.-number shape is a standalone history note', () => {
+    const r = parseActHtml(notesAndBold);
+    const s4 = r.sections[3]!;
+    expect(s4.historyNotes).toEqual(['((b) repealed July 15, 2024, P.L. , No.62).']);
+    expect(s4.text).toBe('Lead text for section four.');
+  });
+});
+
+describe('the bold-paragraph rule', () => {
+  test('a bold run opening with "(" is body text, label kept verbatim, no synthetic space at the </b> boundary', () => {
+    const r = parseActHtml(notesAndBold);
+    const s5 = r.sections[4]!;
+    expect(s5.text).toContain('(a) General rule.--The department shall enforce this act.');
+  });
+  test('a bold run opening with a quotation mark is a defined term and stays body text', () => {
+    const r = parseActHtml(notesAndBold);
+    const s5 = r.sections[4]!;
+    expect(s5.text).toContain('"Employer." Includes every person, firm, partnership, association.');
+  });
+  test("a bold-led Compiler's Note paragraph is dropped from text", () => {
+    const r = parseActHtml(notesAndBold);
+    const s5 = r.sections[4]!;
+    expect(s5.text).not.toContain("Compiler's Note");
+    expect(s5.text).not.toContain('must not appear in text');
   });
 });
