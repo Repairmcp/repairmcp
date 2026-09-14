@@ -298,8 +298,9 @@ apps/state-ca-server/ @repairmcp/state-ca-server — Worker, ca.repairmcp.com,
 
 packages/state-fl/    @repairmcp/state-fl — Florida vertical (pure corpus, TWO
                       publishers, THREE domains; state #6, the first of the
-                      population-ordered run FL → NY → MN → PA → OH → IL → MI →
-                      NC → MA → GA decided 2026-09-09)
+                      Tier 1 run FL → NY → PA → OH → IL → MI → NC; the
+                      "MN next" order that was recorded here until
+                      2026-09-14 was wrong — see docs/PA-VERTICAL-KICKOFF.md)
   src/parse-statutes.ts  Online Sunshine (leg.state.fl.us) one-page-per-section
                       parser: the statute is a SECOND complete HTML document
                       nested in div#statutes; div.Section / span.SectionNumber /
@@ -353,8 +354,7 @@ apps/state-fl-server/ @repairmcp/state-fl-server — Worker, fl.repairmcp.com,
 
 packages/state-ny/    @repairmcp/state-ny — New York vertical (pure corpus,
                       FIVE publishers, THREE domains; state #7, second of
-                      the population-ordered run FL → NY → MN → PA → OH →
-                      IL → MI → NC → MA → GA)
+                      the Tier 1 run FL → NY → PA → OH → IL → MI → NC)
   src/parse-senate.ts  nysenate.gov one-page-per-section parser; absence is
                       HTTP 200 with no law-section content, not a 404
   src/capture-statutes.ts  one fetch per cite; the site is Cloudflare-fronted
@@ -962,12 +962,15 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   disabled/expired, its action changed from Block, or its expression no longer
   matches `/mcp`. Re-verify in the dashboard and burst-test again; until then
   every corpus is an open, unrated door.
-- **Next states, in order** (decided 2026-09-09, by vehicles on the road ×
-  shop-usable law × publisher capturability): NY done. MN next (72A.201
-  subd. 6, revisor.mn.gov is the cleanest publisher in the country), then PA,
-  OH, IL, MI, NC, MA, GA (Lexis-hosted; TN and NJ share that problem).
-  `docs/FL-VERTICAL-KICKOFF.md` and `docs/NY-VERTICAL-KICKOFF.md` record the
-  reasoning.
+- **Next states, in order** (the project owner's "Remaining states
+  ordering" decision, by vehicles on the road × shop-usable law × publisher
+  capturability): **Tier 1 — FL, NY, PA, OH, IL, MI, NC**; **Tier 2 — GA,
+  TN, NJ** (official code on LexisNexis behind a bot challenge; each needs
+  a CA-style mirror decision first, and Georgia is the one worth fighting
+  for). FL and NY done; PA kicked off 2026-09-14
+  (`docs/PA-VERTICAL-KICKOFF.md`); OH next (codes.ohio.gov, ORC + OAC as
+  clean HTML). The "FL → NY → MN → PA …" order this file carried until
+  2026-09-14 was a transcription error — Minnesota is not in Tier 1.
 - **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
   the project owner's clients and run the gauntlet's shop-phrasing queries);
   Florida's edition rollover lands every July/August — the pin will fail the
