@@ -1,0 +1,25 @@
+{
+  "name": "@repairmcp/state-oh",
+  "version": "0.0.0",
+  "description": "Ohio state law vertical for RepairMCP: OAC 3901-1-54 (the insurer pays the difference or names a shop that will repair for its written estimate, no unreasonable travel to a specific shop, restoration to pre-loss condition when the insurer designates a shop, itemized betterment, the total loss replacement and cash-value methods, notice before storage payments stop, 15-day acknowledgment and 21-day decision deadlines), the Unfair and Deceptive Practices statutes, ORC 1345.81 aftermarket crash parts disclosure, salvage titles, the Attorney General's motor vehicle repair rule (OAC 109:4-3-13) under the Consumer Sales Practices Act, unclaimed and abandoned vehicles, wage and overtime law with the constitutional minimum wage, workers' compensation, and the BWC specific safety requirements with the VSSR statute, captured verbatim from codes.ohio.gov.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}
