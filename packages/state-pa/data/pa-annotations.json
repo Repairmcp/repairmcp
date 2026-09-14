@@ -1,0 +1,287 @@
+{
+  "31 Pa. Code 62.3": {
+    "topics": ["appraiser_conduct", "steering", "repair_facility_choice", "aftermarket_parts", "total_loss", "valuation_dispute", "estimate_dispute", "supplement_handling", "inspection_photos", "storage_towing"],
+    "appliesTo": ["insurers", "repairers", "consumers", "claimants"],
+    "claimUseCases": [
+      "the adjuster told my customer to take it to their DRP shop",
+      "appraiser named a shop on the appraisal",
+      "adjuster steering the customer to a network shop",
+      "can the appraiser tell the customer where to get the vehicle fixed",
+      "appraiser will not review the estimate with my shop",
+      "insurer moved the vehicle to another location without asking the customer",
+      "the appraiser wrote the repair hours too low to return the vehicle to its predamaged condition",
+      "aftermarket parts on the estimate and the customer never knew",
+      "appraisal written with aftermarket crash parts and no disclosure",
+      "they lowballed the total loss value",
+      "how is total loss decided in Pennsylvania",
+      "do they have to tell the customer the salvage value",
+      "total loss evaluation report not sent to the customer",
+      "appraiser has a conflict of interest"
+    ],
+    "quoteSafeExcerpts": [
+      "Not mention the name of any repair shop, unless the appraiser includes disclosure that there is no requirement to use any specified repair shop.",
+      "Review the appraisal with an authorized representative of the repair shop which is selected by the consumer",
+      "If the appraisal includes aftermarket crash parts, a statement that the appraisal has been prepared based on the use of aftermarket crash parts",
+      "The appraised value of the loss shall be the replacement value of the motor vehicle if the cost of repairing a motor vehicle exceeds its appraised value less salvage value"
+    ]
+  },
+  "63 P.S. 861": {
+    "topics": ["appraiser_conduct", "steering", "repair_facility_choice", "inspection_photos", "supplement_handling", "estimate_dispute"],
+    "appliesTo": ["insurers", "repairers", "consumers"],
+    "claimUseCases": [
+      "insurer requiring repairs at a specific shop",
+      "appraiser hasn't come out to look at the car in a week",
+      "how long does the appraiser have to inspect the vehicle",
+      "adjuster wants to do the supplement from photos on a disputed repair",
+      "appraiser taking a kickback from a shop",
+      "appraiser is not independent"
+    ],
+    "quoteSafeExcerpts": [
+      "No appraiser or his employer shall require that repairs be made in any specified repair shop.",
+      "Inspect a vehicle within six working days of assignment to the appraiser"
+    ]
+  },
+  "31 Pa. Code 146.8": {
+    "topics": ["fair_settlement", "estimate_dispute", "short_pay", "betterment", "third_party_claims", "total_loss", "valuation_dispute", "inspection_photos", "repair_facility_choice"],
+    "appliesTo": ["insurers", "repairers", "claimants", "consumers"],
+    "claimUseCases": [
+      "insurer wrote it for 20 hours and I can't repair it for that",
+      "the appraisal is too low to actually fix the car",
+      "short pay on the estimate",
+      "betterment on tires and a battery",
+      "insurer depreciating parts on the estimate",
+      "third-party claimant, adjuster told him to go through his own policy",
+      "insurer making the customer drive across the state for an estimate",
+      "cash settlement lower than the repair cost",
+      "insurer elected to repair but will not restore the car to pre-loss condition"
+    ],
+    "quoteSafeExcerpts": [
+      "Insurers may not recommend that third-party claimants make claim under their own policies",
+      "If an insurer prepares an appraisal of the cost of automobile repairs, the appraisal shall be in an amount for which it may be reasonably expected",
+      "When the amount claimed is reduced because of betterment or depreciation",
+      "When the insurer elects to repair in a first-party claim, the insurer shall cause the damaged automobile to be restored to its condition prior to the loss"
+    ]
+  },
+  "31 Pa. Code 146.5": {
+    "topics": ["prompt_investigation", "fair_settlement"],
+    "appliesTo": ["insurers", "claimants"],
+    "claimUseCases": [
+      "insurer hasn't even acknowledged the claim, two weeks",
+      "no response from the insurer after filing the claim",
+      "adjuster not returning calls or letters",
+      "how long does the insurer have to acknowledge a claim"
+    ],
+    "quoteSafeExcerpts": ["Every insurer, upon receiving notification of a claim, shall, within 10 working days, acknowledge the receipt of the notice"]
+  },
+  "31 Pa. Code 146.6": {
+    "topics": ["prompt_investigation", "fair_settlement", "supplement_handling"],
+    "appliesTo": ["insurers", "claimants"],
+    "claimUseCases": [
+      "investigation dragging on for months",
+      "insurer still investigating after 30 days",
+      "no status update from the insurer"
+    ],
+    "quoteSafeExcerpts": ["Every insurer shall complete investigation of a claim within 30 days after notification of claim"]
+  },
+  "31 Pa. Code 146.7": {
+    "topics": ["claim_denial", "prompt_investigation", "fair_settlement", "short_pay", "third_party_claims"],
+    "appliesTo": ["insurers", "claimants"],
+    "claimUseCases": [
+      "no decision after a month",
+      "denied with no reason given",
+      "insurer denied the claim without citing the policy",
+      "how long does the insurer have to accept or deny the claim",
+      "insurer will not settle because someone else should pay"
+    ],
+    "quoteSafeExcerpts": ["Within 15 working days after receipt by the insurer of properly executed proofs of loss, the first-party claimant shall be advised of the acceptance or denial of the claim by the insurer."]
+  },
+  "42 Pa.C.S. 8371": {
+    "topics": ["bad_faith", "fair_settlement", "claim_denial", "short_pay"],
+    "appliesTo": ["insurers", "consumers", "claimants"],
+    "claimUseCases": [
+      "can I sue the insurer for bad faith",
+      "insurer acting in bad faith on my customer's claim",
+      "does Pennsylvania have a bad faith statute",
+      "punitive damages against the insurer",
+      "interest on a claim the insurer refused to pay"
+    ],
+    "quoteSafeExcerpts": [
+      "if the court finds that the insurer has acted in bad faith toward the insured, the court may take all of the following actions",
+      "Award interest on the amount of the claim from the date the claim was made by the insured in an amount equal to the prime rate of interest plus 3%."
+    ]
+  },
+  "40 P.S. 1171.5": {
+    "topics": ["fair_settlement", "claim_denial", "prompt_investigation", "short_pay", "misrepresentation", "bad_faith"],
+    "appliesTo": ["insurers", "claimants", "consumers"],
+    "claimUseCases": [
+      "unfair claim settlement practices by the insurer",
+      "insurer misrepresented the policy to avoid paying",
+      "insurer keeps lowballing hoping we give up",
+      "pattern of unfair claims practices",
+      "can I sue under the unfair insurance practices act"
+    ],
+    "quoteSafeExcerpts": [
+      "Any of the following acts if committed or performed with such frequency as to indicate a business practice shall constitute unfair claim settlement or compromise practices",
+      "Not attempting in good faith to effectuate prompt, fair and equitable settlements of claims in which the company's liability under the policy has become reasonably clear.",
+      "Compelling persons to institute litigation to recover amounts due under an insurance policy by offering substantially less than the amounts due and ultimately recovered in actions brought by such persons."
+    ]
+  },
+  "37 Pa. Code 301.5": {
+    "topics": ["estimate_authorization", "replaced_parts", "invoice_records", "storage_charges", "consumer_protection"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "do I need written authorization before I start the repair",
+      "customer claims he did not authorize the work",
+      "oral authorization over the phone, what do I have to record",
+      "can I charge storage, do I have to post it",
+      "customer wants his old parts back",
+      "do I have to tell the customer a part is used or rebuilt",
+      "what has to be on the final invoice",
+      "customer refuses to pay for repairs over the estimate",
+      "using a customer vehicle for a parts run"
+    ],
+    "quoteSafeExcerpts": [
+      "Charging a customer for repairs which were not authorized in writing",
+      "That the customer has the right upon request to have parts replaced returned to the customer",
+      "The conditions under which the repair shop may impose daily or hourly storage charges for a vehicle"
+    ]
+  },
+  "75 Pa.C.S. 7311": {
+    "topics": ["abandoned_vehicle", "storage_charges"],
+    "appliesTo": ["repairers"],
+    "claimUseCases": [
+      "customer never picked the car up, it's been a month",
+      "car abandoned at my shop after the repair",
+      "how long before a car left at the shop is abandoned",
+      "customer will not pay and will not come get the car"
+    ],
+    "quoteSafeExcerpts": ["The person in charge of any garage or repair shop in which a vehicle of unknown ownership has been left for a period of 15 consecutive days"]
+  },
+  "75 Pa.C.S. 7306": {
+    "topics": ["abandoned_vehicle", "storage_charges", "storage_towing"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "who pays the towing and storage when the owner reclaims an abandoned car",
+      "can I collect storage on an abandoned vehicle"
+    ],
+    "quoteSafeExcerpts": ["the reclaiming party shall pay the costs for towing and storage from the date the salvor submitted the abandoned vehicle report to the department"]
+  },
+  "75 Pa.C.S. 7308": {
+    "topics": ["abandoned_vehicle"],
+    "appliesTo": ["repairers"],
+    "claimUseCases": [
+      "how do I sell an abandoned car that was never claimed",
+      "the car was never picked up and it's been a month, can I sell it at public sale",
+      "public sale of an unclaimed vehicle"
+    ],
+    "quoteSafeExcerpts": ["If an abandoned vehicle having value has not been reclaimed as provided in this chapter, the vehicle shall be sold at a public auction."]
+  },
+  "75 Pa.C.S. 1161": {
+    "topics": ["salvage_title", "total_loss"],
+    "appliesTo": ["insurers", "consumers", "repairers"],
+    "claimUseCases": [
+      "total loss, does it need a salvage title",
+      "insurer totaled the car, who applies for the certificate of salvage",
+      "customer keeping the totaled car"
+    ],
+    "quoteSafeExcerpts": ["a vehicle located or registered in this Commonwealth which qualifies as a salvage vehicle shall make application to the department for a certificate of salvage for that vehicle"]
+  },
+  "75 Pa.C.S. 1165": {
+    "topics": ["salvage_title"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "rebuilt a salvage car, what does it need before it goes back on the road",
+      "reconstructed vehicle title"
+    ],
+    "quoteSafeExcerpts": ["If a vehicle, other than an antique or classic vehicle, for which a certificate of salvage has been issued is thereafter restored to operating condition, it shall be regarded as a reconstructed vehicle."]
+  },
+  "43 P.S. 260.5": {
+    "topics": ["final_paycheck", "wage_claims"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "tech quit Friday, when do I have to pay him",
+      "final paycheck for a fired painter",
+      "when is the last check due after a tech leaves"
+    ],
+    "quoteSafeExcerpts": ["the wages or compensation earned shall become due and payable not later than the next regular payday"]
+  },
+  "43 P.S. 260.10": {
+    "topics": ["liquidated_damages", "wage_claims", "final_paycheck"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "wages 30 days late",
+      "penalty for paying a tech late",
+      "what does the shop owe if payroll is a month behind"
+    ],
+    "quoteSafeExcerpts": ["Where wages remain unpaid for thirty days beyond the regularly scheduled payday"]
+  },
+  "43 P.S. 333.104": {
+    "topics": ["minimum_wage", "overtime"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "overtime for a salaried estimator",
+      "does a flat-rate tech get overtime",
+      "time and a half after 40 hours",
+      "minimum wage in Pennsylvania"
+    ],
+    "quoteSafeExcerpts": [
+      "Employes shall be paid for overtime not less than one and one-half times the employe's regular rate as prescribed in regulations promulgated by the secretary",
+      "no pay for overtime in addition to the regular rate shall be required except for hours in excess of forty hours in a workweek"
+    ]
+  },
+  "34 Pa. Code 231.43": {
+    "topics": ["overtime"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "how is the regular rate figured for overtime on a flat-rate tech",
+      "overtime on a salary",
+      "bonuses in the overtime rate"
+    ],
+    "quoteSafeExcerpts": [
+      "The regular rate for salaried employees who are not exempt from overtime is the amount of remuneration determined under subsection (a) divided by 40 hours.",
+      "the regular rate at which an employee is employed shall be deemed to include all remuneration for employment paid to or on behalf of the employee"
+    ]
+  },
+  "34 Pa. Code 231.21": {
+    "topics": ["minimum_wage"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "flat-rate tech had a slow week, do I still owe minimum wage",
+      "minimum wage on commission or piece rate"
+    ],
+    "quoteSafeExcerpts": ["The minimum wage shall be paid for hours worked, regardless of the frequency of payment and regardless of whether the wage is paid on an hourly, salaried, or commissioned, piece rate, or any other"]
+  },
+  "34 Pa. Code 9.1": {
+    "topics": ["deductions", "wage_claims"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "deducting a comeback from a tech's pay",
+      "can I charge a tech for a comeback out of his check",
+      "deductions from wages for damaged tools or a wrecked customer car",
+      "what deductions are allowed from a paycheck"
+    ],
+    "quoteSafeExcerpts": ["The following deductions from wages are authorized for the convenience of employes in accordance with the provisions of section 3 of the Wage Payment and Collection Law"]
+  },
+  "77 P.S. 501": {
+    "topics": ["workers_comp"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "1099 tech, no comp policy",
+      "what happens if the shop has no workers comp insurance",
+      "penalty for not carrying workers compensation"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer liable under this act to pay compensation shall insure the payment of compensation in the State Workmen's Insurance Fund",
+      "Any employer who fails to comply with the provisions of this section for every such failure, shall, upon conviction in the court of common pleas, be guilty of a misdemeanor of the third degree."
+    ]
+  },
+  "77 P.S. 22": {
+    "topics": ["workers_comp", "independent_contractor"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "is my 1099 tech an employee for workers comp",
+      "independent contractor or employee under workers compensation"
+    ],
+    "quoteSafeExcerpts": ["All natural persons who perform services for another for a valuable consideration"]
+  }
+}
