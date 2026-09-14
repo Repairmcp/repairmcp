@@ -10,6 +10,7 @@ import { CO_CAPTURE_PROFILE } from '../packages/state-co/src/capture.js';
 import { FL_CAPTURE_PROFILE } from '../packages/state-fl/src/capture.js';
 import { MT_CAPTURE_PROFILE } from '../packages/state-mt/src/capture.js';
 import { NY_CAPTURE_PROFILE } from '../packages/state-ny/src/capture.js';
+import { PA_CAPTURE_PROFILE } from '../packages/state-pa/src/capture.js';
 import { TX_CAPTURE_PROFILE } from '../packages/state-tx/src/capture.js';
 import { WA_CAPTURE_PROFILE } from '../packages/state-wa/src/capture-profile.js';
 
@@ -21,4 +22,5 @@ export const STATE_PROFILES: Record<string, StateCaptureProfile> = {
   ca: CA_CAPTURE_PROFILE,
   fl: FL_CAPTURE_PROFILE,
   ny: NY_CAPTURE_PROFILE,
+  pa: PA_CAPTURE_PROFILE,
 };
