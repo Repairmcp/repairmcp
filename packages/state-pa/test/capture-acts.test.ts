@@ -59,13 +59,25 @@ describe('captureActs', () => {
     expect(s.headingSource).toBe('manifest');
     expect(s.actSection).toBe('303');
   });
-  test('an inline amendment note in the body dates the section', async () => {
+  test('an inline amendment note in the body dates the section AND is recorded in historyNote', async () => {
     const io = buildActsIo({ pages: { [actUrl(1972, 367)]: actPage({ year: 1972, actNo: 367, pl: 1713, date: 'Dec. 29, 1972', cl: 63, shortTitle: 'Motor Vehicle Physical Damage Appraiser Act',
-      sections: PA_ACT_SOURCES[1]!.sections.map((x) => ({ n: x.actSection, catchline: `C ${x.actSection}.`, body: x.actSection === '11' ? ['(d) No appraiser shall require repairs in any specified shop. ((d) amended Apr. 14, 2016, P.L.79, No.13)'] : ['x'] })) }) } });
+      sections: PA_ACT_SOURCES[1]!.sections.map((x) => ({ n: x.actSection, catchline: `C ${x.actSection}.`,
+        body: x.actSection === '11' ? ['(d) No appraiser shall require repairs in any specified shop. ((d) amended Apr. 14, 2016, P.L.79, No.13)'] : ['x'],
+        // The real 63 P.S. 861 shape: the dating note is INLINE and the
+        // standalone note names an OLDER act. Recording only the standalone
+        // one left the audit field contradicting the citation's own date.
+        ...(x.actSection === '11' ? { notes: ['(11 amended June 24, 1996, P.L.350, No.57)'] } : {}) })) }) } });
     const r = await captureActs(io, PA_ACT_SOURCES);
     const s = r.sections.find((x) => x.code === '63 P.S.' && x.cite === '861')!;
     expect(s.effectiveDate).toBe('2016-04-14');
     expect(s.dateKind).toBe('amended');
+    expect(s.historyNote).toBe('((d) amended Apr. 14, 2016, P.L.79, No.13) (11 amended June 24, 1996, P.L.350, No.57)');
+    expect(s.historyNote).toContain('Apr. 14, 2016');
+  });
+  test('a named act section that captures no body text fails by name', async () => {
+    const io = buildActsIo({ pages: { [actUrl(1961, 329)]: actPage({ year: 1961, actNo: 329, pl: 637, date: 'Jul. 14, 1961', cl: 43, shortTitle: 'Wage Payment and Collection Law',
+      sections: PA_ACT_SOURCES.find((a) => a.actNo === 329)!.sections.map((x) => ({ n: x.actSection, catchline: `C ${x.actSection}.`, body: x.actSection === '5' ? [] : ['x'] })) }) } });
+    await expect(captureActs(io, PA_ACT_SOURCES)).rejects.toThrow(/43 P\.S\. 260\.5 .*captured no body text from the Act 329 of 1961 page/);
   });
   test('a title line whose act number or year disagrees with the manifest fails by name', async () => {
     const io = buildActsIo({ pages: { [actUrl(1961, 329)]: actPage({ year: 1961, actNo: 330, pl: 1, date: 'Jul. 14, 1961', cl: 43, shortTitle: 'X', sections: [{ n: '5', catchline: 'C.', body: ['x'] }] }) } });

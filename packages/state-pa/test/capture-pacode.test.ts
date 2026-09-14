@@ -61,6 +61,14 @@ describe('capturePacode', () => {
     const reserved = buildPacodeIo({ pages: { [pacodeChapterUrl(31, 62)]: pacodeChapterPage({ title: 31, chapter: 62, sections: [{ cite: '62.1', heading: 'Definitions.', body: ['x'] }, { cite: '62.2', heading: '[Reserved].', body: [] }, { cite: '62.3', heading: 'Standards.', body: ['x'] }] }) } });
     await expect(capturePacode(reserved, PA_PACODE_SOURCES)).rejects.toThrow(/62\.2 .*Reserved/);
   });
+  test('a named cite that captures no body text fails by name', async () => {
+    const io = buildPacodeIo({ pages: { [pacodeChapterUrl(31, 62)]: pacodeChapterPage({ title: 31, chapter: 62, sections: [
+      { cite: '62.1', heading: 'Definitions.', body: ['x'] },
+      { cite: '62.2', heading: 'Licensure.', body: [] },
+      { cite: '62.3', heading: 'Standards.', body: ['x'] },
+    ] }) } });
+    await expect(capturePacode(io, PA_PACODE_SOURCES)).rejects.toThrow(/31 Pa\. Code 62\.2 captured no body text from the Chapter 62 page/);
+  });
   test('a Subchapter-named preamble adoption line (Chapter 9\'s real shape) is inherited by sections with no own Source line — review round 1, Finding 1', async () => {
     const io = buildPacodeIo({
       pages: {

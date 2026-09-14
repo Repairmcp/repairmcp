@@ -40,7 +40,13 @@ export async function captureConsolidated(
 
   const out: PaSection[] = [];
   for (const src of sources) {
-    const byCite = new Map(parsed.get(`${src.title}/${src.chapter}`)!.map((s) => [s.cite, s]));
+    const key = `${src.title}/${src.chapter}`;
+    // Populated by the fetch loop above for every source; a miss is a bug in
+    // THIS file, not in the page, so it says so by name rather than throwing
+    // on `undefined.map`.
+    const chapterSections = parsed.get(key);
+    if (!chapterSections) throw new Error(`Internal: chapter ${key} was not parsed`);
+    const byCite = new Map(chapterSections.map((s) => [s.cite, s]));
     for (const cite of src.cites) {
       const label = `${src.code} ${cite}`;
       const s = byCite.get(cite);

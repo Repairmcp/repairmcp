@@ -3,6 +3,7 @@ import corpusJson from '../data/pa-law-corpus.json' with { type: 'json' };
 import annotationsJson from '../data/pa-annotations.json' with { type: 'json' };
 import { PaAdapter } from '../src/adapter.js';
 import { PaCorpus } from '../src/corpus.js';
+import { newestActAmendmentDate } from '../src/history-dates.js';
 import { displayCite } from '../src/identity.js';
 import { PA_TOPICS } from '../src/taxonomy.js';
 
@@ -24,6 +25,18 @@ describe('the committed corpus', () => {
       if (s.code.endsWith('P.S.')) { expect(s.captureSource).toBe('legis'); expect(s.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}$/); expect(s.dateKind).toMatch(/^(amended|enacted)$/); expect(s.actSection).toBeDefined(); }
       if (s.code.endsWith('Pa. Code')) { expect(s.captureSource).toBe('pacode'); expect(s.actSection).toBeUndefined(); }
       expect(s.headingSource).toBe(s.code === '77 P.S.' ? 'manifest' : 'source');
+    }
+  });
+  test('every act citation dated "amended" states the dating note in historyNote; "enacted" ones state none', () => {
+    for (const s of corpus.sections) {
+      if (s.dateKind === 'amended') {
+        // The audit field must contain the note the date came from. The date
+        // is computed over the body text AND the standalone notes, so a
+        // historyNote built from the standalone notes alone was absent on
+        // three of these and named an older act on five more.
+        expect(newestActAmendmentDate(s.historyNote ?? ''), `${displayCite(s)} historyNote`).toBe(s.effectiveDate);
+      }
+      if (s.dateKind === 'enacted') expect(s.historyNote, `${displayCite(s)}`).toBeUndefined();
     }
   });
   test('headliners are captured verbatim', () => {

@@ -96,7 +96,12 @@ const NOTE_CLAUSE = String.raw`(?:${NOTE_TOKEN}\s+)?${NOTE_VERB}\s+${NOTE_DATE},
 const HISTORY_ONLY = new RegExp(String.raw`^\(${NOTE_CLAUSE}(?:;\s*${NOTE_CLAUSE})*\)\.?$`);
 const REPEALED_BODY = /^\([0-9.]+\s+repealed\b.*\)\.?$/;
 
-/** The paragraph's first bold run, when it opens the paragraph — decoded and trimmed. */
+/**
+ * The paragraph's first bold run, when it opens the paragraph — decoded and
+ * trimmed. Nested tags are stripped with an EMPTY string; parse-consolidated.ts
+ * carries the identical helper and the two must stay identical, because both
+ * decide the same question (note or body?) on the same publisher's markup.
+ */
 const LEADING_BOLD = /^\s*<p\b[^>]*>\s*<b\b[^>]*>([\s\S]*?)<\/b>/i;
 function leadingBoldText(pieceHtml: string): string | undefined {
   const m = LEADING_BOLD.exec(pieceHtml);

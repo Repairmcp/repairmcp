@@ -31,7 +31,8 @@
  * `chapterSourceLines`, which only sees the page-level preamble ahead of
  * the FIRST h4). Every page states "changes effective through 56 Pa.B.
  * 4026 (July 4, 2026)"; a page that does not is refused. Absence is HTTP
- * 200 + "File not found."
+ * 200 + "File not found." — tested BEFORE currency, so a wrong chapter path
+ * fails with the absence message rather than a missing-cutoff message.
  */
 import { decodeEntities } from '@repairmcp/state-law';
 
@@ -95,11 +96,15 @@ export function parsePacodeChapterHtml(
   html: string,
   opts: { title: number; chapter: number },
 ): { currency: string; chapterSourceLines: string[]; sections: ParsedPacodeSection[] } {
-  const currency = CURRENCY.exec(stripToText(html))?.[1];
-  if (!currency) throw new PacodeParseError('The page does not state its currency ("changes effective through N Pa.B. N (date)") — refusing a corpus that cannot state its own cutoff.');
+  // Absence FIRST. A wrong chapter path still renders the site's chrome, so
+  // whether the currency sentence survives on a "File not found" page is the
+  // site's business, not ours: checking currency first would report a missing
+  // cutoff on a page whose real problem is that the chapter is not there.
   if (/File not found\. Please go back and try again\./.test(html)) {
     throw new PacodeParseError(`Chapter ${opts.chapter} of Title ${opts.title}: the site answers "File not found" (HTTP 200) — the chapter does not exist at this path.`);
   }
+  const currency = CURRENCY.exec(stripToText(html))?.[1];
+  if (!currency) throw new PacodeParseError('The page does not state its currency ("changes effective through N Pa.B. N (date)") — refusing a corpus that cannot state its own cutoff.');
   const chunks = html.split(/(?=<h4 class="pacode-section-title")/i);
   const preamble = chunks[0] ?? '';
   const chapterSourceLines = preamble

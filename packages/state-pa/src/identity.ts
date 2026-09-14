@@ -149,11 +149,20 @@ export function resolvePaCitationQuery(query: string): CitationQuery {
   }
   const actForm = /^(.+?)(?:\s+(?:§|SEC\.|SECTION)?\s*(\d+(?:\.\d+)?))?$/.exec(upper);
   if (actForm && actForm[2]) {
+    const num = actForm[2];
     const name = actForm[1]!.replace(/\s+(?:§|SEC\.|SECTION)$/, '').trim();
     for (const a of ACT_ALIASES) {
       if (!a.re.test(name)) continue;
-      const entry = a.act.sections.find((x) => x.actSection === actForm[2]);
-      return entry ? { kind: 'section', code: a.act.code, cite: entry.psCite } : null;
+      const entry = a.act.sections.find((x) => x.actSection === num);
+      if (entry) return { kind: 'section', code: a.act.code, cite: entry.psCite };
+      // The alias matched but the trailing number is not one of that act's
+      // ACT sections. Shops write both forms, and the P.S. cite is the more
+      // common one: "UIPA 1171.5", "WPCL 260.5", "Appraiser Act 861". Fall
+      // through carrying the NUMBER ALONE so the bare exact-match stage can
+      // claim it from the manifest map; a number no manifest cite claims
+      // ("UIPA § 99") reaches that stage too and still ends as null.
+      upper = num;
+      break;
     }
   }
 

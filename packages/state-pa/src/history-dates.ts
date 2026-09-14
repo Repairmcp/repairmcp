@@ -80,9 +80,22 @@ export function newestConsolidatedEffectiveDate(notes: readonly string[]): strin
 
 // --- 2. unconsolidated acts ------------------------------------------------
 
-/** "(5 amended July 14, 1977, P.L.82, No.30)", "((a) amended …)", "(Def. amended …)", "((b) repealed July 15, 2024, P.L. , No.62)". */
+/**
+ * "(5 amended July 14, 1977, P.L.82, No.30)", "((a) amended …)",
+ * "(Def. amended …)", "((b) repealed July 15, 2024, P.L. , No.62)".
+ *
+ * Group 1 is the WHOLE note span, opening paren through closing paren —
+ * `[^)]*\)` runs past a compound note's later clauses ("(318 amended Dec.
+ * 28, 1959, P.L.2034, No.747; repealed in part Apr. 28, 1978, P.L.202,
+ * No.53)") to the one real close. Group 2 is the dating act's approval
+ * date. The span exists so a section's audit trail can state the note that
+ * produced its date: capture-acts.ts records every note this regex finds
+ * INLINE in the body alongside the standalone note paragraphs the parser
+ * separated out, because on 8 of the 41 manifest sections the dating note
+ * is inline and the standalone list is empty or older.
+ */
 const ACT_NOTE = new RegExp(
-  String.raw`\((?:\([a-z0-9]+\)|[A-Za-z0-9.]+)\s+(?:amended|added|repealed(?:\s+in\s+part)?|reenacted(?:\s+and\s+amended)?|renumbered|deleted)\s+([A-Z][a-z]{2,8}\.?\s+\d{1,2},\s+\d{4}),\s*P\.L\.`,
+  String.raw`(\((?:\([a-z0-9]+\)|[A-Za-z0-9.]+)\s+(?:amended|added|repealed(?:\s+in\s+part)?|reenacted(?:\s+and\s+amended)?|renumbered|deleted)\s+([A-Z][a-z]{2,8}\.?\s+\d{1,2},\s+\d{4}),\s*P\.L\.[^)]*\))`,
   'g',
 );
 
@@ -90,9 +103,21 @@ const ACT_NOTE = new RegExp(
 export function actAmendmentDates(text: string): string[] {
   const out: string[] = [];
   for (const m of text.replace(/\s+/g, ' ').matchAll(ACT_NOTE)) {
-    const d = parseMonthDate(m[1]!);
+    const d = parseMonthDate(m[2]!);
     if (d) out.push(d);
   }
+  return out;
+}
+
+/**
+ * The same matches as `actAmendmentDates`, but the note SPANS themselves —
+ * verbatim, in page order, whitespace collapsed the way the parser
+ * collapses it. This is the audit field's producer; the date rule above is
+ * unchanged and still decides the citation.
+ */
+export function actAmendmentNotes(text: string): string[] {
+  const out: string[] = [];
+  for (const m of text.replace(/\s+/g, ' ').matchAll(ACT_NOTE)) out.push(m[1]!);
   return out;
 }
 

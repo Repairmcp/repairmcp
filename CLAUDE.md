@@ -1064,6 +1064,13 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   Pa. Code robots decision (fetch anyway, at a 10 s floor, like leginfo at
   CA) is worth revisiting if the Legislative Reference Bureau ever adds a
   bot challenge the way Westlaw calregs did.
+- **Subsection-qualified cites resolve to null in every state.** "31 Pa. Code
+  146.8(d)", "11 NYCRR 216.7(c)", "Ins. Code 758.6(a)" all fail the cite-shape
+  test and return null, in WA, MT, CO, TX, CA, FL, NY and PA alike — the fix is
+  one place, `packages/state-law`: strip a trailing subsection group before the
+  shape test (and keep it out of the resolved cite, since sections are the
+  addressable unit). Most visible in Pennsylvania, whose KNOWN CAVEATS hand the
+  model more subsection-qualified cites than any other state's do.
 
 - ~~Resolve the `/grid/get/all` 200-row response.~~ **Resolved 2026-08-03**: transient
   throttle, not an endpoint change. One polite fetch that morning returned 5,777,228
@@ -1208,6 +1215,21 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Known gotchas
 
+- **`decodeEntities` maps numeric references 128–159 through Windows-1252
+  since PA** (`packages/state-law/src/html.ts`) — `&#150;` is an en dash, not
+  a C1 control, because Pennsylvania's pages emit the cp1252 code points as
+  decimal references. That fix cannot reach a LITERAL C1 character, and New
+  York's corpus holds the only one in the repo: `DFS Guidance:OGC Opinion
+  06-06-09` carries a U+0096 where an en dash belongs, because the DFS page
+  itself serves the bytes `C2 96` (a valid UTF-8 encoding of U+0096) under a
+  `charset=utf-8` header — the publisher's own text, decoded faithfully, with
+  no entity anywhere on the page. Verified by a full live re-capture
+  2026-09-14: `+0 [none], -0 [none], 0 with changed text`, so the drift check
+  stays clean and this is NOT pending drift. Changing it would mean remapping
+  decoded C1 characters rather than entities — a separate decision about
+  rewriting a publisher's bytes in a verbatim corpus. PA's corpus test
+  rejects any C1 or replacement character in section text; NY has no such
+  guard, which is why it shipped.
 - **Online Sunshine answers an unknown section with HTTP 200** and the
   sentence "The statute you have selected cannot be found." — no
   `div.Section`, no 404. The statute itself is a SECOND complete HTML

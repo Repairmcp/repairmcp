@@ -33,6 +33,13 @@ describe('resolvePaCitationQuery', () => {
     expect(resolvePaCitationQuery('WCA § 305')).toEqual({ kind: 'section', code: '77 P.S.', cite: '501' });
     expect(resolvePaCitationQuery('UIPA § 99')).toBeNull();
   });
+  test('an alias followed by the P.S. cite (not the act section) falls through to the bare exact-match stage', () => {
+    expect(resolvePaCitationQuery('UIPA 1171.5')).toEqual({ kind: 'section', code: '40 P.S.', cite: '1171.5' });
+    expect(resolvePaCitationQuery('Appraiser Act 861')).toEqual({ kind: 'section', code: '63 P.S.', cite: '861' });
+    expect(resolvePaCitationQuery('WPCL 260.5')).toEqual({ kind: 'section', code: '43 P.S.', cite: '260.5' });
+    // The fall-through must not turn a number no manifest cite claims into a hit.
+    expect(resolvePaCitationQuery('UIPA § 99')).toBeNull();
+  });
   test('act aliases with a trailing year, curly quotes, and an alias-plus-missing-section still resolve or null correctly', () => {
     // Finding 1: the year in "... Act of 1968" must not be peeled off as a section number.
     expect(resolvePaCitationQuery('The Minimum Wage Act of 1968')).toEqual({ kind: 'chapter', code: '43 P.S.', chapter: 'The Minimum Wage Act of 1968' });

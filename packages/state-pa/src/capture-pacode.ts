@@ -4,7 +4,9 @@
  * sentence sets the value every later page must repeat (the FL edition
  * rule); the value is RECORDED in meta, not pinned — it rolls weekly.
  * Effective date: the section's own Source lines, else the chapter-level
- * adoption line, else silence (kickoff §3.3).
+ * adoption line, else silence (kickoff §3.3). A named cite that captures no
+ * body text hard-fails, the same rule the consolidated and act pipelines
+ * carry: an unnamed section may legitimately be empty, a NAMED one never is.
  */
 import type { CaptureIo } from '@repairmcp/state-law';
 import { newestPacodeEffectiveDate } from './history-dates.js';
@@ -39,6 +41,9 @@ export async function capturePacode(
       const s = byCite.get(cite);
       if (!s) throw new Error(`${label} was requested by name but is absent from the ${src.chapterKey} page — renumbered or reserved upstream; correct the manifest after reading the page.`);
       if (s.reserved) throw new Error(`${label} was requested by name but its heading reads "${s.heading}" (Reserved).`);
+      if (!s.text) {
+        throw new Error(`${label} captured no body text from the ${src.chapterKey} page — the parser lost the section; re-derive from the saved raw before capturing.`);
+      }
       const own = newestPacodeEffectiveDate(s.sourceLines);
       const effectiveDate = own ?? chapterDate;
       const historyNote = s.sourceLines.length > 0 ? s.sourceLines.join(' ') : own === undefined && chapterDate ? chapterLine : undefined;

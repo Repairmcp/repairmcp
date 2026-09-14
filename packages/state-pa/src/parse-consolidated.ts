@@ -89,12 +89,18 @@ const TOC_LINE = /^\d{1,4}(?:\.\d+)?\.\s+\S/;
 const HISTORY = /^\(.*P\.L\..*\)\.?$/;
 const REPEALED = /\((Repealed|Expired|Deleted by amendment|Reserved)\)\s*\.?\s*$/i;
 
-/** The paragraph's first bold run, when it opens the paragraph — decoded and trimmed. */
+/**
+ * The paragraph's first bold run, when it opens the paragraph — decoded and
+ * trimmed. Nested tags are stripped with an EMPTY string, matching
+ * `stripToText` above and parse-act.ts's identical helper: the two must stay
+ * byte-for-byte identical, because both decide the same question (is this
+ * paragraph a note or body?) on the same publisher's markup.
+ */
 const LEADING_BOLD = /^\s*<p\b[^>]*>\s*<b\b[^>]*>([\s\S]*?)<\/b>/i;
 function leadingBoldText(pieceHtml: string): string | undefined {
   const m = LEADING_BOLD.exec(pieceHtml);
   if (!m) return undefined;
-  return decodeEntities(m[1]!.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  return decodeEntities(m[1]!.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
 }
 
 /**

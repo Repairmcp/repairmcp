@@ -93,6 +93,10 @@ describe('parsePacodeChapterHtml', () => {
     expect(() => parsePacodeChapterHtml('<html><body><p class="leftpaneltextmobile">changes effective through 56 Pa.B. 4026 (July 4, 2026).</p><p>File not found. Please go back and try again.</p></body></html>', { title: 31, chapter: 999 })).toThrow(/File not found/);
     expect(() => parsePacodeChapterHtml(page, { title: 31, chapter: 62 })).toThrow(PacodeParseError);
   });
+  test('absence is tested BEFORE currency: a File-not-found page with no currency sentence still names the absence', () => {
+    expect(() => parsePacodeChapterHtml('<html><body><p>File not found. Please go back and try again.</p></body></html>', { title: 31, chapter: 999 }))
+      .toThrow(/Chapter 999 of Title 31: the site answers "File not found"/);
+  });
 });
 
 describe('parsePacodeChapterHtml — review round 1 fixes', () => {

@@ -77,6 +77,18 @@ const notesAndBold = actPage({
       { bold: '(a)&nbsp;&nbsp;General rule.--', rest: 'The department shall enforce this act.' },
       { bold: '"Employer."', rest: '&nbsp;Includes every person, firm, partnership, association.' },
     ], compilerNote: 'This explanatory note must not appear in text.' },
+    /**
+     * The real UIPA §5 shape: a body paragraph that is TWO adjacent
+     * top-level parenthesized groups — the subsection marker "(b)" followed
+     * by its own repeal note — with no prose between them. The standalone
+     * form of the very same note (section 4 above) IS a history note; this
+     * one must stay body, because the paragraph as a whole is not one pair
+     * of parentheses around note clauses.
+     */
+    { n: '6', catchline: 'Adjacent Groups.', body: [
+      'Lead text for section six.',
+      '(b) ((b) repealed July 15, 2024, P.L. , No.62).',
+    ] },
   ],
 });
 
@@ -146,6 +158,14 @@ describe('the standalone-note structural rule', () => {
     const s4 = r.sections[3]!;
     expect(s4.historyNotes).toEqual(['((b) repealed July 15, 2024, P.L. , No.62).']);
     expect(s4.text).toBe('Lead text for section four.');
+  });
+  test('the same note preceded by its own subsection marker (two adjacent groups, the real UIPA §5 shape) stays BODY text', () => {
+    const r = parseActHtml(notesAndBold);
+    const s6 = r.sections[5]!;
+    expect(s6.historyNotes).toEqual([]);
+    expect(s6.text).toBe('Lead text for section six.\n(b) ((b) repealed July 15, 2024, P.L. , No.62).');
+    // Same note text, opposite verdict, decided only by what precedes it.
+    expect(r.sections[3]!.historyNotes[0]).toContain('repealed July 15, 2024, P.L. , No.62');
   });
 });
 

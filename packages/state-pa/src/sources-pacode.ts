@@ -51,5 +51,5 @@ export const PA_PACODE_SOURCES: readonly PaPacodeCaptureSource[] = [
     note: '231.82-231.84 are {Abrogated} (Act 70 of 2021) and 231.81 is a stub pointing at them — excluded.' },
   { code: '34 Pa. Code', title: 34, chapter: 9, chapterKey: 'Chapter 9, Subchapter A', chapterTitle: 'Employment and Wages — Wage Payment and Collection Laws', domain: 'employment',
     cites: ['9.1', '9.2', '9.3'],
-    note: '9.1 authorized deductions (the comeback-chargeback answer); 9.4 is railroads.' },
+    note: '9.1 authorized deductions (the comeback-chargeback answer); 9.4 is railroads. The preamble adoption line is Subchapter A\'s; a section outside Subchapter A would inherit the wrong date — model that subchapter\'s own line before adding one.' },
 ];

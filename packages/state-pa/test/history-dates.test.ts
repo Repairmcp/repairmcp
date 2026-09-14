@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import {
-  actAmendmentDates, consolidatedNoteDates, newestActAmendmentDate, newestConsolidatedEffectiveDate,
-  newestPacodeEffectiveDate, pacodeSourceDates, parseActTitleLine, parseMonthDate, plusDays,
+  actAmendmentDates, actAmendmentNotes, consolidatedNoteDates, newestActAmendmentDate,
+  newestConsolidatedEffectiveDate, newestPacodeEffectiveDate, pacodeSourceDates, parseActTitleLine,
+  parseMonthDate, plusDays,
 } from '../src/history-dates.js';
 
 describe('parseMonthDate', () => {
@@ -66,6 +67,18 @@ describe('unconsolidated act notes (kickoff §3.2)', () => {
   test('newest wins; none yields undefined', () => {
     expect(newestActAmendmentDate('(3 amended July 14, 1977, P.L.82, No.30) x ((a) amended June 24, 1996, P.L.350, No.57)')).toBe('1996-06-24');
     expect(newestActAmendmentDate('Section 1. Short Title.--This act shall be known')).toBeUndefined();
+  });
+  test('actAmendmentNotes returns the note SPANS themselves, in page order, closing paren included', () => {
+    expect(actAmendmentNotes('(5 amended July 14, 1977, P.L.82, No.30)')).toEqual(['(5 amended July 14, 1977, P.L.82, No.30)']);
+    expect(actAmendmentNotes('(d) No appraiser shall require repairs in any specified shop. ((d) amended Apr. 14, 2016, P.L.79, No.13)')).toEqual(['((d) amended Apr. 14, 2016, P.L.79, No.13)']);
+    expect(actAmendmentNotes('(b) ((b) repealed July 15, 2024, P.L. , No.62).')).toEqual(['((b) repealed July 15, 2024, P.L. , No.62)']);
+    // A compound note is ONE span, run through to its single closing paren.
+    expect(actAmendmentNotes('(318 amended Dec. 28, 1959, P.L.2034, No.747; repealed in part Apr. 28, 1978, P.L.202, No.53)'))
+      .toEqual(['(318 amended Dec. 28, 1959, P.L.2034, No.747; repealed in part Apr. 28, 1978, P.L.202, No.53)']);
+    // Page order, and a wrapped note is collapsed the way the parser collapses it.
+    expect(actAmendmentNotes('(3 amended July 14, 1977, P.L.82,\n            No.30) prose ((a) amended June 24, 1996, P.L.350, No.57)'))
+      .toEqual(['(3 amended July 14, 1977, P.L.82, No.30)', '((a) amended June 24, 1996, P.L.350, No.57)']);
+    expect(actAmendmentNotes('Section 1. Short Title.--This act shall be known')).toEqual([]);
   });
   test('the act title line', () => {
     expect(parseActTitleLine('Act of Jul. 14, 1961,P.L. 637, No. 329 Cl. 43 - WAGE PAYMENT AND COLLECTION LAW')).toEqual({ actDate: '1961-07-14', pl: '637', actNo: '329' });
