@@ -116,7 +116,12 @@ packages/state-law/   @repairmcp/state-law — the shared state-vertical machine
                       politeness pause for publishers whose robots.txt asks
                       for more than the io-wide 2 s (leginfo and the LII
                       mirror both ask for 10 s); replays from --from-dir
-                      never wait.
+                      never wait. Added at PA: `html.ts`'s numeric character
+                      reference decoding for codepoints 128–159 now routes
+                      through the Windows-1252 table (the WHATWG rule),
+                      because the Pennsylvania Code prints `&#151;` for an
+                      em dash and `&#145;`/`&#146;` for curly quotes on
+                      pages that declare UTF-8.
 
 packages/state-mt/    @repairmcp/state-mt — Montana vertical (pure corpus)
   src/parse-mca.ts    mca.legmt.gov section-page parser: edition-marker
@@ -387,7 +392,7 @@ packages/state-ny/    @repairmcp/state-ny — New York vertical (pure corpus,
                       pinned separately (2020-06-24, no rolling edition)
   data/               ny-law-corpus.json (95 sections: insurance 22 /
                       repair_law 34 / employment 39) + annotations
-  test/               93 tests incl. the demo gauntlet (weekly pay → Lab.
+  test/               94 tests incl. the demo gauntlet (weekly pay → Lab.
                       Law 191, steering → Ins. Law 2610 with DFS OGC Opinion
                       04-06-03 second, uninspected car → 11 NYCRR 216.7),
                       the CR82 edition pin, and full-manifest capture
@@ -398,6 +403,63 @@ apps/state-ny-server/ @repairmcp/state-ny-server — Worker, ny.repairmcp.com,
                       cr82Edition + part142EffectiveDate + captureSources
                       (senate/lii/dfs/dmv/dol counts) + the three-domain
                       breakdown
+
+packages/state-pa/    @repairmcp/state-pa — Pennsylvania vertical (pure
+                      corpus, TWO publishers, THREE domains; state #8, third
+                      of the Tier 1 run FL → NY → PA → OH → IL → MI → NC)
+  src/schema.ts       PaSection: two publishers, three page shapes, ten
+                      codes — PA_CONSOLIDATED_CODES (2) + PA_ACT_CODES (5) +
+                      PA_PACODE_CODES (3); `dateKind` records whether a
+                      citation's date is effective, amended, or enacted
+  src/history-dates.ts  the three PA date rules in one module: consolidated
+                      sections carry the newest history-note EFFECTIVE date,
+                      inherited from the subchapter/chapter Enactment note
+                      when the section has none; unconsolidated P.S.
+                      sections carry the newest amending act's APPROVAL
+                      date ("amended") or the act's own title-line date
+                      ("enacted") — the page states no effective clause;
+                      Pa. Code sections carry the newest Source-note
+                      effective date, inherited from the chapter-level
+                      adoption line when absent
+  src/parse-consolidated.ts + capture-consolidated.ts  the General
+                      Assembly's static mirror (legis.state.pa.us/WU01)
+                      consolidated Pa.C.S. CHAPTER pages at a 5 s floor;
+                      `<div class="Comment">` markers are the site's own
+                      anchors and the region boundaries; capture is BY
+                      CHAPTER because a section's date often lives only in
+                      its subchapter's or chapter's Enactment note, which a
+                      single-section page omits
+  src/parse-act.ts + capture-acts.ts  the same mirror's unconsolidated P.S.
+                      ACT pages, one whole act per manifest act at 5 s; P.S.
+                      numbers are never printed by the Legislature — the
+                      manifest asserts them (`psCite`) and the Pennsylvania
+                      Code's own cross-references are the check
+  src/parse-pacode.ts + capture-pacode.ts  pacodeandbulletin.gov CHAPTER
+                      "toc" pages (despite the name, the whole chapter's
+                      text) at the project owner's 10 s floor against the
+                      site's blanket robots Disallow (2026-09-14); the first
+                      page's currency sentence is RECORDED in meta, not
+                      pinned — it rolls weekly (the FL edition rule, minus
+                      the pin)
+  src/identity.ts     ten codes, three cite shapes the shared factory's
+                      splitter cannot express, so PA resolves everything
+                      itself; bare cites resolve by EXACT match through
+                      PA_CITE_CODES built from the three manifests;
+                      consolidated and Pa. Code cites carry "effective
+                      M/D/YYYY", P.S. cites carry "amended M/D/YYYY" or
+                      "enacted M/D/YYYY" (`dateKind`)
+  data/               pa-law-corpus.json (89 sections: insurance 37 /
+                      repair_law 19 / employment 33) + annotations
+  test/               115 tests incl. the demo gauntlet (DRP steering → 31
+                      Pa. Code 62.3, bad faith interest → 42 Pa.C.S. 8371,
+                      final wages → 43 P.S. 260.5), the capture-profile
+                      fixtures, and the act-alias-tested-whole-before-split
+                      / curly-quote-normalization identity tests
+
+apps/state-pa-server/ @repairmcp/state-pa-server — Worker, pa.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      paCodeEffectiveThrough + captureSources (legis/pacode
+                      counts) + the three-domain breakdown
 
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
@@ -440,7 +502,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl, ny) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl, ny, pa) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -499,28 +561,32 @@ Colorado (`apps/state-co-server/`, 55 CRS/CCR/bulletin sections), Texas
 California (`apps/state-ca-server/`, 97 statute/CCR/Cal-OSHA sections across
 four domains), Florida (`apps/state-fl-server/`, 46 statute/FAC
 sections; the FAC text is read out of Word 97 documents at capture, ~2
-minutes end to end), and New York (`apps/state-ny-server/`, 95
-statute/CR-82/CR-142/Reg-64/DFS-guidance sections across five publishers).
+minutes end to end), New York (`apps/state-ny-server/`, 95
+statute/CR-82/CR-142/Reg-64/DFS-guidance sections across five publishers),
+and Pennsylvania (`apps/state-pa-server/`, 89 statute/Pa. Code sections,
+~2 minutes to capture).
 Pure corpus: the data ships in each bundle, so a corpus
 refresh IS a deploy — re-run the capture, run the tests (the substring,
 demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
 TX_STATUTES_CURRENCY, FL FL_STATUTES_EDITION, NY CR82_EDITION; California has
-no pin because none of its surfaces states currency — are the acceptance
-gate), deploy from the state's app.
+no pin because none of its surfaces states currency; PA has no pin: the
+Pa. Code currency sentence rolls weekly and is recorded, not pinned — are
+the acceptance gate), deploy from the state's app.
 A California capture takes ~20 minutes: leginfo and the LII mirror each ask
 for a 10-second crawl delay and the capture honors it (`--save-raw` once,
 then `--from-dir` for every re-parse).
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny)
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny, pa)
 bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa. / mt. / co. / tx. / ca. / fl. / ny.repairmcp.com
+wrangler deploy                                      # → wa. / mt. / co. / tx. / ca. / fl. / ny. / pa.repairmcp.com
 curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
 curl -s https://ca.repairmcp.com/health              # corpus meta + domains + captureSources
 curl -s https://fl.repairmcp.com/health              # corpus meta + domains + statutesEdition
 curl -s https://ny.repairmcp.com/health              # corpus meta + domains + cr82Edition + captureSources
+curl -s https://pa.repairmcp.com/health              # corpus meta + domains + paCodeEffectiveThrough + captureSources
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -536,7 +602,8 @@ API's own SHA-256 content hashes and skip unchanged documents; MCA re-fetches
 its ~110 pages (~5 min, fine at this cadence); California re-fetches its 16
 leginfo views and 32 LII pages at their 10 s crawl delays plus 16 DIR pages
 (~20 min, and a block by either publisher fails loudly rather than shipping
-stale text). The refresh stays a human
+stale text); Pennsylvania re-fetches nine statute pages at 5 s and five
+Pa. Code chapter pages at 10 s (~2 min). The refresh stays a human
 action ON PURPOSE: changed law can renumber annotated sections or shift demo
 rankings, and the per-state test suite is the gate that needs eyes. No
 legislative calendars are modeled anywhere — Montana's biennial sessions and
@@ -771,7 +838,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | NY vertical | ✅ live | 2026-09-10: `https://ny.repairmcp.com/mcp` deployed (version `9f9c249c-1b83-41fc-8e79-24a43acaf808`) and verified on the wire — `/health` reports 95 sections, current through 2026-09-10, cr82Edition "CR-82 (5/26)", part142EffectiveDate 2020-06-24, captureSources senate 33 / lii 13 / dfs 6 / dmv 19 / dol 24, domains insurance 22 / repair_law 34 / employment 39; "my painter says he has to be paid every week" → N.Y. Lab. Law 191 first; the steering query ("adjuster is telling the customer to take it to their shop") → N.Y. Ins. Law 2610 first with DFS OGC Opinion 04-06-03 second; "insurer has not come out to look at the car in two weeks" → 11 NYCRR 216.7 first; `ny_get_authority` on "Circular Letter 16 (2000)" → shortForm ends "withdrawn 12/4/2003"; the connector search on an uninspected car → 216.7. 95 verbatim sections from FIVE publishers — the State Senate's public site (one page per statute, Cloudflare-fronted, two transient 403s in 33 fetches both cleared by one retry, absence is HTTP 200 with no law-section content), the DMV's CR-82 booklet PDF (15 NYCRR Part 82, edition-pinned "CR-82 (5/26)"), the Department of Labor's CR 142 booklet PDF (12 NYCRR Part 142, pinned effective date 2020-06-24), the Legal Information Institute's mirror of 11 NYCRR Part 216 / Regulation 64 (the official publisher, Westlaw, blocks automated access — the CA/FL pattern; history arrives as `<effectivedate>` notes rather than numbered Register entries, and 10 of 13 Part 216 sections carry no date at all), and DFS guidance (six hand-picked opinions and circular letters, one — Circular Letter 16 of 2000 — captured WITHDRAWN rather than left to read as live). Headliners no other shipped state has: Lab. Law 191 (weekly pay for manual workers, with the Vega liquidated-damages line under 198), Ins. Law 2610 (no required or suggested shop, with the DFS opinion on "certified" shop programs beside it), 11 NYCRR 216.7 (six business days to inspect, good faith negotiation, total loss valuation). Honest absences in the tool descriptions and the site card: no private lawsuit under the unfair claims settlement statute (Rocanova v. Equitable), the steering statute's recommendation clause narrowed by a court with the Department's own letter withdrawn, no crash parts statute, no total loss percentage, no state OSHA plan for private shops. Site flips to nine sources; /legal names all five NY publishers. WAF burst test: 30/30 returned HTTP 200, 0 returned 429 — the fourth hostname (after fl., ca., deg.) where the zone rate limit does not fire (see Backlog). Open: connector gates in the project owner's clients. |
 
-**Test totals:** 1072 passing (91 core + 106 deg + 74 nhtsa + 18 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 93 state-ny + 193 ingestion). 0 failing.
+| PA vertical | ✅ live | 2026-09-14: `https://pa.repairmcp.com/mcp` deployed (deployment `baf2d24b-c670-4fb6-be4d-d1dbe435e7f0`, 2026-09-14T20:34:58Z) and verified on the wire — `/health` reports 89 sections, current through 2026-09-14, captured 2026-09-14, paCodeEffectiveThrough "56 Pa.B. 4026 (July 4, 2026)", captureSources legis 58 / pacode 31, domains insurance 37 / repair_law 19 / employment 33; "the adjuster told my customer to take it to their DRP shop" → 31 Pa. Code 62.3, effective 10/23/1999, first, 37 Pa. Code 301.5 second, 63 P.S. 861, amended 4/14/2016, third, with the verbatim "Not mention the name of any repair shop, unless the appraiser includes disclosure that there is no requirement to use any specified repair shop." excerpt; `pa_get_authority` on "42 Pa.C.S. § 8371" → "42 Pa.C.S. 8371, effective 7/1/1990" with "prime rate of interest plus 3%"; the connector `search` on "tech quit friday when do I have to pay him" → `43 p.s.:260.5` first. 89 verbatim sections from TWO publishers — the General Assembly's static mirror (legis.state.pa.us/WU01, consolidated Pa.C.S. chapter pages and unconsolidated P.S. act pages, both at a 5 s floor) and the Pennsylvania Code (pacodeandbulletin.gov, five chapter "toc" pages — despite the name, the whole chapter's text — fetched at the project owner's 10 s floor against the site's blanket robots Disallow, the same call as leginfo at CA). The real capture (14 requests, 93 s) ran clean on the first attempt; what task review against the saved real pages corrected in the kickoff's assumptions before the run: consolidated pages print subsection markers as inline bold, so "bold text opening with ( or a quotation mark is body" replaced the plan's "bold-led paragraph is a note" rule, which had emptied half of chapter 73 (empty named cites now hard-fail; subchapter labels with a decimal are handled); act pages' standalone-history-note regex was sweeping long body subsections ending in an inline note into historyNotes, replaced by a structural rule (one pair of parentheses enclosing only `;`-joined act-note clauses); the Pennsylvania Code's chapter 9 preamble reads "Subchapter A" rather than "Chapter", so the chapter-level date fallback accepts either line, a section's Source lines are scoped to its own cite, and a range-reserved head is skipped; and identity resolution tests act aliases whole before the section split and normalizes curly quotes (two kickoff readback expectations were also wrong against the real page: 75 Pa.C.S. 7301 prints its own note, 7307 inherits from the chapter). Honest absences in the tool descriptions and the site card: no private lawsuit under the Unfair Insurance Practices Act, no labor rate or paint-and-materials cap rule, no standalone crash parts statute, total loss as a formula rather than a percentage, no usable statutory garage keeper's lien, no shop licensing, and no state OSHA plan for private shops. Site flips to ten sources; /legal names both publishers. WAF burst test: 20/30 returned HTTP 200, 10 returned 429 — the rule FIRED on pa., the first hostname since Florida where it has (fl., ca., deg., and ny. all returned 0/30 earlier; those results remain unexplained — see Backlog). Open: connector gates in the project owner's clients. |
+
+**Test totals:** 1191 passing (91 core + 106 deg + 74 nhtsa + 21 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 94 state-ny + 115 state-pa + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -954,21 +1023,26 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Backlog (deferred until called)
 
-- **The zone WAF rate limit is not firing — check it first.** At the FL launch
-  (2026-09-09) 30 parallel `POST /mcp` requests from one IP returned 30×200 on
-  `fl.`, `ca.`, and `deg.repairmcp.com` alike; every earlier launch saw 429s
-  at ~20/10 s. Nothing in this repo changed the rule (it lives in the
-  dashboard: Security → WAF → Rate limiting rules). Either the rule was
-  disabled/expired, its action changed from Block, or its expression no longer
-  matches `/mcp`. Re-verify in the dashboard and burst-test again; until then
-  every corpus is an open, unrated door.
+- **The zone WAF rate limit fires on some hostnames and not others, and no
+  one has explained why.** At the FL launch (2026-09-09) 30 parallel
+  `POST /mcp` requests from one IP returned 30×200 on `fl.`, `ca.`, and
+  `deg.repairmcp.com` alike; the NY launch (2026-09-10) added `ny.` to that
+  list, also 30×200. Then at the PA launch (2026-09-14) the same burst test
+  against `pa.repairmcp.com` returned 20×200 then 10×429 — the rule fired,
+  matching the ~20/10 s behavior every launch before FL saw. Nothing in this
+  repo changed the rule (it lives in the dashboard: Security → WAF → Rate
+  limiting rules), and nothing about `pa.` is different from `fl.`/`ca.`/
+  `deg.`/`ny.` in how the rule matches (it is expression-based on `/mcp`,
+  not hostname-specific) — so the four non-firing results remain
+  unexplained rather than resolved. Re-verify `fl.`, `ca.`, `deg.`, and
+  `ny.` in the dashboard and burst-test them again; until then those four
+  corpora are open, unrated doors.
 - **Next states, in order** (the project owner's "Remaining states
   ordering" decision, by vehicles on the road × shop-usable law × publisher
   capturability): **Tier 1 — FL, NY, PA, OH, IL, MI, NC**; **Tier 2 — GA,
   TN, NJ** (official code on LexisNexis behind a bot challenge; each needs
   a CA-style mirror decision first, and Georgia is the one worth fighting
-  for). FL and NY done; PA kicked off 2026-09-14
-  (`docs/PA-VERTICAL-KICKOFF.md`); OH next (codes.ohio.gov, ORC + OAC as
+  for). FL, NY, and PA done; OH next (codes.ohio.gov, ORC + OAC as
   clean HTML). The "FL → NY → MN → PA …" order this file carried until
   2026-09-14 was a transcription error — Minnesota is not in Tier 1.
 - **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
@@ -982,6 +1056,14 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   same shape — worth extracting the next time a state needs it; a second
   code claiming a bare statute number turns that number's bare resolution
   off, by design (NY's `NY_CITE_CODES` collision guard, same shape as CA's).
+- **PA residuals:** connector gates (add `https://pa.repairmcp.com/mcp` in
+  the project owner's clients and run the gauntlet's shop-phrasing queries);
+  the General Assembly's static mirror (legis.state.pa.us/WU01) is a legacy
+  surface with a `view-statute?iFrame=true` fallback URL form named in its
+  own markup — worth capturing to if the WU01 mirror is ever retired; the
+  Pa. Code robots decision (fetch anyway, at a 10 s floor, like leginfo at
+  CA) is worth revisiting if the Legislative Reference Bureau ever adds a
+  bot challenge the way Westlaw calregs did.
 
 - ~~Resolve the `/grid/get/all` 200-row response.~~ **Resolved 2026-08-03**: transient
   throttle, not an endpoint change. One polite fetch that morning returned 5,777,228
@@ -1176,6 +1258,33 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   `StateLawCorpus`/`CorpusProfile` machinery. `tsc` compiled clean with
   `.refine` as written, end to end through the real corpus and tool
   wiring — worth knowing before "fixing" it preemptively on a future state.
+- **The WU01 pages' `<div class="Comment">` markers are the site's own
+  anchors and are the region boundaries**, not incidental markup — a
+  single-section consolidated page omits the subchapter's Enactment note
+  entirely (the note lives only on the subchapter/chapter table-of-contents
+  page), which is why PA capture is BY CHAPTER rather than by section.
+- **P.S. numbers are never printed by the Legislature.** The WU01 act pages
+  print only the ACT's own section number ("Section 5."), never the
+  Purdon's cite everyone actually cites (43 P.S. 260.5); the manifest
+  asserts `psCite` per section, and the Pennsylvania Code's own
+  cross-references (62.2 citing "63 P.S. §§ 853, 854, 858 and 861") are the
+  check that the asserted numbers are right.
+- **The Pa. Code chapter "toc" page is the whole chapter**, despite the
+  name, and its `&#151;`/`&#145;`/`&#146;` numeric character references are
+  cp1252 codepoints on a page that declares UTF-8 — `decodeEntities` in
+  `packages/state-law/src/html.ts` maps 128–159 through the Windows-1252
+  table since PA, or those entities decode to invisible control characters
+  inside verbatim law text.
+- **In Git Bash, an inline `curl -d '…§…'` mangles the section sign.** The
+  shell's own quoting does not survive the `§` byte sequence intact through
+  `-d`. Put the JSON probe body in a file and pass it with
+  `--data-binary @file` instead of inlining it; this cost a wrong-looking
+  wire probe during PA verification before the file form was tried.
+- **The shared `*_get_authority` tool's input field is `idOrCitation`, not
+  `citation`.** Every state's `get_authority` tool takes the same shared
+  shape from `packages/state-law`; a probe body written from memory as
+  `{ "citation": "..." }` silently fails to resolve rather than erroring,
+  because the field is simply absent from what the tool schema expects.
 
 - **leginfo answers an unknown section with HTTP 200 and an EMPTY
   `single_law_section` div**, and answers a section the Legislature prints in

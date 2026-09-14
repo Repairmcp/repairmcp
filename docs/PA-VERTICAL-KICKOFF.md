@@ -1,5 +1,36 @@
 # Kickoff spec: Pennsylvania state vertical (state #8)
 
+> **Status 2026-09-14 (same day): SHIPPED** — `https://pa.repairmcp.com/mcp`
+> (deployment `baf2d24b-c670-4fb6-be4d-d1dbe435e7f0`, deployed
+> 2026-09-14T20:34:58Z) live and verified on the wire; see the PA row in
+> CLAUDE.md's build status. `/health` reports 89 sections, current through
+> 2026-09-14, captured 2026-09-14, paCodeEffectiveThrough "56 Pa.B. 4026
+> (July 4, 2026)", captureSources legis 58 / pacode 31, domains insurance 37
+> / repair_law 19 / employment 33. The real capture (14 requests, 93 s) ran
+> clean on the first attempt; task review against the saved real pages, run
+> before a line of the capture itself executed, caught four parser/manifest
+> corrections the plan below got wrong: (1) consolidated pages print
+> subsection markers as inline bold (`<b>(a)&nbsp;General rule.--</b>text`)
+> — the plan's "bold-led paragraph is a note" rule emptied half of chapter
+> 73 and was replaced by "bold text opening with ( or a quotation mark is
+> body"; empty named cites now hard-fail; subchapter labels with a decimal
+> (`SUBCHAPTER B.1`) are handled; (2) act pages: the plan's
+> standalone-history-note regex swept long body subsections ending in an
+> inline note into historyNotes; replaced by a structural rule (one pair of
+> parentheses enclosing only `;`-joined act-note clauses); (3) Pennsylvania
+> Code: chapter 9's preamble adoption line reads "Subchapter A", so the
+> chapter-level date fallback accepts Chapter or Subchapter lines, a
+> section's Source lines are scoped to its own cite, and a range-reserved
+> head (`§ § 231.91—231.99. {Reserved}.`) is skipped; (4) identity: act
+> aliases are tested whole before the section split ("The Minimum Wage Act
+> of 1968" resolves) and curly quotes normalize. Two kickoff readback
+> expectations were also wrong against the real page: 75 Pa.C.S. 7301
+> prints its own note (effective 2/7/2003); 7307 is the chapter-inherit
+> case (7/1/1977). The zone WAF rate limit FIRED on pa.repairmcp.com — a 30
+> parallel-request burst returned 20×200 then 10×429 — the first hostname
+> since Florida where it has; fl., ca., deg., and ny. still return 0/30
+> under the same test (CLAUDE.md Backlog, first entry).
+
 Written 2026-09-14. Pattern follows WA → MT → CO → TX → CA → FL → NY: a
 state package on `@repairmcp/state-law`, a Worker at `pa.repairmcp.com`,
 registration in `scripts/state-registry.ts` so the 4-week drift checker
