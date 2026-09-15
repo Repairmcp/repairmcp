@@ -20,7 +20,7 @@ describe('the committed corpus', () => {
   });
   test('every section states its capture surface and an effective date; ORC carries Latest Legislation; no control chars or notice lines', () => {
     for (const s of corpus.sections) {
-      expect(s.text, `${displayCite(s)} replacement or control chars`).not.toMatch(/[-�]/);
+      expect(s.text, `${displayCite(s)} replacement or control chars`).not.toMatch(/[\u0080-\u009f\ufffd]/);
       expect(s.text, `${displayCite(s)} notice line`).not.toMatch(/Last updated [A-Z][a-z]+ \d/);
       expect(s.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(['chapter', 'section']).toContain(s.captureSource);
