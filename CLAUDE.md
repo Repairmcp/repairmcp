@@ -604,7 +604,7 @@ minutes end to end), New York (`apps/state-ny-server/`, 95
 statute/CR-82/CR-142/Reg-64/DFS-guidance sections across five publishers),
 Pennsylvania (`apps/state-pa-server/`, 89 statute/Pa. Code sections,
 ~2 minutes to capture), and Ohio (`apps/state-oh-server/`, 51 ORC/OAC/
-Constitution sections, ~3 minutes to capture).
+Constitution sections, ~4 minutes to capture).
 Pure corpus: the data ships in each bundle, so a corpus
 refresh IS a deploy — re-run the capture, run the tests (the substring,
 demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
@@ -646,8 +646,8 @@ its ~110 pages (~5 min, fine at this cadence); California re-fetches its 16
 leginfo views and 32 LII pages at their 10 s crawl delays plus 16 DIR pages
 (~20 min, and a block by either publisher fails loudly rather than shipping
 stale text); Pennsylvania re-fetches nine statute pages at 5 s and five
-Pa. Code chapter pages at 10 s (~2 min); Ohio re-fetches ten chapter pages
-and eight section pages at 10 s (~3 min). The refresh stays a human
+Pa. Code chapter pages at 10 s (~2 min); Ohio re-fetches seven chapter
+pages and eighteen section pages at 10 s (~4 min). The refresh stays a human
 action ON PURPOSE: changed law can renumber annotated sections or shift demo
 rankings, and the per-state test suite is the gate that needs eyes. No
 legislative calendars are modeled anywhere — Montana's biennial sessions and

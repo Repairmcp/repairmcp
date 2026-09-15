@@ -407,7 +407,10 @@ Ohio headliners, in demo order:
   `M/D/YYYY` comma-separated and is recorded as `priorEffectiveDates`
   (ISO), not used for the citation.
 
-### 3.3 The fetch plan — 18 requests at a 10 s floor, about 3 minutes
+### 3.3 The fetch plan (as planned here: 18 requests at a 10 s floor, about
+3 minutes; the real capture used 25 requests over ~4 minutes after the OAC
+chapter-lag finding moved every Administrative Code rule to its own page —
+see the status block above)
 
 - ORC chapter pages (7): 3901, 1345, 4505, 4513, 4111, 4113, 4123.
 - ORC section pages (5): 1343.03, 1333.41, 4738.01, 4109.07, 4121.47.
