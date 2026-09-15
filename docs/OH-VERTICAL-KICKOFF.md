@@ -36,10 +36,12 @@
 > matching pa.'s behavior; fl., ca., deg., and ny. still return 0/30 under
 > the same test (CLAUDE.md Backlog, first entry). The final whole-branch
 > review caught one more: the parser had left a space before punctuation
-> wherever a closing tag butted against it (41 places in 12 sections, one
-> inside a curated excerpt); fixed with the New York parser's lookahead plus
-> no-space stripping of sub/sup tags, the corpus re-captured, and a corpus
-> test now rejects any space before `,;:)`.
+> wherever a closing tag butted against it (the re-capture changed the text
+> of 8 sections, one of them behind a curated excerpt; 8 further spaces
+> before punctuation in 6 other sections are the publisher's own text and
+> are allowlisted by name in the corpus test); fixed with the New York
+> parser's lookahead plus no-space stripping of sub/sup tags, the corpus
+> re-captured, and a corpus test now rejects any space before `,;:)`.
 
 Written 2026-09-14. Pattern follows WA → MT → CO → TX → CA → FL → NY → PA:
 a state package on `@repairmcp/state-law`, a Worker at `oh.repairmcp.com`,
