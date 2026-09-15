@@ -19,8 +19,8 @@ describe('OH_CAPTURE_PROFILE.captureAll', () => {
     expect(new Set(keys).size).toBe(keys.length);
     const sources = new Map<string, number>();
     for (const s of file.sections) sources.set((s as { captureSource: string }).captureSource, (sources.get((s as { captureSource: string }).captureSource) ?? 0) + 1);
-    expect(sources.get('chapter')).toBe(43);
-    expect(sources.get('section')).toBe(8);
+    expect(sources.get('chapter')).toBe(33);
+    expect(sources.get('section')).toBe(18);
     expect(out.report.warnings).toEqual([]);
   });
   test('the profile is registered under oh with the attention file and checklist', () => {

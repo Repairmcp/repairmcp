@@ -42,10 +42,10 @@ export function buildOhIo(overrides: { pages?: Record<string, string> } = {}): C
 }
 
 describe('captureOhio', () => {
-  test('18 fetches at the 10 s floor with raw names; 51 sections; sourceUrl is always the section page; captureSource records the unit', async () => {
+  test('25 fetches at the 10 s floor with raw names; 51 sections; sourceUrl is always the section page; captureSource records the unit', async () => {
     const io = buildOhIo();
     const r = await captureOhio(io, OH_SOURCES);
-    expect(io.fetched.length).toBe(18);
+    expect(io.fetched.length).toBe(25);
     for (const f of io.fetched) { expect(f.minDelayMs).toBe(10_000); expect(f.rawName).toMatch(/^oh-(orc|oac|const)-(ch|s|r)[^:]+\.html$/); }
     expect(r.sections.length).toBe(51);
     const s101 = r.sections.find((s) => s.cite === '4505.101')!;
@@ -66,7 +66,9 @@ describe('captureOhio', () => {
     expect(single.domain).toBe('safety');
     const rule = r.sections.find((s) => s.cite === '3901-1-54')!;
     expect(rule.code).toBe('OAC');
-    expect(rule.priorEffectiveDates).toEqual(['2000-01-01', '2010-02-02']);
+    expect(rule.captureSource).toBe('section');
+    expect(rule.chapterTitle).toBe('Title of 3901-1');
+    expect(rule.priorEffectiveDates).toEqual(['2003-01-01']);
     expect(rule.latestLegislation).toBeUndefined();
     expect(rule.sourceUrl).toBe('https://codes.ohio.gov/ohio-administrative-code/rule-3901-1-54');
     const k = r.sections.find((s) => s.code === 'Ohio Const.')!;
@@ -105,5 +107,9 @@ describe('captureOhio', () => {
     const r = await captureOhio(pdfUnrequested, OH_SOURCES);
     expect(r.sections.length).toBe(51);
     expect(r.report.warnings).toEqual([expect.stringContaining('ORC 4113.99')]);
+  });
+  test('a named cite with no catchline (an unassigned heading) fails by name', async () => {
+    const noCatchline = buildOhIo({ pages: { [chapterUrl('ORC', '4113')]: chapterPage({ code: 'ORC', chapter: '4113', title: 'T', entries: [{ cite: '4113.15', effective: 'March 20, 2019', paragraphs: ['y'] }, { cite: '4113.19', catchline: 'z.', effective: 'October 1, 1953', paragraphs: ['w'] }] }) } });
+    await expect(captureOhio(noCatchline, OH_SOURCES)).rejects.toThrow(/ORC 4113\.15 prints no catchline on the page/);
   });
 });

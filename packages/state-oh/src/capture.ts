@@ -15,7 +15,7 @@ function today(): string {
 }
 
 export const OH_SOURCE_NOTE =
-  "Captured from the Ohio Revised Code, the Ohio Administrative Code, and the Ohio Constitution as published by the Legislative Service Commission at codes.ohio.gov — whole-chapter pages where two or more sections share a chapter and single-section pages otherwise, fetched at a 10-second pace by the project owner's decision despite the site's blanket robots.txt Disallow. Every section carries the Effective date the site prints for its current text; Revised Code sections also record the Latest Legislation marker, and Administrative Code rules record the Supplemental Information block (Authorized By, Amplifies, Five Year Review Date, Prior Effective Dates). A bracketed status note the site prints in front of a catchline (a Governor's veto not yet reflected, for example) is kept per section. The site states no currency line; the newest per-section effective date is recorded in meta. Each section records whether it was captured from a chapter page or its own page.";
+  "Captured from the Ohio Revised Code, the Ohio Administrative Code, and the Ohio Constitution as published by the Legislative Service Commission at codes.ohio.gov — Revised Code chapters as whole-chapter pages, and every Administrative Code rule and the Constitution section from its own page (the Administrative Code chapter view's Supplemental Information block can lag the rule's own page), fetched at a 10-second pace by the project owner's decision despite the site's blanket robots.txt Disallow. Every section carries the Effective date the site prints for its current text; Revised Code sections also record the Latest Legislation marker, and Administrative Code rules record the Supplemental Information block (Authorized By, Amplifies, Five Year Review Date, Prior Effective Dates). A bracketed status note the site prints in front of a catchline (a Governor's veto not yet reflected, for example) is kept per section. The site states no currency line; the newest per-section effective date is recorded in meta. Each section records whether it was captured from a chapter page or its own page.";
 
 export const OH_CAPTURE_PROFILE: StateCaptureProfile = {
   state: 'OH',
@@ -25,7 +25,7 @@ export const OH_CAPTURE_PROFILE: StateCaptureProfile = {
   attentionFileName: 'OH-LAW-ATTENTION.txt',
   refreshChecklist:
     '  1. cd C:\\dev\\repairmcp\n' +
-    '  2. bun scripts/capture-state.ts --state oh      (ten chapter pages + eight section pages at 10 s; ~3 minutes)\n' +
+    '  2. bun scripts/capture-state.ts --state oh      (seven chapter pages + eighteen section pages at 10 s; ~4 minutes)\n' +
     '  3. cd packages\\state-oh && bun test             (annotation + demo suites are the gate; read every status note the log prints)\n' +
     '  4. cd ..\\..\\apps\\state-oh-server && npx wrangler deploy\n' +
     '  5. curl -s https://oh.repairmcp.com/health       (confirm the capture date + newestEffectiveDate)\n' +

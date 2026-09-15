@@ -4,12 +4,12 @@ import {
 } from '../src/sources.js';
 
 describe('the Ohio manifest', () => {
-  test('51 cites, unique per code, 18 fetch units, per-cite domains sum to 9/16/17/9', () => {
+  test('51 cites, unique per code, 25 fetch units, per-cite domains sum to 9/16/17/9', () => {
     const all = manifestCites();
     expect(all.length).toBe(51);
     expect(new Set(all.map((c) => `${c.code}:${c.cite}`)).size).toBe(51);
-    expect(OH_SOURCES.length).toBe(18);
-    expect(OH_SOURCES.filter((s) => s.kind === 'chapter').length).toBe(10);
+    expect(OH_SOURCES.length).toBe(25);
+    expect(OH_SOURCES.filter((s) => s.kind === 'chapter').length).toBe(7);
     const domains = new Map<string, number>();
     for (const c of all) domains.set(c.domain, (domains.get(c.domain) ?? 0) + 1);
     expect(domains.get('insurance')).toBe(9);

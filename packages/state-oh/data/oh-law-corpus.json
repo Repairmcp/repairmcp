@@ -3,7 +3,7 @@
   "state": "OH",
   "capturedAt": "2026-09-15",
   "currentThrough": "2026-09-15",
-  "sourceNote": "Captured from the Ohio Revised Code, the Ohio Administrative Code, and the Ohio Constitution as published by the Legislative Service Commission at codes.ohio.gov — whole-chapter pages where two or more sections share a chapter and single-section pages otherwise, fetched at a 10-second pace by the project owner's decision despite the site's blanket robots.txt Disallow. Every section carries the Effective date the site prints for its current text; Revised Code sections also record the Latest Legislation marker, and Administrative Code rules record the Supplemental Information block (Authorized By, Amplifies, Five Year Review Date, Prior Effective Dates). A bracketed status note the site prints in front of a catchline (a Governor's veto not yet reflected, for example) is kept per section. The site states no currency line; the newest per-section effective date is recorded in meta. Each section records whether it was captured from a chapter page or its own page.",
+  "sourceNote": "Captured from the Ohio Revised Code, the Ohio Administrative Code, and the Ohio Constitution as published by the Legislative Service Commission at codes.ohio.gov — Revised Code chapters as whole-chapter pages, and every Administrative Code rule and the Constitution section from its own page (the Administrative Code chapter view's Supplemental Information block can lag the rule's own page), fetched at a 10-second pace by the project owner's decision despite the site's blanket robots.txt Disallow. Every section carries the Effective date the site prints for its current text; Revised Code sections also record the Latest Legislation marker, and Administrative Code rules record the Supplemental Information block (Authorized By, Amplifies, Five Year Review Date, Prior Effective Dates). A bracketed status note the site prints in front of a catchline (a Governor's veto not yet reflected, for example) is kept per section. The site states no currency line; the newest per-section effective date is recorded in meta. Each section records whether it was captured from a chapter page or its own page.",
   "sourceUrl": "https://codes.ohio.gov/",
   "newestEffectiveDate": "2026-03-21"
  },
@@ -526,10 +526,14 @@
    "effectiveDate": "2022-02-14",
    "domain": "insurance",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-3901-1-07",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "3901.041",
    "amplifies": "3901.20 , 3901.21",
-   "fiveYearReviewDate": "2027-02-27"
+   "fiveYearReviewDate": "2027-02-27",
+   "priorEffectiveDates": [
+    "1975-04-01",
+    "2007-04-05"
+   ]
   },
   {
    "cite": "3901-1-54",
@@ -541,13 +545,15 @@
    "effectiveDate": "2022-02-14",
    "domain": "insurance",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-3901-1-54",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "3901.041",
    "amplifies": "3901.19 to 3901.26",
    "fiveYearReviewDate": "2027-02-27",
    "priorEffectiveDates": [
     "1993-09-01",
-    "2004-11-12"
+    "2004-11-12",
+    "2007-04-05",
+    "2016-11-03"
    ]
   },
   {
@@ -560,12 +566,14 @@
    "effectiveDate": "2007-01-07",
    "domain": "repair_law",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-109:4-3-01",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "1345.05",
    "amplifies": "Chapter 1345.01",
    "fiveYearReviewDate": "2027-04-28",
    "priorEffectiveDates": [
-    "1980-01-26"
+    "1973-06-05",
+    "1980-01-26",
+    "2005-03-14"
    ]
   },
   {
@@ -578,10 +586,15 @@
    "effectiveDate": "2026-03-21",
    "domain": "repair_law",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-109:4-3-13",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "1345.05",
    "amplifies": "1345.02",
-   "fiveYearReviewDate": "2031-03-11"
+   "fiveYearReviewDate": "2031-03-11",
+   "priorEffectiveDates": [
+    "1978-09-11",
+    "2005-03-14",
+    "2015-08-10"
+   ]
   },
   {
    "cite": "4123:1-5-01",
@@ -593,13 +606,18 @@
    "effectiveDate": "2023-06-30",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-01",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121 , 4121.13",
    "amplifies": "4121.12 , 4121.121 , 4121.47",
    "fiveYearReviewDate": "2027-02-01",
    "priorEffectiveDates": [
     "1964-04-01",
-    "1986-01-01"
+    "1977-08-01",
+    "1986-01-01",
+    "1999-04-01",
+    "2011-04-10",
+    "2016-06-01",
+    "2022-02-01"
    ]
   },
   {
@@ -612,14 +630,17 @@
    "effectiveDate": "2023-06-30",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-12",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121 , 4121.13",
    "amplifies": "4121.47",
    "fiveYearReviewDate": "2027-02-01",
    "priorEffectiveDates": [
+    "1964-04-01",
     "1977-08-01",
     "1986-01-01",
-    "2011-07-10"
+    "2011-07-10",
+    "2016-06-01",
+    "2022-02-01"
    ]
   },
   {
@@ -632,12 +653,15 @@
    "effectiveDate": "2023-06-30",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-13",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121",
    "amplifies": "4121.13",
    "fiveYearReviewDate": "2026-11-01",
    "priorEffectiveDates": [
-    "1986-01-01"
+    "1977-08-01",
+    "1986-01-01",
+    "2011-04-10",
+    "2016-06-01"
    ]
   },
   {
@@ -650,14 +674,16 @@
    "effectiveDate": "2023-06-30",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-16",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121 , 4121.13",
    "amplifies": "4121.47",
    "fiveYearReviewDate": "2027-02-01",
    "priorEffectiveDates": [
     "1964-04-01",
     "1977-08-01",
-    "2011-04-10"
+    "1999-04-01",
+    "2011-04-10",
+    "2022-02-01"
    ]
   },
   {
@@ -670,12 +696,17 @@
    "effectiveDate": "2024-02-01",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-17",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121 , 4121.13",
    "amplifies": "4121.47",
    "fiveYearReviewDate": "2027-02-01",
    "priorEffectiveDates": [
+    "1964-04-01",
+    "1977-08-01",
     "1986-01-01",
+    "1999-04-01",
+    "2011-04-10",
+    "2016-06-01",
     "2022-02-01",
     "2023-09-01"
    ]
@@ -690,10 +721,17 @@
    "effectiveDate": "2023-09-01",
    "domain": "safety",
    "sourceUrl": "https://codes.ohio.gov/ohio-administrative-code/rule-4123:1-5-18",
-   "captureSource": "chapter",
+   "captureSource": "section",
    "authorizedBy": "4121.12 , 4121.121 , 4121.13",
    "amplifies": "4121.47",
-   "fiveYearReviewDate": "2026-11-01"
+   "fiveYearReviewDate": "2026-11-01",
+   "priorEffectiveDates": [
+    "1964-04-01",
+    "1977-08-01",
+    "1986-01-01",
+    "2011-04-10",
+    "2016-06-01"
+   ]
   },
   {
    "cite": "3745-31-30",

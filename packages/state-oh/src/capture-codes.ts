@@ -1,15 +1,19 @@
 /**
- * The Ohio pipeline: ten chapter pages and eight section pages from
- * codes.ohio.gov at the 10 s floor, parsed once, selected per manifest
- * cite. Hard-fails, all by name: a named cite absent from its chapter page,
- * a "[Repealed …]" status note on a named cite, a named cite with no body
- * text, a named cite the parser skipped as PDF-filed, and Number Not Found
- * on a section page. A chapter page's PDF-filed rules the manifest never
- * asked for (chapter 4123:1-5 carries one — "Ladders and scaffolds", live
- * 2026-09-14) are silently absent from the parsed set; a warning names each
- * one so the capture log states what was on the page but not captured. Any
- * other status note ("Governor's veto not reflected …") is recorded on the
- * section and listed in the report so the capture log prints it.
+ * The Ohio pipeline: seven Revised Code chapter pages and eighteen section
+ * pages (five ORC, one Constitution, twelve OAC — every Administrative Code
+ * rule from its own page, never a chapter page) from codes.ohio.gov at the
+ * 10 s floor, parsed once, selected per manifest cite. Hard-fails, all by
+ * name: a named cite absent from its chapter page, a "[Repealed …]" status
+ * note on a named cite, a named cite with no catchline (an unassigned
+ * heading — the schema requires one), a named cite with no body text, a
+ * named cite the parser skipped as PDF-filed, and Number Not Found on a
+ * section page. A chapter page's PDF-filed rules the manifest never asked
+ * for (chapter 4123:1-5 carried two — "Ladders and scaffolds" and one more,
+ * live 2026-09-14, before OAC rules moved to their own pages) are silently
+ * absent from the parsed set; a warning names each one so the capture log
+ * states what was on the page but not captured. Any other status note
+ * ("Governor's veto not reflected …") is recorded on the section and listed
+ * in the report so the capture log prints it.
  */
 import type { CaptureIo } from '@repairmcp/state-law';
 import { parseOhChapterPage, parseOhSectionPage, type ParsedOhBlock } from './parse-codes.js';
@@ -28,6 +32,9 @@ function toSection(
   const label = `${meta.code} ${block.cite}`;
   if (block.statusNote && /^Repealed\b/i.test(block.statusNote)) {
     throw new Error(`${label} was requested by name but the site marks it "${block.statusNote}" — correct the manifest after reading the page.`);
+  }
+  if (!block.heading) {
+    throw new Error(`${label} prints no catchline on the page — the schema requires a heading; read the page before capturing.`);
   }
   if (!block.text) {
     throw new Error(`${label} captured no body text — the parser lost the section or the site changed; re-derive from the saved raw before capturing.`);

@@ -2,11 +2,19 @@ import type { OhCode, OhDomain } from './schema.js';
 
 /**
  * The Ohio manifest (kickoff §2, §3.3): 51 sections on codes.ohio.gov,
- * captured as ten whole-chapter pages (where two or more manifest sections
- * share a chapter) and eight single-section pages, at the project owner's
- * 10 s floor against the site's blanket robots Disallow (2026-09-14). Every
- * chapter page carries every section's full text with its own Effective
- * date — verified byte-identical to the section page for 3901.21.
+ * captured at the project owner's 10 s floor against the site's blanket
+ * robots Disallow (2026-09-14), as 25 fetch units: seven Revised Code
+ * whole-chapter pages (where two or more manifest sections share a
+ * chapter), five Revised Code single-section pages, one Constitution
+ * section page, and TWELVE Administrative Code rule pages — every OAC rule
+ * from its own page, never a chapter page. That split was forced by real
+ * capture data, not chosen up front: the ORC chapter view carries every
+ * section's full text byte-identical to its own section page (verified for
+ * 3901.21), but the OAC chapter view's Supplemental Information block can
+ * LAG the rule's own page — OAC 3901-1-54's chapter view stated only 2 of
+ * its 4 real Prior Effective Dates on 2026-09-14, confirmed by fetching the
+ * rule's own page directly. The corpus must state what its own `sourceUrl`
+ * states, so every Administrative Code rule is captured from that URL.
  *
  * Domains are per CITE, not per chapter: chapter 4505 holds the salvage
  * title section (insurance) and the unclaimed-vehicle pair (repair_law);
@@ -75,7 +83,6 @@ export function sectionRawName(code: OhCode, cite: string): string {
 const ins = (cite: string, note?: string): OhCiteEntry => ({ cite, domain: 'insurance', ...(note ? { note } : {}) });
 const rep = (cite: string, note?: string): OhCiteEntry => ({ cite, domain: 'repair_law', ...(note ? { note } : {}) });
 const emp = (cite: string, note?: string): OhCiteEntry => ({ cite, domain: 'employment', ...(note ? { note } : {}) });
-const saf = (cite: string, note?: string): OhCiteEntry => ({ cite, domain: 'safety', ...(note ? { note } : {}) });
 
 export const OH_SOURCES: readonly OhSource[] = [
   // --- ORC chapter pages (7) ---
@@ -116,18 +123,18 @@ export const OH_SOURCES: readonly OhSource[] = [
   { kind: 'section', code: 'ORC', cite: '4121.47', chapter: '4121', domain: 'safety', note: 'the VSSR statute' },
   // --- Constitution (1) ---
   { kind: 'section', code: 'Ohio Const.', cite: OH_CONST_CITE, chapter: 'art. II', domain: 'employment', note: 'the indexed minimum wage' },
-  // --- OAC chapter pages (3) ---
-  { kind: 'chapter', code: 'OAC', chapter: '3901-1', sections: [
-    ins('3901-1-07', 'the general unfair claims practices companion'),
-    ins('3901-1-54', 'the headliner: (H)(1) pay the difference or name a shop; (H)(8) no unreasonable travel; (H)(9) storage notice'),
-  ] },
-  { kind: 'chapter', code: 'OAC', chapter: '109:4-3', sections: [
-    rep('109:4-3-01'), rep('109:4-3-13', 'the AG\'s motor vehicle repair rule, amended effective 3/21/2026'),
-  ] },
-  { kind: 'chapter', code: 'OAC', chapter: '4123:1-5', sections: [
-    saf('4123:1-5-01'), saf('4123:1-5-12'), saf('4123:1-5-13'), saf('4123:1-5-16'), saf('4123:1-5-17'), saf('4123:1-5-18'),
-  ] },
-  // --- OAC rule pages (2) ---
+  // --- OAC rule pages (12): every Administrative Code rule from its own
+  // page — never a chapter page (see the module doc comment) ---
+  { kind: 'section', code: 'OAC', cite: '3901-1-07', chapter: '3901-1', domain: 'insurance', note: 'the general unfair claims practices companion' },
+  { kind: 'section', code: 'OAC', cite: '3901-1-54', chapter: '3901-1', domain: 'insurance', note: 'the headliner: (H)(1) pay the difference or name a shop; (H)(8) no unreasonable travel; (H)(9) storage notice' },
+  { kind: 'section', code: 'OAC', cite: '109:4-3-01', chapter: '109:4-3', domain: 'repair_law' },
+  { kind: 'section', code: 'OAC', cite: '109:4-3-13', chapter: '109:4-3', domain: 'repair_law', note: "the AG's motor vehicle repair rule, amended effective 3/21/2026" },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-01', chapter: '4123:1-5', domain: 'safety' },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-12', chapter: '4123:1-5', domain: 'safety' },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-13', chapter: '4123:1-5', domain: 'safety' },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-16', chapter: '4123:1-5', domain: 'safety' },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-17', chapter: '4123:1-5', domain: 'safety' },
+  { kind: 'section', code: 'OAC', cite: '4123:1-5-18', chapter: '4123:1-5', domain: 'safety' },
   { kind: 'section', code: 'OAC', cite: '3745-31-30', chapter: '3745-31', domain: 'safety', note: 'omnibus permit-by-rule; (C)(2)(f) is auto body refinishing' },
   { kind: 'section', code: 'OAC', cite: '3745-21-18', chapter: '3745-21', domain: 'safety', note: 'applies only in sixteen named counties' },
 ];
