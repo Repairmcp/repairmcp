@@ -85,7 +85,15 @@ export function parseSlashDate(s: string): string | undefined {
 }
 
 const stripComments = (html: string): string => html.replace(/<!--[\s\S]*?-->/g, '');
-const stripTags = (html: string): string => decodeEntities(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+const stripTags = (html: string): string =>
+  decodeEntities(
+    html
+      .replace(/<\/?(?:sub|sup)\b[^>]*>/gi, '')
+      .replace(/<[^>]+>(?=[,.;:)])/g, '')
+      .replace(/<[^>]+>/g, ' '),
+  )
+    .replace(/\s+/g, ' ')
+    .trim();
 
 /** Body HTML → verbatim text: one paragraph per line, inner whitespace collapsed, tags dropped (link text kept), the laws-notice cut. */
 export function htmlToText(fragment: string): string {

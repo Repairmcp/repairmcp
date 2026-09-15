@@ -78,6 +78,14 @@ describe('helpers', () => {
     expect(htmlToText(`<span><p>(A) Making,\n\t\t  issuing</p><p> (B) See section <a class='section-link' href='/x'>3901.213</a> &amp; use &quot;free&quot;.</p></span><div class="laws-notice"><p>Last updated August 27, 2024 at 4:01 PM</p></div>`))
       .toBe('(A) Making, issuing\n(B) See section 3901.213 & use "free".');
   });
+  test('htmlToText: a closing tag butted against punctuation leaves no space', () => {
+    expect(htmlToText(`<p>Failing to comply with section <a class='section-link' href='/x'>3923.23</a>, <a class='section-link' href='/y'>3923.231</a>, or</p>`))
+      .toBe('Failing to comply with section 3923.23, 3923.231, or');
+  });
+  test('htmlToText: sub/sup tags join without a space', () => {
+    expect(htmlToText(`<p>VOC = (W<sub>v</sub> - W<sub>w</sub>)/(V - V<sub>w</sub>)</p>`))
+      .toBe('VOC = (Wv - Ww)/(V - Vw)');
+  });
   test('isNumberNotFound', () => {
     expect(isNumberNotFound(numberNotFoundPage('3901.9999'))).toBe(true);
     expect(isNumberNotFound(orcSectionPage({ cite: '3901.20', catchline: 'x.', effective: 'January 5, 1988', legislation: 'House Bill 1 - 117th General Assembly', paragraphs: ['y'] }))).toBe(false);

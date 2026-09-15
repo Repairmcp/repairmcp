@@ -474,7 +474,7 @@ packages/state-oh/    @repairmcp/state-oh — Ohio vertical (pure corpus, ONE
                       OAC rules carry the Supplemental Information extras
                       (`authorizedBy`, `amplifies`, `fiveYearReviewDate`,
                       `priorEffectiveDates`)
-  src/sources.ts      the 18-unit manifest (51 sections) with domain PER
+  src/sources.ts      the 25-unit manifest (51 sections) with domain PER
                       CITE, not per chapter (chapter 4505 splits across
                       insurance and repair_law; so does 1345)
   src/parse-codes.ts  the one block parser for all three page shapes
@@ -1112,11 +1112,12 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   bot challenge the way Westlaw calregs did.
 - **OH residuals:** connector gates (add `https://oh.repairmcp.com/mcp` in
   the project owner's clients and run the gauntlet's shop-phrasing queries);
-  the H.B. 434 veto note on 4513.60/4513.61 — when the Legislative Service
-  Commission applies the veto, the drift check flags both sections and the
-  refresh drops the note; the Ohio Department of Insurance portal's
-  user-agent gate (revisit only if a shop-facing bulletin is ever
-  identified); the omnibus 3745-31-30 length-bias risk (the same scorer
+  the H.B. 434 veto note on 4513.60/4513.61 — when the LSC applies the veto
+  the text of both sections changes and the drift check flags them; a
+  status-note change with unchanged text would NOT be flagged — the checker
+  diffs text only; the refresh drops the note; the Ohio Department of
+  Insurance portal's user-agent gate (revisit only if a shop-facing bulletin
+  is ever identified); the omnibus 3745-31-30 length-bias risk (the same scorer
   candidate noted under CO and CA, now with a fifth state corpus on the
   shared base scorer).
 - **Subsection-qualified cites resolve to null in every state.** "31 Pa. Code

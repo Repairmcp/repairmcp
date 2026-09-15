@@ -269,7 +269,7 @@
     "topics": ["workers_comp", "independent_contractor"],
     "appliesTo": ["employers", "employees"],
     "claimUseCases": ["1099 tech got hurt, no comp policy, can he sue me", "noncomplying employer loses the common law defenses", "misclassified tech injured on the job"],
-    "quoteSafeExcerpts": ["are not entitled to the benefits of sections 4123.01 to 4123.94 , inclusive, of the Revised Code, during the period of such noncompliance, but are liable to their employees for damages suffered by reason of personal injuries sustained in the course of employment"]
+    "quoteSafeExcerpts": ["are not entitled to the benefits of sections 4123.01 to 4123.94, inclusive, of the Revised Code, during the period of such noncompliance, but are liable to their employees for damages suffered by reason of personal injuries sustained in the course of employment"]
   },
   "ORC 4123.90": {
     "topics": ["workers_comp", "retaliation"],

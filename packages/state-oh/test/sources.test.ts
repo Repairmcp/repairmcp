@@ -46,4 +46,7 @@ describe('the Ohio manifest', () => {
       expect(keys.has(k), k).toBe(true);
     }
   });
+  test('only Revised Code chapters are captured as chapter pages — every Administrative Code rule comes from its own page (the 2026-09-14 ruling)', () => {
+    expect(OH_SOURCES.filter((s) => s.kind === 'chapter').every((s) => s.code === 'ORC')).toBe(true);
+  });
 });

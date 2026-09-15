@@ -18,10 +18,31 @@ describe('the committed corpus', () => {
   test('meta records the newest effective date and nothing rolls', () => {
     expect((corpus.meta as { newestEffectiveDate?: string }).newestEffectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
+  // Six sections print a space before punctuation VERBATIM on codes.ohio.gov
+  // itself, confirmed against the raw fetched pages (no tag sits between the
+  // space and the punctuation) and present in the corpus before the F1
+  // tag-spacing fix too, so these are not stripTags artifacts. The corpus
+  // never edits what the publisher printed, so the space-before-punctuation
+  // guard below carves out exactly these known occurrences rather than
+  // "fixing" genuine source text.
+  const KNOWN_VERBATIM_SPACING: Record<string, string[]> = {
+    'ORC 4505.104': ['As used in this section, :'],
+    'ORC 4111.03': ['effective date of this amendment , sections'],
+    'ORC 4113.15': ['stocks or bonds ;', 'charitable contribution ;', 'savings program ;'],
+    'ORC 4113.19': ['his employee , or pay'],
+    'OAC 4123:1-5-17': ['Metal , wood'],
+    'OAC 3745-31-30': ['Fahrenheit ), in mm Hg'],
+  };
   test('every section states its capture surface and an effective date; ORC carries Latest Legislation; no control chars or notice lines', () => {
     for (const s of corpus.sections) {
       expect(s.text, `${displayCite(s)} replacement or control chars`).not.toMatch(/[\u0080-\u009f\ufffd]/);
       expect(s.text, `${displayCite(s)} notice line`).not.toMatch(/Last updated [A-Z][a-z]+ \d/);
+      let textForSpacingCheck = s.text;
+      for (const known of KNOWN_VERBATIM_SPACING[displayCite(s)] ?? []) {
+        expect(textForSpacingCheck, `${displayCite(s)} expected known verbatim spacing "${known}"`).toContain(known);
+        textForSpacingCheck = textForSpacingCheck.replace(known, known.replace(/ ([,;:)])/g, '$1'));
+      }
+      expect(textForSpacingCheck, `${displayCite(s)} space before punctuation`).not.toMatch(/ [,;:)]/);
       expect(s.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(['chapter', 'section']).toContain(s.captureSource);
       if (s.code === 'ORC') expect(s.latestLegislation, displayCite(s)).toMatch(/General Assembly$/);
