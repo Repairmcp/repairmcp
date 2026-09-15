@@ -84,6 +84,19 @@
         "wrangler": "^4.118.0",
       },
     },
+    "apps/state-il-server": {
+      "name": "@repairmcp/state-il-server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "@repairmcp/core": "workspace:*",
+        "@repairmcp/state-il": "workspace:*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260730.1",
+        "wrangler": "^4.118.0",
+      },
+    },
     "apps/state-mt-server": {
       "name": "@repairmcp/state-mt-server",
       "version": "0.0.0",
@@ -511,6 +524,8 @@
     "@repairmcp/state-fl-server": ["@repairmcp/state-fl-server@workspace:apps/state-fl-server"],
 
     "@repairmcp/state-il": ["@repairmcp/state-il@workspace:packages/state-il"],
+
+    "@repairmcp/state-il-server": ["@repairmcp/state-il-server@workspace:apps/state-il-server"],
 
     "@repairmcp/state-law": ["@repairmcp/state-law@workspace:packages/state-law"],
 
