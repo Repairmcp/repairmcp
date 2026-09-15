@@ -461,6 +461,45 @@ apps/state-pa-server/ @repairmcp/state-pa-server — Worker, pa.repairmcp.com,
                       paCodeEffectiveThrough + captureSources (legis/pacode
                       counts) + the three-domain breakdown
 
+packages/state-oh/    @repairmcp/state-oh — Ohio vertical (pure corpus, ONE
+                      publisher, FOUR domains; state #9, fourth of the
+                      Tier 1 run FL → NY → PA → OH → IL → MI → NC)
+  src/schema.ts       OhSection: three codes (ORC, OAC, Ohio Const.), four
+                      domains (insurance/repair_law/employment/safety);
+                      `effectiveDate` is REQUIRED — codes.ohio.gov prints
+                      "Effective:" on every page, so unlike every prior
+                      state there is no silence path; `statusNote` carries a
+                      bracketed site annotation ("[Governor's veto not
+                      reflected …]"); ORC sections carry `latestLegislation`,
+                      OAC rules carry the Supplemental Information extras
+                      (`authorizedBy`, `amplifies`, `fiveYearReviewDate`,
+                      `priorEffectiveDates`)
+  src/sources.ts      the 18-unit manifest (51 sections) with domain PER
+                      CITE, not per chapter (chapter 4505 splits across
+                      insurance and repair_law; so does 1345)
+  src/parse-codes.ts  the one block parser for all three page shapes
+                      (`laws-section-info` / `laws-body` / `laws-history`);
+                      the catchline splitter peels a bracketed status note
+                      off the front; the `laws-notice` "Last updated" cut
+  src/capture-codes.ts  seven ORC chapter pages, eighteen section pages
+                      (five ORC, one Constitution, twelve OAC — every
+                      Administrative Code rule from its own page, because
+                      the chapter view's Supplemental Information block can
+                      lag it), all named-cite failures loud by name
+  src/identity.ts     three codes resolved by cite SHAPE, not lookup —
+                      dotted ORC numbers, hyphenated OAC numbers with an
+                      optional colon, and the one Constitution cite
+                      ("art. II, § 34a")
+  data/               oh-law-corpus.json (51 sections: insurance 9 /
+                      repair_law 16 / employment 17 / safety 9) + annotations
+  test/               73 tests
+
+apps/state-oh-server/ @repairmcp/state-oh-server — Worker, oh.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      newestEffectiveDate + captureSources
+                      (chapter/section counts) + statusNotes + the
+                      four-domain breakdown
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -563,30 +602,34 @@ four domains), Florida (`apps/state-fl-server/`, 46 statute/FAC
 sections; the FAC text is read out of Word 97 documents at capture, ~2
 minutes end to end), New York (`apps/state-ny-server/`, 95
 statute/CR-82/CR-142/Reg-64/DFS-guidance sections across five publishers),
-and Pennsylvania (`apps/state-pa-server/`, 89 statute/Pa. Code sections,
-~2 minutes to capture).
+Pennsylvania (`apps/state-pa-server/`, 89 statute/Pa. Code sections,
+~2 minutes to capture), and Ohio (`apps/state-oh-server/`, 51 ORC/OAC/
+Constitution sections, ~3 minutes to capture).
 Pure corpus: the data ships in each bundle, so a corpus
 refresh IS a deploy — re-run the capture, run the tests (the substring,
 demo-criteria, and the currency-pin suites — MT edition, CO CRS_EDITION, TX
 TX_STATUTES_CURRENCY, FL FL_STATUTES_EDITION, NY CR82_EDITION; California has
 no pin because none of its surfaces states currency; PA has no pin: the
-Pa. Code currency sentence rolls weekly and is recorded, not pinned — are
+Pa. Code currency sentence rolls weekly and is recorded, not pinned; OH has
+no pin: codes.ohio.gov states no currency, so the newest per-section
+effective date is recorded — are
 the acceptance gate), deploy from the state's app.
 A California capture takes ~20 minutes: leginfo and the LII mirror each ask
 for a 10-second crawl delay and the capture honors it (`--save-raw` once,
 then `--from-dir` for every re-parse).
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny, pa)
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny, pa, oh)
 bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
-wrangler deploy                                      # → wa. / mt. / co. / tx. / ca. / fl. / ny. / pa.repairmcp.com
+wrangler deploy                                      # → wa. / mt. / co. / tx. / ca. / fl. / ny. / pa. / oh.repairmcp.com
 curl -s https://tx.repairmcp.com/health              # corpus meta + domains (+ statutesCurrentThrough)
 curl -s https://ca.repairmcp.com/health              # corpus meta + domains + captureSources
 curl -s https://fl.repairmcp.com/health              # corpus meta + domains + statutesEdition
 curl -s https://ny.repairmcp.com/health              # corpus meta + domains + cr82Edition + captureSources
 curl -s https://pa.repairmcp.com/health              # corpus meta + domains + paCodeEffectiveThrough + captureSources
+curl -s https://oh.repairmcp.com/health              # corpus meta + domains + newestEffectiveDate + captureSources + statusNotes
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -603,7 +646,8 @@ its ~110 pages (~5 min, fine at this cadence); California re-fetches its 16
 leginfo views and 32 LII pages at their 10 s crawl delays plus 16 DIR pages
 (~20 min, and a block by either publisher fails loudly rather than shipping
 stale text); Pennsylvania re-fetches nine statute pages at 5 s and five
-Pa. Code chapter pages at 10 s (~2 min). The refresh stays a human
+Pa. Code chapter pages at 10 s (~2 min); Ohio re-fetches ten chapter pages
+and eight section pages at 10 s (~3 min). The refresh stays a human
 action ON PURPOSE: changed law can renumber annotated sections or shift demo
 rankings, and the per-state test suite is the gate that needs eyes. No
 legislative calendars are modeled anywhere — Montana's biennial sessions and
@@ -840,7 +884,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | PA vertical | ✅ live | 2026-09-14: `https://pa.repairmcp.com/mcp` deployed (deployment `baf2d24b-c670-4fb6-be4d-d1dbe435e7f0`, redeployed the same evening as `9902e7fb-5cce-4b44-8c17-5b0e67aa0f7b` after the final whole-branch review fixes — historyNote on ten act sections now carries the inline note that dates them, empty-text hard-fails in every pipeline; first deployed 2026-09-14T20:34:58Z) and verified on the wire — `/health` reports 89 sections, current through 2026-09-14, captured 2026-09-14, paCodeEffectiveThrough "56 Pa.B. 4026 (July 4, 2026)", captureSources legis 58 / pacode 31, domains insurance 37 / repair_law 19 / employment 33; "the adjuster told my customer to take it to their DRP shop" → 31 Pa. Code 62.3, effective 10/23/1999, first, 37 Pa. Code 301.5 second, 63 P.S. 861, amended 4/14/2016, third, with the verbatim "Not mention the name of any repair shop, unless the appraiser includes disclosure that there is no requirement to use any specified repair shop." excerpt; `pa_get_authority` on "42 Pa.C.S. § 8371" → "42 Pa.C.S. 8371, effective 7/1/1990" with "prime rate of interest plus 3%"; the connector `search` on "tech quit friday when do I have to pay him" → `43 p.s.:260.5` first. 89 verbatim sections from TWO publishers — the General Assembly's static mirror (legis.state.pa.us/WU01, consolidated Pa.C.S. chapter pages and unconsolidated P.S. act pages, both at a 5 s floor) and the Pennsylvania Code (pacodeandbulletin.gov, five chapter "toc" pages — despite the name, the whole chapter's text — fetched at the project owner's 10 s floor against the site's blanket robots Disallow, the same call as leginfo at CA). The real capture (14 requests, 93 s) ran clean on the first attempt; what task review against the saved real pages corrected in the kickoff's assumptions before the run: consolidated pages print subsection markers as inline bold, so "bold text opening with ( or a quotation mark is body" replaced the plan's "bold-led paragraph is a note" rule, which had emptied half of chapter 73 (empty named cites now hard-fail; subchapter labels with a decimal are handled); act pages' standalone-history-note regex was sweeping long body subsections ending in an inline note into historyNotes, replaced by a structural rule (one pair of parentheses enclosing only `;`-joined act-note clauses); the Pennsylvania Code's chapter 9 preamble reads "Subchapter A" rather than "Chapter", so the chapter-level date fallback accepts either line, a section's Source lines are scoped to its own cite, and a range-reserved head is skipped; and identity resolution tests act aliases whole before the section split and normalizes curly quotes (two kickoff readback expectations were also wrong against the real page: 75 Pa.C.S. 7301 prints its own note, 7307 inherits from the chapter). Honest absences in the tool descriptions and the site card: no private lawsuit under the Unfair Insurance Practices Act, no labor rate or paint-and-materials cap rule, no standalone crash parts statute, total loss as a formula rather than a percentage, no usable statutory garage keeper's lien, no shop licensing, and no state OSHA plan for private shops. Site flips to ten sources; /legal names both publishers. WAF burst test: 20/30 returned HTTP 200, 10 returned 429 — the rule FIRED on pa., the first hostname since Florida where it has (fl., ca., deg., and ny. all returned 0/30 earlier; those results remain unexplained — see Backlog). Open: connector gates in the project owner's clients. |
 
-**Test totals:** 1198 passing (91 core + 106 deg + 74 nhtsa + 21 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 94 state-ny + 122 state-pa + 193 ingestion). 0 failing.
+| OH vertical | ✅ live | 2026-09-14 (evening): `https://oh.repairmcp.com/mcp` deployed (deployment `04d76e91-76d4-433c-908b-28efbf01b369`, 2026-09-15T01:26:34Z UTC) and verified on the wire — `/health` reports 51 sections, capturedAt 2026-09-15, currentThrough 2026-09-15, newestEffectiveDate 2026-03-21, captureSources chapter 33 / section 18, domains insurance 9 / repair_law 16 / employment 17 / safety 9, statusNotes the two 4513.60/4513.61 veto lines; "the insurer wrote it for 20 hours and I can't repair it for that" → OAC 3901-1-54, effective 2/14/2022, first, with the "name of at least one repair shop" excerpt; `oh_get_authority` on "ORC 4513.60" → "ORC 4513.60, effective 11/25/2025" with the verbatim "upon complaint of a repair garage or place of storage" text and the statusNote in the payload; the connector `search` on "tech quit friday when do I have to pay him" → `orc:4113.15` first. 51 verbatim sections from ONE publisher — the Legislative Service Commission at codes.ohio.gov, ORC chapters as whole-chapter pages and every OAC rule and the Constitution section from its own page (the OAC chapter view's Supplemental Information block can lag the rule's own page), fetched at the project owner's 10 s floor against the site's blanket robots Disallow, the same call as leginfo at CA and Pa. Code at PA. The four domains are insurance 9 / repair_law 16 / employment 17 / safety 9 — safety is thin because Ohio's own workshop-specific rules (the BWC specific safety requirements and the VSSR statute behind them, plus the EPA auto body permit by rule) are a narrower slice than California's or Washington's full Cal/OSHA- or WISHA-style programs. What the real capture corrected in the kickoff's assumptions: (1) ORC 3901.93 on the chapter-3901 page prints no catchline — unrequested catchline-less heads now parse as an empty heading, and a NAMED cite with no catchline hard-fails by name; (2) OAC 4123:1-5-03 and 4123:1-5-99 on the wanted chapter page are PDF-filed — unrequested PDF-filed rules are skipped with a capture warning instead of failing the page, a named one still hard-fails; (3) OAC 3745-31-30 prints a Prior Effective Date "6/7/2010 (Emer.)" — the annotation is stripped before the date parses; (4) the OAC chapter page's Supplemental Information lags the rule's own page (3901-1-54's chapter view stated 2 of its 4 prior effective dates), so every Administrative Code rule is captured from its own rule page — the fetch plan is 7 ORC chapter pages + 5 ORC section pages + 1 Constitution page + 12 OAC rule pages = 25 requests (~4 minutes), captureSource chapter 33 / section 18, not the kickoff's originally planned 18 requests and 43/8; (5) the shared get-authority payload emitted a fixed field list, so `packages/state-law/src/tools.ts` gained an optional `statusNote` spread (commit 140f15a, additive-only test). Honest absences in the tool descriptions and the site card: no private lawsuit under the unfair insurance practices statutes, no statutory steering ban, no labor rate or paint cap rule, no total loss percentage, no garage keeper's lien on motor vehicles, no shop licensing, no adult break law, and no state OSHA plan for private shops. Site flips to eleven sources; /legal names the one publisher. WAF burst test: 22/30 returned HTTP 200, 8 returned 429 — the rule FIRED on oh., like pa. (fl., ca., deg., and ny. still 0/30; those results remain unexplained — see Backlog). Open: connector gates in the project owner's clients. |
+
+**Test totals:** 1273 passing (91 core + 106 deg + 74 nhtsa + 23 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 94 state-ny + 122 state-pa + 73 state-oh + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -1042,9 +1088,9 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   capturability): **Tier 1 — FL, NY, PA, OH, IL, MI, NC**; **Tier 2 — GA,
   TN, NJ** (official code on LexisNexis behind a bot challenge; each needs
   a CA-style mirror decision first, and Georgia is the one worth fighting
-  for). FL, NY, and PA done; OH next (codes.ohio.gov, ORC + OAC as
-  clean HTML). The "FL → NY → MN → PA …" order this file carried until
-  2026-09-14 was a transcription error — Minnesota is not in Tier 1.
+  for). OH done 2026-09-14; IL next. The "FL → NY → MN → PA …" order this
+  file carried until 2026-09-14 was a transcription error — Minnesota is
+  not in Tier 1.
 - **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
   the project owner's clients and run the gauntlet's shop-phrasing queries);
   Florida's edition rollover lands every July/August — the pin will fail the
@@ -1064,6 +1110,15 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   Pa. Code robots decision (fetch anyway, at a 10 s floor, like leginfo at
   CA) is worth revisiting if the Legislative Reference Bureau ever adds a
   bot challenge the way Westlaw calregs did.
+- **OH residuals:** connector gates (add `https://oh.repairmcp.com/mcp` in
+  the project owner's clients and run the gauntlet's shop-phrasing queries);
+  the H.B. 434 veto note on 4513.60/4513.61 — when the Legislative Service
+  Commission applies the veto, the drift check flags both sections and the
+  refresh drops the note; the Ohio Department of Insurance portal's
+  user-agent gate (revisit only if a shop-facing bulletin is ever
+  identified); the omnibus 3745-31-30 length-bias risk (the same scorer
+  candidate noted under CO and CA, now with a fifth state corpus on the
+  shared base scorer).
 - **Subsection-qualified cites resolve to null in every state.** "31 Pa. Code
   146.8(d)", "11 NYCRR 216.7(c)", "Ins. Code 758.6(a)" all fail the cite-shape
   test and return null, in WA, MT, CO, TX, CA, FL, NY and PA alike — the fix is
@@ -1215,6 +1270,25 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 
 ## Known gotchas
 
+- **codes.ohio.gov answers an unknown section number with a 302 to
+  `/number-not-found/` and HTTP 200** once the redirect is followed — same
+  absence-as-200 shape as Online Sunshine and leginfo, one layer further
+  back. Detect it by the page's own `<h1>` ("Number Not Found"), never by
+  the HTTP status, which reports success at every step.
+- **The site's `laws-notice` "Last updated" line sits INSIDE `laws-body`**
+  on every ORC section, OAC rule, and chapter page, and must be cut before
+  the body text is kept — it is not law text, and left in place it reads as
+  the section's own closing sentence. The Constitution page also wraps its
+  body in a plain `<div>`, not the `<section class="laws-body">` every
+  other page shape uses; the parser has to accept either wrapper for that
+  one page.
+- **Bracketed catchline prefixes are site annotations, not law text.**
+  codes.ohio.gov prints things like `[Governor's veto not reflected; see
+  H.B. 434 status report]` or `[Repealed effective …]` in front of a
+  section's actual catchline; the parser splits them into `statusNote`
+  rather than leaving them in the heading. A Repealed note on a NAMED cite
+  (one the manifest actually asked for) hard-fails the capture rather than
+  shipping a repealed section as if it were live.
 - **`decodeEntities` maps numeric references 128–159 through Windows-1252
   since PA** (`packages/state-law/src/html.ts`) — `&#150;` is an en dash, not
   a C1 control, because Pennsylvania's pages emit the cp1252 code points as

@@ -1,5 +1,41 @@
 # Kickoff spec: Ohio state vertical (state #9)
 
+> **Status 2026-09-14 (evening): SHIPPED** — `https://oh.repairmcp.com/mcp`
+> (deployment `04d76e91-76d4-433c-908b-28efbf01b369`, deployed
+> 2026-09-15T01:26:34Z UTC, the evening of 2026-09-14 Pacific) live and
+> verified on the wire; see the OH row in CLAUDE.md's build status. `/health`
+> reports 51 sections, capturedAt 2026-09-15, currentThrough 2026-09-15,
+> newestEffectiveDate 2026-03-21, captureSources chapter 33 / section 18,
+> domains insurance 9 / repair_law 16 / employment 17 / safety 9, statusNotes
+> the two 4513.60/4513.61 veto lines. Wire probes: "insurer wrote it for 20
+> hours and I can't repair it for that" → `OAC 3901-1-54, effective
+> 2/14/2022` first with the "name of at least one repair shop" excerpt;
+> `oh_get_authority` on "ORC 4513.60" → `ORC 4513.60, effective 11/25/2025`
+> with the verbatim "upon complaint of a repair garage or place of storage"
+> text and the statusNote in the payload; the connector `search` on "tech
+> quit friday when do I have to pay him" → `orc:4113.15` first. The real
+> capture corrected five things the plan below got wrong: (1) ORC 3901.93 on
+> the chapter-3901 page prints no catchline — unrequested catchline-less
+> heads now parse as an empty heading, and a NAMED cite with no catchline
+> hard-fails by name; (2) OAC 4123:1-5-03 and 4123:1-5-99 on the wanted
+> chapter page are PDF-filed — unrequested PDF-filed rules are skipped with a
+> capture warning instead of failing the page, a named one still hard-fails;
+> (3) OAC 3745-31-30 prints a Prior Effective Date "6/7/2010 (Emer.)" — the
+> annotation is stripped before the date parses; (4) the OAC chapter page's
+> Supplemental Information lags the rule's own page (3901-1-54's chapter
+> view stated only 2 of its 4 real prior effective dates), so every
+> Administrative Code rule is captured from its own rule page rather than a
+> chapter page — the fetch plan is 7 ORC chapter pages + 5 ORC section pages
+> + 1 Constitution page + 12 OAC rule pages = 25 requests (~4 minutes),
+> captureSource chapter 33 / section 18, not the plan's originally stated 18
+> requests and 43/8; (5) the shared get-authority payload emitted a fixed
+> field list, so `packages/state-law/src/tools.ts` gained an optional
+> `statusNote` spread (commit 140f15a, additive-only test) — the plan's
+> stated exception, and it was needed. The zone WAF rate limit FIRED on
+> oh.repairmcp.com — a 30 parallel-request burst returned 22×200 then 8×429,
+> matching pa.'s behavior; fl., ca., deg., and ny. still return 0/30 under
+> the same test (CLAUDE.md Backlog, first entry).
+
 Written 2026-09-14. Pattern follows WA → MT → CO → TX → CA → FL → NY → PA:
 a state package on `@repairmcp/state-law`, a Worker at `oh.repairmcp.com`,
 registration in `scripts/state-registry.ts` so the 4-week drift checker
