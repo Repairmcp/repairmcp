@@ -24,7 +24,7 @@ describe('IL_CAPTURE_PROFILE.captureAll', () => {
     const sources = new Map<string, number>();
     for (const s of file.sections) sources.set((s as { captureSource: string }).captureSource, (sources.get((s as { captureSource: string }).captureSource) ?? 0) + 1);
     expect([...sources.entries()].sort()).toEqual([...expected.entries()].sort());
-    expect(sources.get('part')).toBe(17);
+    expect(sources.get('part')).toBe(23);
     expect(out.report.warnings).toEqual([]);
   });
   test('the profile is registered under il with the attention file and checklist', () => {
