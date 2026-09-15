@@ -1,0 +1,331 @@
+{
+  "OAC 3901-1-54": {
+    "topics": ["fair_settlement", "estimate_dispute", "short_pay", "steering", "repair_facility_choice", "supplement_handling", "prompt_investigation", "claim_denial", "betterment", "aftermarket_parts", "total_loss", "valuation_dispute", "storage_charges", "storage_towing", "third_party_claims"],
+    "appliesTo": ["insurers", "repairers", "consumers", "claimants"],
+    "claimUseCases": [
+      "insurer wrote it for 20 hours and I can't repair it for that",
+      "the insurer's estimate is too low to fix the car",
+      "necessary repairs will exceed the insurer's written estimate",
+      "adjuster says find a shop that will do it for their number",
+      "the adjuster told my customer to take it to their DRP shop",
+      "adjuster steering the customer to a network shop",
+      "insurer wants the car repaired at a specific repair shop across town",
+      "insurer designated the shop and the repair is not back to pre-loss condition",
+      "insurer cut off storage on the total loss with no notice",
+      "storage payments stopped without warning",
+      "they lowballed the total loss value",
+      "how is actual cash value figured on a total loss",
+      "comparable vehicle offer on a total loss",
+      "sales tax on the total loss settlement",
+      "betterment on tires and a battery",
+      "depreciation deduction on the estimate",
+      "aftermarket parts on the insurer's estimate",
+      "insurer hasn't acknowledged the claim in three weeks",
+      "no decision on the claim after a month",
+      "insurer wants a copy of the estimate before it will settle",
+      "deductible on the subrogation recovery"
+    ],
+    "quoteSafeExcerpts": [
+      "the insurer shall pay the difference between the written estimate and a higher estimate obtained by the claimant or promptly provide the claimant with the name of at least one repair shop that will make the repairs for the amount of the written estimate.",
+      "If the insurer provides the name of only one repair shop, it shall ensure that the repairs are performed in a workmanlike manner.",
+      "An insurer shall not require a claimant to travel an unreasonable distance to inspect a replacement automobile, to obtain a repair estimate, or to have the automobile repaired at a specific repair shop.",
+      "shall cause the damaged automobile to be restored to its condition prior to the loss.",
+      "An insurer shall provide notice to a claimant prior to termination of payment for automobile storage charges.",
+      "An insurer may reduce a claim amount because of betterment deductions only if the deductions reflect a measurable decrease in market value due to the poorer condition of, or prior damage to, the vehicle",
+      "the actual cost to purchase a comparable automobile less any applicable deductible amount contained in the policy",
+      "An insurer shall acknowledge the receipt of a claim within fifteen days of receiving such notification.",
+      "within twenty-one days of the receipt of properly executed proof(s) of loss decide whether to accept or deny such claim(s)."
+    ]
+  },
+  "OAC 3901-1-07": {
+    "topics": ["fair_settlement", "prompt_investigation", "claim_denial", "short_pay", "misrepresentation", "third_party_claims"],
+    "appliesTo": ["insurers", "claimants", "consumers"],
+    "claimUseCases": [
+      "denied with no reason given",
+      "denial letter does not say which policy provision",
+      "insurer will not answer the department's inquiry",
+      "insurer offered far less than the claim is worth to force a lawsuit",
+      "insurer paying less than the claim without an explanation",
+      "no reply to my letters about the claim"
+    ],
+    "quoteSafeExcerpts": [
+      "Denying a claim on the grounds of a specific policy provision, condition, or exclusion without reference to such provision, condition, or exclusion;",
+      "Compelling insureds to institute suits to recover amounts due under its policies by offering substantially less than the amounts ultimately recovered in suits brought by them"
+    ]
+  },
+  "ORC 3901.20": {
+    "topics": ["fair_settlement", "misrepresentation"],
+    "appliesTo": ["insurers"],
+    "claimUseCases": ["what statute makes unfair claims practices illegal in Ohio", "is there a law against unfair insurance practices", "can I sue the insurer for bad faith"],
+    "quoteSafeExcerpts": ["No person shall engage in this state in any trade practice which is defined in sections 3901.19 to 3901.23 of the Revised Code"]
+  },
+  "ORC 3901.21": {
+    "topics": ["fair_settlement", "misrepresentation", "third_party_claims"],
+    "appliesTo": ["insurers"],
+    "claimUseCases": ["adjuster used a formula to assign fault without investigating", "pattern settlement", "the unfair and deceptive practices list"],
+    "quoteSafeExcerpts": ["Using, or permitting to be used, a pattern settlement as the basis of any offer of settlement."]
+  },
+  "ORC 3901.22": {
+    "topics": ["fair_settlement", "bad_faith", "claim_denial"],
+    "appliesTo": ["insurers", "consumers", "claimants"],
+    "claimUseCases": [
+      "can I sue the insurer for bad faith",
+      "can I sue the insurer for an unfair claims practice",
+      "who enforces the unfair claims practices rules in Ohio",
+      "file a complaint with the department of insurance about the adjuster",
+      "penalties against an insurer for unfair claims handling"
+    ],
+    "quoteSafeExcerpts": ["the commencement of a class action under Civil Rule 23 on behalf of policyholders"]
+  },
+  "ORC 1345.81": {
+    "topics": ["aftermarket_parts", "estimate_dispute", "consumer_protection", "invoice_records"],
+    "appliesTo": ["insurers", "repairers", "consumers"],
+    "claimUseCases": [
+      "aftermarket parts on the estimate and the customer never knew",
+      "do I have to disclose aftermarket crash parts on my estimate",
+      "non-OEM parts disclosure notice",
+      "customer signature on the aftermarket parts notice",
+      "aftermarket fender with no manufacturer logo",
+      "insurer specified aftermarket parts without telling the owner"
+    ],
+    "quoteSafeExcerpts": [
+      "shall identify, clearly in the written estimate, each non-OEM aftermarket crash part",
+      "This estimate has been prepared based upon the use of one or more aftermarket crash parts supplied by a source other than the manufacturer of your motor vehicle."
+    ]
+  },
+  "ORC 4505.11": {
+    "topics": ["salvage_title", "total_loss"],
+    "appliesTo": ["insurers", "consumers"],
+    "claimUseCases": ["total loss, does it need a salvage title", "insurer totaled the car, who applies for the salvage title", "rebuilt salvage certificate of title", "what makes a car a total loss in Ohio"],
+    "quoteSafeExcerpts": ["When an insurance company declares it economically impractical to repair such a motor vehicle and has paid an agreed price for the purchase of the motor vehicle to any insured or claimant owner, the insurance company shall proceed as follows:"]
+  },
+  "ORC 1343.03": {
+    "topics": ["interest", "short_pay"],
+    "appliesTo": ["insurers", "repairers", "consumers"],
+    "claimUseCases": ["interest on a late claim payment", "does Ohio have a prompt pay interest rate", "statutory interest on money owed"],
+    "quoteSafeExcerpts": ["the creditor is entitled to interest at the rate per annum determined pursuant to section 5703.47 of the Revised Code"]
+  },
+  "OAC 109:4-3-13": {
+    "topics": ["estimate_authorization", "replaced_parts", "invoice_records", "storage_charges", "consumer_protection", "misrepresentation", "storage_towing"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "do I need written authorization before I start the repair",
+      "estimate form the customer initials",
+      "job ran ten percent over the estimate",
+      "supplement pushed the bill over the estimate, do I need the customer's ok",
+      "customer wants his old parts back",
+      "can I charge for teardown if they don't approve the repair",
+      "disassembly charge when the customer declines the repair",
+      "itemized invoice with used or remanufactured parts",
+      "customer dropped the car after hours with no estimate",
+      "do I have to tell the customer I sublet the work",
+      "towing charge disclosure"
+    ],
+    "quoteSafeExcerpts": [
+      "Your bill will not be higher than the estimate by more than ten per cent unless you approve a larger amount before repairs are finished.",
+      "Fail, where an estimate has been requested by a consumer, to obtain oral or written authorization from the consumer for the anticipated cost of any additional, unforeseen, but necessary repairs or services when the cost of those repairs or services amounts to ten per cent or more (excluding tax) of the original estimate;",
+      "Charge for any repair or service which has not been authorized by the consumer;",
+      "Fail to tender to the consumer any replaced parts, unless the parts are to be rebuilt or sold by the supplier, or returned to the manufacturer in connection with warranted repairs or services, and such intended reuse or return is made known to the consumer prior to commencing any repair or service;"
+    ]
+  },
+  "ORC 1345.02": {
+    "topics": ["consumer_protection", "misrepresentation", "shop_licensing"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": ["what counts as a deceptive act by a repair shop", "telling a customer repairs are needed when they are not", "the consumer sales practices act"],
+    "quoteSafeExcerpts": ["the failure of a supplier to obtain or maintain any registration, license, bond, or insurance required by state law or local ordinance for the supplier to engage in the supplier's trade or profession is an unfair or deceptive act or practice."]
+  },
+  "ORC 1345.09": {
+    "topics": ["consumer_protection"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": ["customer threatening treble damages under the consumer sales practices act", "what can a customer recover for a deceptive repair practice"],
+    "quoteSafeExcerpts": ["three times the amount of the consumer's actual economic damages or two hundred dollars, whichever is greater"]
+  },
+  "ORC 4505.101": {
+    "topics": ["abandoned_vehicle", "garage_lien", "storage_charges", "storage_towing"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "customer never picked the car up, it's been a month",
+      "car abandoned at my shop after the repair",
+      "how do I get title to an unclaimed car in my lot",
+      "notice to the owner and lienholder for an unclaimed vehicle",
+      "can I sell a car the customer abandoned",
+      "storage on a car nobody comes back for"
+    ],
+    "quoteSafeExcerpts": ["Any repair garage or place of storage in which a motor vehicle with a value of less than three thousand five hundred dollars has been left unclaimed for fifteen days or more following completion of the requested repair or the agreed term of storage shall send a notice to remove the motor vehicle to the last known address of any owner and any lienholder of the motor vehicle."]
+  },
+  "ORC 4513.60": {
+    "topics": ["abandoned_vehicle", "garage_lien", "storage_towing"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": [
+      "the car is worth ten grand and the customer abandoned it, can I take title",
+      "abandoned car worth more than the title route allows",
+      "sheriff order a car into storage from my garage",
+      "vehicle left at the shop longer than agreed",
+      "the car's never been picked, it's sitting there a month"
+    ],
+    "quoteSafeExcerpts": ["The sheriff or chief, upon complaint of a repair garage or place of storage, may order into storage any motor vehicle, other than an abandoned junk motor vehicle, that has been left at the garage or place of storage for a longer period than that agreed upon."]
+  },
+  "ORC 4513.62": {
+    "topics": ["abandoned_vehicle", "salvage_title"],
+    "appliesTo": ["repairers"],
+    "claimUseCases": ["what happens to an unclaimed car ordered into storage", "public auction of an abandoned vehicle"],
+    "quoteSafeExcerpts": ["may sell the motor vehicle at public auction"]
+  },
+  "ORC 4505.104": {
+    "topics": ["abandoned_vehicle", "storage_towing"],
+    "appliesTo": ["repairers"],
+    "claimUseCases": ["towing company getting title to a stored car", "sixty days unclaimed after the notice"],
+    "quoteSafeExcerpts": ["will obtain title to the motor vehicle if not claimed within sixty days after the date the notice was received."]
+  },
+  "ORC 1333.41": {
+    "topics": ["garage_lien", "storage_charges"],
+    "appliesTo": ["repairers", "consumers"],
+    "claimUseCases": ["does Ohio have a mechanic's lien or garage keeper's lien on a car", "can I hold the car until the bill is paid", "lien for repair and storage charges", "an abandoned car worth more than the title route allows, can the bailee's lien still take the property"],
+    "quoteSafeExcerpts": ["This section does not apply to a bailee for hire who performs any service or provides any materials with respect to motor vehicles"]
+  },
+  "ORC 4738.01": {
+    "topics": ["shop_licensing", "salvage_title"],
+    "appliesTo": ["repairers"],
+    "claimUseCases": ["does a body shop need a license in Ohio", "am I a salvage dealer if I part out a car"],
+    "quoteSafeExcerpts": ["\"Motor vehicle salvage dealer\" means any person who engages in business primarily for the purpose of selling salvage motor vehicle parts"]
+  },
+  "ORC 4113.15": {
+    "topics": ["final_paycheck", "wage_claims", "liquidated_damages"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": [
+      "tech quit Friday, when do I have to pay him",
+      "final paycheck after a tech quits or is fired",
+      "wages 30 days late",
+      "how often do I have to pay my techs in Ohio",
+      "liquidated damages for unpaid wages",
+      "fringe benefits withheld and not paid over"
+    ],
+    "quoteSafeExcerpts": [
+      "shall, on or before the first day of each month, pay all its employees the wages earned by them during the first half of the preceding month",
+      "the employer, in addition, as liquidated damages, is liable to the employee in an amount equal to six per cent of the amount of the claim still unpaid and not in contest or disputed or two hundred dollars, whichever is greater."
+    ]
+  },
+  "ORC 4113.19": {
+    "topics": ["deductions", "wage_claims"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["deducting a comeback or a broken tool from a tech's pay", "charge a tech for a damaged tool", "deduct the cost of a wrecked customer car from the painter's pay", "payroll deduction for damaged equipment"],
+    "quoteSafeExcerpts": ["without an express contract with his employee, deduct or retain the wages of such employee, or a part thereof, for wares, tools, or machinery destroyed or damaged."]
+  },
+  "ORC 4111.03": {
+    "topics": ["overtime", "minimum_wage"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["overtime for a flat-rate tech", "overtime for a salaried estimator", "time and a half after forty hours", "is my service writer exempt from overtime"],
+    "quoteSafeExcerpts": ["an employer shall pay an employee for overtime at a wage rate of one and one-half times the employee's wage rate for hours worked in excess of forty hours in one workweek"]
+  },
+  "ORC 4111.031": {
+    "topics": ["overtime"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["drive time to a mobile job, is it overtime", "travel time and clocking in early"],
+    "quoteSafeExcerpts": ["Walking, riding, or traveling to and from the actual place of performance of the principal activity or activities that the employee is employed to perform;"]
+  },
+  "ORC 4111.02": {
+    "topics": ["minimum_wage"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["what's minimum wage this year", "does a city or county get to set its own minimum wage", "state statute pegging the minimum wage to the constitutional rate"],
+    "quoteSafeExcerpts": ["No political subdivision shall establish a minimum wage rate different from the wage rate required under this section."]
+  },
+  "Ohio Const. art. II, § 34a": {
+    "topics": ["minimum_wage"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["what's minimum wage this year", "how is the Ohio minimum wage adjusted", "minimum wage for a small shop under the gross receipts threshold", "tipped wage"],
+    "quoteSafeExcerpts": ["On the thirtieth day of each September, beginning in 2007, this state minimum wage rate shall be increased effective the first day of the following January by the rate of inflation"]
+  },
+  "ORC 4111.14": {
+    "topics": ["minimum_wage", "wage_records", "wage_claims", "retaliation"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["how long do I keep payroll records", "tech filed a minimum wage complaint", "back wages plus double damages"],
+    "quoteSafeExcerpts": ["damages shall be calculated as an additional two times the amount of the back wages"]
+  },
+  "ORC 4109.07": {
+    "topics": ["rest_breaks"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["do I have to give my techs a lunch break", "rest breaks for a 17 year old detailer", "meal break law in Ohio"],
+    "quoteSafeExcerpts": ["No employer shall employ a minor more than five consecutive hours without allowing the minor a rest period of at least thirty minutes."]
+  },
+  "ORC 4123.35": {
+    "topics": ["workers_comp", "independent_contractor"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["1099 tech, no comp policy", "do I have to carry workers comp for one employee", "paying BWC premiums", "self-insuring for workers compensation"],
+    "quoteSafeExcerpts": ["every private employer and every publicly owned utility shall pay"]
+  },
+  "ORC 4123.74": {
+    "topics": ["workers_comp"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["can an injured tech sue me if I have workers comp", "employer immunity under workers compensation"],
+    "quoteSafeExcerpts": ["shall not be liable to respond in damages at common law or by statute for any injury, or occupational disease, or bodily condition, received or contracted by any employee in the course of or arising out of his employment"]
+  },
+  "ORC 4123.75": {
+    "topics": ["workers_comp", "independent_contractor"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["tech got hurt and I had no comp coverage", "injured worker of an employer with no workers comp"],
+    "quoteSafeExcerpts": ["Payment of the claim shall be made promptly from the statutory surplus fund. Payment shall not bar any action under section 4123.77 of the Revised Code."]
+  },
+  "ORC 4123.77": {
+    "topics": ["workers_comp", "independent_contractor"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["1099 tech got hurt, no comp policy, can he sue me", "noncomplying employer loses the common law defenses", "misclassified tech injured on the job"],
+    "quoteSafeExcerpts": ["are not entitled to the benefits of sections 4123.01 to 4123.94 , inclusive, of the Revised Code, during the period of such noncompliance, but are liable to their employees for damages suffered by reason of personal injuries sustained in the course of employment"]
+  },
+  "ORC 4123.90": {
+    "topics": ["workers_comp", "retaliation"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["can I fire a tech who filed a comp claim", "retaliation for a workers compensation claim"],
+    "quoteSafeExcerpts": ["No employer shall discharge, demote, reassign, or take any punitive action against any employee because the employee filed a claim"]
+  },
+  "ORC 4121.47": {
+    "topics": ["vssr", "workers_comp"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["tech got hurt on a grinder with no guard, BWC says VSSR", "violation of a specific safety requirement", "additional award for a safety rule violation", "what is a VSSR claim"],
+    "quoteSafeExcerpts": ["No employer shall violate a specific safety rule adopted by the administrator of workers' compensation pursuant to section 4121.13 of the Revised Code"]
+  },
+  "OAC 4123:1-5-12": {
+    "topics": ["vssr", "machine_guarding"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["grinder with no guard", "bench grinder guard requirements", "buffing wheel safety", "abrasive wheel machine guarding"],
+    "quoteSafeExcerpts": ["Abrasive wheels will be used only on machines provided with safety guards as defined in the following paragraphs of this rule"]
+  },
+  "OAC 4123:1-5-13": {
+    "topics": ["vssr", "vehicle_lifts"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["car on a jack with no stands", "blocking a vehicle on a hoist", "jack stands and cribbing under a lifted vehicle"],
+    "quoteSafeExcerpts": ["being supported by slings, hoists, or jacks will be substantially blocked or cribbed."]
+  },
+  "OAC 4123:1-5-16": {
+    "topics": ["vssr", "welding"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["oxygen and acetylene cylinder storage in the shop", "welding safety rules", "cutting torch cylinders next to the paint mixing room"],
+    "quoteSafeExcerpts": ["a minimum distance of twenty feet or by a noncombustible barrier at least five feet high, having a fire resistance rating of at least one-half hour."]
+  },
+  "OAC 4123:1-5-17": {
+    "topics": ["vssr", "ppe_respirators"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["respirators for the painter", "eye protection in the paint booth", "safety glasses when grinding", "do I have to provide PPE"],
+    "quoteSafeExcerpts": [
+      "All spray paint operations where the operator's eyes are exposed to paint mist in the atmosphere;",
+      "the employer will provide respiratory protection equipment approved for the hazard."
+    ]
+  },
+  "OAC 4123:1-5-18": {
+    "topics": ["vssr", "ventilation"],
+    "appliesTo": ["employers", "employees"],
+    "claimUseCases": ["ventilation for paint fumes in the shop", "exhaust for sanding dust", "air contaminants in the booth"],
+    "quoteSafeExcerpts": ["Where employees are exposed to hazardous concentrations of air contaminants, the air contaminants will be minimized by at least one of the following methods:"]
+  },
+  "OAC 3745-31-30": {
+    "topics": ["air_permits", "ventilation"],
+    "appliesTo": ["employers", "repairers"],
+    "claimUseCases": ["do I need an air permit for my booth", "permit by rule for an auto body shop", "two paint booths, fifty jobs a week, do I need an EPA permit", "air permit for a paint booth"],
+    "quoteSafeExcerpts": ["The facility has two or fewer paint spray booths used for painting."]
+  },
+  "OAC 3745-21-18": {
+    "topics": ["voc_coatings", "air_permits"],
+    "appliesTo": ["employers", "repairers"],
+    "claimUseCases": ["VOC limits on refinish coatings", "low VOC primer and clear requirements in Cleveland", "coating VOC rule for a body shop in Hamilton County"],
+    "quoteSafeExcerpts": ["located in Butler, Clark, Clermont, Greene, Hamilton, Miami, Montgomery, or Warren county"]
+  }
+}
