@@ -8,6 +8,7 @@ import type { StateCaptureProfile } from '../packages/state-law/src/capture.js';
 import { CA_CAPTURE_PROFILE } from '../packages/state-ca/src/capture.js';
 import { CO_CAPTURE_PROFILE } from '../packages/state-co/src/capture.js';
 import { FL_CAPTURE_PROFILE } from '../packages/state-fl/src/capture.js';
+import { IL_CAPTURE_PROFILE } from '../packages/state-il/src/capture.js';
 import { MT_CAPTURE_PROFILE } from '../packages/state-mt/src/capture.js';
 import { NY_CAPTURE_PROFILE } from '../packages/state-ny/src/capture.js';
 import { OH_CAPTURE_PROFILE } from '../packages/state-oh/src/capture.js';
@@ -25,4 +26,5 @@ export const STATE_PROFILES: Record<string, StateCaptureProfile> = {
   ny: NY_CAPTURE_PROFILE,
   pa: PA_CAPTURE_PROFILE,
   oh: OH_CAPTURE_PROFILE,
+  il: IL_CAPTURE_PROFILE,
 };
