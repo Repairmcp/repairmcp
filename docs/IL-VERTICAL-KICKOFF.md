@@ -1,9 +1,36 @@
 # Kickoff spec: Illinois state vertical (state #10)
 
-> **Status 2026-09-15: APPROVED, BUILDING.** The project owner approved all
-> four decisions below as written on 2026-09-15 ("Yes to all four"). The
-> build follows this spec; the status block is updated when
-> `il.repairmcp.com` is verified on the wire.
+> **Status 2026-09-15: SHIPPED** — `https://il.repairmcp.com/mcp` (version
+> `e0662f48-7d2f-498b-97bc-656c03a5d197`, deployed 2026-09-15T21:19:50Z)
+> live and verified on the wire; see the IL row in CLAUDE.md's build status.
+> The project owner approved all four decisions below as written the same
+> day ("Yes to all four") and every one held. `/health` reports 88 sections,
+> captured 2026-09-15, newestEffectiveDate 2026-07-01, captureSources act 50
+> / article 15 / part 23, headingSources section 68 / manifest 20, ten
+> undated sections, the three dual-printed sections resolved as §The four
+> decisions item 4 predicted, domains insurance 16 / repair_law 37 /
+> employment 23 / safety 12. Wire probes: the paint-and-materials query →
+> `215 ILCS 5/154.6, effective 7/1/2022` first with the (j) excerpt; the
+> twenty-hours query → `50 Ill. Adm. Code 919.80, effective 7/22/2002` first
+> with the (d)(6) excerpts; `il_get_authority` on "770 ILCS 45/1.5" →
+> `770 ILCS 45/1.5, effective 11/23/2017`; the connector `search` on "tech
+> quit friday when do I have to pay him" → `ilcs:820-115/5` first. WAF burst
+> 19/30 passed, 11 blocked — the rule fired on il. What the real pages
+> corrected in this plan: (1) the fetch plan is 23 units, not 21 (§3.3 below
+> counted the two lien acts as one); (2) ilga.gov serves only its leaf
+> certificate — Bun's fetch cannot build the chain, and the capture runs
+> with `NODE_EXTRA_CA_CERTS=C:\degdata\ilga-intermediate.pem` (the Sectigo
+> OV R40 intermediate, fetched from the leaf's own AIA URL); (3) a section
+> table nests its outline items as inner `width="100%"` tables and a
+> `<center>`-set form (770 ILCS 45/2) glues its Source note to the last
+> line — both handled in `parse-ilcs.ts`; (4) 154.7 also prints no
+> catchline, so 20 sections carry manifest headings, not 19; (5) the shared
+> corpus and adapter assumed a display cite of `${code} ${cite}` in their
+> lookup key — now the profile's `displayCite`, byte-identical for every
+> prior state (nine suites re-run green) and necessary for a cite that
+> carries its code inside it. The whole-Part page's SUBPART heading
+> documents and appendix/table heads were the two Administrative Code
+> surface shapes the kickoff had not seen.
 
 Written 2026-09-15. Pattern follows WA → MT → CO → TX → CA → FL → NY → PA →
 OH: a state package on `@repairmcp/state-law`, a Worker at

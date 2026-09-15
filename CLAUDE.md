@@ -500,6 +500,58 @@ apps/state-oh-server/ @repairmcp/state-oh-server — Worker, oh.repairmcp.com,
                       (chapter/section counts) + statusNotes + the
                       four-domain breakdown
 
+packages/state-il/    @repairmcp/state-il — Illinois vertical (pure corpus, ONE
+                      publisher whose robots.txt INVITES the crawl at a 10 s
+                      delay, FOUR domains; state #10, fifth of the Tier 1 run
+                      FL → NY → PA → OH → IL → MI → NC)
+  src/schema.ts       IlSection: two codes (ILCS, Ill. Adm. Code), three
+                      capture surfaces (act / article / part), `headingSource`
+                      (section | manifest — Illinois prints no catchline on
+                      20 of 88 sections), `sourceNote` + `publicActs` (the
+                      "(Source: P.A. 93-565, eff. 1-1-04.)" note; no eff →
+                      an UNDATED citation, ten of them), `printedVersions` +
+                      `versionNote` (dual-printed sections), `dateSource`
+                      (an unamended Adm. Code section inherits its Part's
+                      adoption date); meta carries `dualPrinted`
+  src/sources.ts      the 23-unit manifest (88 sections): 12 whole-act pages,
+                      6 article-range pages of the Insurance and Vehicle
+                      Codes (opaque SeqStart/SeqEnd ranges read from the act
+                      page's own links), 5 whole-Part Adm. Code pages; every
+                      entry carries a fallback heading
+  src/parse-ilcs.ts   the statute block parser: <code><font> runs → lines →
+                      versions; the catchline is the first run after
+                      "Sec. N." only when short, period-terminated, and not
+                      an outline item; soft wraps join; section tables are
+                      width="500" and the outline items inside are nested
+                      width="100%" tables; `selectVersion` is decision 4
+                      (before/after by date, "from" sets by newest in-force
+                      date, ties by act number)
+  src/parse-iac.ts    the whole-Part page: the TOC places each section in its
+                      SUBPART (which names its per-section landing page) and
+                      carries the Part SOURCE block; the concatenated Word
+                      documents split on their embedded </html> closers
+  src/capture-ilga.ts + capture.ts  the pipeline and profile; NOTE ilga.gov
+                      omits its Sectigo intermediate certificate, so the
+                      capture runs with NODE_EXTRA_CA_CERTS (see Commands)
+  src/identity.ts     the cite IS the display cite ("815 ILCS 308/15",
+                      "50 Ill. Adm. Code 919.80"); ids compress it
+                      (ilcs:815-308/15, iac:50-919.80); bare tokens resolve
+                      by exact match with a pinned collision list ("15" is
+                      306/15, 308/15, and 192/15 → null by design); "5/…"
+                      resolves by section token because 215 ILCS 5 and
+                      625 ILCS 5 are both captured
+  data/               il-law-corpus.json (88 sections, 291 KB: insurance 16 /
+                      repair_law 37 / employment 23 / safety 12) + annotations
+  test/               82 tests incl. the demo gauntlet (paint-and-materials
+                      cap → 154.6, name-a-shop-or-reimburse → 919.80, the
+                      lienholder notice → 45/1.5) and the three dual-print
+                      fixtures
+
+apps/state-il-server/ @repairmcp/state-il-server — Worker, il.repairmcp.com,
+                      same shape as the other state servers; /health adds
+                      captureSources (act/article/part) + headingSources +
+                      undated + dualPrinted + the four-domain breakdown
+
 apps/site/            @repairmcp/site — the public site at repairmcp.com
   wrangler.jsonc      Assets-only Worker. No "main": nothing runs. Preview route only.
   public/index.html   The whole site. One page: hero, both setups, "What to ask
@@ -541,7 +593,7 @@ ingestion/deg-backfill/   @repairmcp/deg-backfill — the crawler and delta sync
 
 scripts/capture-uscode.ts       OLRC → packages/nhtsa/data JSON (one request, --dry-run,
                                 hard-fails without the currentthrough marker)
-scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl, ny, pa) the two scripts drive
+scripts/state-registry.ts       the StateCaptureProfiles (wa, mt, co, tx, ca, fl, ny, pa, oh, il) the two scripts drive
 scripts/capture-state.ts        capture one state from its official publisher(s):
                                 --state wa|mt, --dry-run / --save-raw / --from-dir /
                                 --only <chapter> (WA only; merge keeps old meta dates)
@@ -619,7 +671,8 @@ for a 10-second crawl delay and the capture honors it (`--save-raw` once,
 then `--from-dir` for every re-parse).
 
 ```bash
-bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny, pa, oh)
+bun scripts/capture-state.ts --state wa --dry-run    # re-capture, report only (also: mt, co, tx, ca, fl, ny, pa, oh, il)
+NODE_EXTRA_CA_CERTS=/c/degdata/ilga-intermediate.pem bun scripts/capture-state.ts --state il   # Illinois: ilga.gov omits its Sectigo intermediate
 bun scripts/capture-state.ts --state tx              # writes packages/state-tx/data JSON
 bun scripts/check-state.ts                           # drift check, ALL states (the Scheduler's command)
 wrangler dev                                         # from the state's app dir
@@ -630,6 +683,7 @@ curl -s https://fl.repairmcp.com/health              # corpus meta + domains + s
 curl -s https://ny.repairmcp.com/health              # corpus meta + domains + cr82Edition + captureSources
 curl -s https://pa.repairmcp.com/health              # corpus meta + domains + paCodeEffectiveThrough + captureSources
 curl -s https://oh.repairmcp.com/health              # corpus meta + domains + newestEffectiveDate + captureSources + statusNotes
+curl -s https://il.repairmcp.com/health              # corpus meta + domains + newestEffectiveDate + captureSources + headingSources + undated + dualPrinted
 ```
 
 **Drift checking is automated, refresh is not.** The Windows Scheduled Task
@@ -886,7 +940,9 @@ bun run shots       # regenerate placeholder images, skipping any real screensho
 
 | OH vertical | ✅ live | 2026-09-14 (evening): `https://oh.repairmcp.com/mcp` deployed (deployment `04d76e91-76d4-433c-908b-28efbf01b369`, 2026-09-15T01:26:34Z UTC) and verified on the wire — `/health` reports 51 sections, capturedAt 2026-09-15, currentThrough 2026-09-15, newestEffectiveDate 2026-03-21, captureSources chapter 33 / section 18, domains insurance 9 / repair_law 16 / employment 17 / safety 9, statusNotes the two 4513.60/4513.61 veto lines; "the insurer wrote it for 20 hours and I can't repair it for that" → OAC 3901-1-54, effective 2/14/2022, first, with the "name of at least one repair shop" excerpt; `oh_get_authority` on "ORC 4513.60" → "ORC 4513.60, effective 11/25/2025" with the verbatim "upon complaint of a repair garage or place of storage" text and the statusNote in the payload; the connector `search` on "tech quit friday when do I have to pay him" → `orc:4113.15` first. 51 verbatim sections from ONE publisher — the Legislative Service Commission at codes.ohio.gov, ORC chapters as whole-chapter pages and every OAC rule and the Constitution section from its own page (the OAC chapter view's Supplemental Information block can lag the rule's own page), fetched at the project owner's 10 s floor against the site's blanket robots Disallow, the same call as leginfo at CA and Pa. Code at PA. The four domains are insurance 9 / repair_law 16 / employment 17 / safety 9 — safety is thin because Ohio's own workshop-specific rules (the BWC specific safety requirements and the VSSR statute behind them, plus the EPA auto body permit by rule) are a narrower slice than California's or Washington's full Cal/OSHA- or WISHA-style programs. What the real capture corrected in the kickoff's assumptions: (1) ORC 3901.93 on the chapter-3901 page prints no catchline — unrequested catchline-less heads now parse as an empty heading, and a NAMED cite with no catchline hard-fails by name; (2) OAC 4123:1-5-03 and 4123:1-5-99 on the wanted chapter page are PDF-filed — unrequested PDF-filed rules are skipped with a capture warning instead of failing the page, a named one still hard-fails; (3) OAC 3745-31-30 prints a Prior Effective Date "6/7/2010 (Emer.)" — the annotation is stripped before the date parses; (4) the OAC chapter page's Supplemental Information lags the rule's own page (3901-1-54's chapter view stated 2 of its 4 prior effective dates), so every Administrative Code rule is captured from its own rule page — the fetch plan is 7 ORC chapter pages + 5 ORC section pages + 1 Constitution page + 12 OAC rule pages = 25 requests (~4 minutes), captureSource chapter 33 / section 18, not the kickoff's originally planned 18 requests and 43/8; (5) the shared get-authority payload emitted a fixed field list, so `packages/state-law/src/tools.ts` gained an optional `statusNote` spread (commit 140f15a, additive-only test). Honest absences in the tool descriptions and the site card: no private lawsuit under the unfair insurance practices statutes, no statutory steering ban, no labor rate or paint cap rule, no total loss percentage, no garage keeper's lien on motor vehicles, no shop licensing, no adult break law, and no state OSHA plan for private shops. Site flips to eleven sources; /legal names the one publisher. WAF burst test: 22/30 returned HTTP 200, 8 returned 429 — the rule FIRED on oh., like pa. (fl., ca., deg., and ny. still 0/30; those results remain unexplained — see Backlog). Open: connector gates in the project owner's clients. |
 
-**Test totals:** 1276 passing (91 core + 106 deg + 74 nhtsa + 23 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 94 state-ny + 122 state-pa + 76 state-oh + 193 ingestion). 0 failing.
+| IL vertical | ✅ live | 2026-09-15: `https://il.repairmcp.com/mcp` deployed (version `e0662f48-7d2f-498b-97bc-656c03a5d197`, 2026-09-15T21:19:50Z) and verified on the wire — `/health` reports 88 sections, capturedAt 2026-09-15, newestEffectiveDate 2026-07-01, captureSources act 50 / article 15 / part 23, headingSources section 68 / manifest 20, undated 10, dualPrinted the three (820 ILCS 115/9 → the after-text, 105/3 → P.A. 104-480, 305/4 → the P.A. 101-384 set), domains insurance 16 / repair_law 37 / employment 23 / safety 12; "insurer says they only pay so much an hour for paint and materials" → `215 ILCS 5/154.6, effective 7/1/2022` first at 0.447 with the verbatim "establishing unreasonable caps or limits on paint or materials when estimating vehicle repairs" excerpt; "insurer wrote it for 20 hours and I can't repair it for that" → `50 Ill. Adm. Code 919.80, effective 7/22/2002` first at 0.445 with the name-a-shop-or-reimburse excerpts; `il_get_authority` on "770 ILCS 45/1.5" → `770 ILCS 45/1.5, effective 11/23/2017` with the verbatim certified-notice text; the connector `search` on "tech quit friday when do I have to pay him" → `ilcs:820-115/5` first. 88 verbatim sections from ONE publisher — the General Assembly's ilga.gov (statutes from twelve whole-act pages and six article-range pages of the Insurance and Vehicle Codes, the Administrative Code from five whole-Part pages through JCAR), fetched at the 10 s crawl delay the site's own robots.txt ASKS for — the first invited capture since Montana. The kickoff's four decisions all held; what the build corrected: the fetch plan is 23 units (the kickoff counted the two lien acts as one), ilga.gov omits its Sectigo intermediate certificate (Bun's fetch fails the chain; `NODE_EXTRA_CA_CERTS` at `C:\degdata\ilga-intermediate.pem` is the fix), section tables nest the outline items as inner tables, a `<center>`-set form glues its Source note to the last line, and the shared corpus/adapter keyed citation lookups on `${code} ${cite}` (now the profile's displayCite — byte-identical for the nine prior states, all suites re-run green). Headliners no other shipped state has: 154.6(j) (a paint-and-materials cap is an improper claims practice by statute), 154.6(p)/(q) with 625 ILCS 5/5-301 (Illinois licenses repairers and insurers must verify it), 919.80(d)(6) (name a shop or promise reimbursement in writing), 919.90(e) (no abandoning salvage to the storage yard), 770 ILCS 45/1.5 (storage fees forfeited without certified notice to the lienholder), 154.10 (the written total-loss explanation, 2025). Honest absences in the tool descriptions and the site card: no private action under 154.6 and no bad-faith tort (Section 155 is the first-party remedy), no statutory steering ban, no labor rate rule, no total-loss percentage, the Automotive Repair Act does not reach collision shops, Illinois OSHA is public-only, the refinishing rules are county-limited, the mechanic overtime exemption is dealership-only, no shop-facing Department of Insurance bulletin (all 158 read). Site flips to twelve sources; /legal names the General Assembly and the invited crawl. WAF burst test: 19/30 returned HTTP 200, 11 returned 429 — the rule FIRED on il., like pa. and oh. Open: connector gates in the project owner's clients; the 4-week drift check needs the certificate environment (see Backlog). |
+
+**Test totals:** 1358 passing (91 core + 106 deg + 74 nhtsa + 23 state-law + 112 state-wa + 59 state-mt + 120 state-co + 58 state-tx + 74 state-ca + 74 state-fl + 94 state-ny + 122 state-pa + 76 state-oh + 82 state-il + 193 ingestion). 0 failing.
 Plus the site copy linter, which is a gate rather than a test count.
 
 ### Remote push automated + pre-launch audit, 2026-08-27
@@ -1088,7 +1144,7 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   capturability): **Tier 1 — FL, NY, PA, OH, IL, MI, NC**; **Tier 2 — GA,
   TN, NJ** (official code on LexisNexis behind a bot challenge; each needs
   a CA-style mirror decision first, and Georgia is the one worth fighting
-  for). OH done 2026-09-14; IL next. The "FL → NY → MN → PA …" order this
+  for). OH done 2026-09-14; IL done 2026-09-15; MI next. The "FL → NY → MN → PA …" order this
   file carried until 2026-09-14 was a transcription error — Minnesota is
   not in Tier 1.
 - **FL residuals:** connector gates (add `https://fl.repairmcp.com/mcp` in
@@ -1120,6 +1176,20 @@ D1 push itself stays a human decision, on purpose (see Backlog).
   is ever identified); the omnibus 3745-31-30 length-bias risk (the same scorer
   candidate noted under CO and CA, now with a fifth state corpus on the
   shared base scorer).
+- **IL residuals:** connector gates (add `https://il.repairmcp.com/mcp` in
+  the project owner's clients and run the gauntlet's shop-phrasing queries);
+  the three dual-printed sections (820 ILCS 115/9, 105/3, 305/4) — when the
+  Legislature merges or the site drops a version the drift check flags the
+  text change and the refresh re-runs decision 4; the ilga.gov certificate
+  chain (the capture and the 4-week check both need
+  `NODE_EXTRA_CA_CERTS=/c/degdata/ilga-intermediate.pem` until the site
+  serves its intermediate — the Scheduled Task's environment must carry it
+  or the Illinois check fails loudly on TLS, not silently); the 62 KB
+  820 ILCS 305/4 is the strongest length-bias case in any state corpus
+  (it out-scored the 919.50 denial rule on "denied with no reason given"
+  until the annotation was tuned) — the same cross-state scorer candidate,
+  now with ten corpora; the Insurance Code article ranges are opaque
+  sequence numbers the capture pins (a re-sequenced code hard-fails by name).
 - **Subsection-qualified cites resolve to null in every state.** "31 Pa. Code
   146.8(d)", "11 NYCRR 216.7(c)", "Ins. Code 758.6(a)" all fail the cite-shape
   test and return null, in WA, MT, CO, TX, CA, FL, NY and PA alike — the fix is
@@ -1270,6 +1340,46 @@ D1 push itself stays a human decision, on purpose (see Backlog).
 ---
 
 ## Known gotchas
+
+- **ilga.gov serves only its leaf certificate.** The Sectigo intermediate
+  ("Sectigo Public Server Authentication CA OV R40") is missing from the
+  chain; browsers and curl fetch it through the leaf's AIA URL, Bun's fetch
+  does not, and the capture failed with "unable to verify the first
+  certificate" on the first fetch. The intermediate is saved at
+  `C:\degdata\ilga-intermediate.pem` (from
+  `http://crt.sectigo.com/SectigoPublicServerAuthenticationCAOVR40.crt`) and
+  `NODE_EXTRA_CA_CERTS` pointing at it is the fix — never
+  `NODE_TLS_REJECT_UNAUTHORIZED`.
+- **The ILCS database prints some sections in two or more complete
+  versions** — "(Text of Section before amendment by P.A. N)" /
+  "(Text of Section after amendment by P.A. N)" for a pending amendment,
+  "(Text of Section from P.A. N)" twice when two Public Acts amended a
+  section without a revisory merge. Three manifest sections are dual-printed
+  today (820 ILCS 115/9, 105/3, 305/4); `selectVersion` in
+  `packages/state-il/src/parse-ilcs.ts` is the kickoff's decision 4 and the
+  corpus records every printed version. A single printed version with a
+  FUTURE effective date is kept as printed and flagged `futureEffective`.
+- **Illinois prints no catchline on many older sections** ("Sec. 1. Every
+  person, firm or corporation who has expended labor …"): the manifest
+  supplies a descriptor and `headingSource: "manifest"` records it. The
+  catchline rule reads the first font run after "Sec. N." — short,
+  period-terminated, not an outline item — because that run is the
+  catchline in BOTH markup variants the site uses.
+- **ilga.gov statute pages nest tables.** A section is one
+  `<table width="500">`; the hanging-indent outline items inside it are
+  nested `<table width="100%">` rows whose continuation lands in the next
+  `<td>` with no `<br>` — the parser splits on width="500" only and treats
+  an inner `</table>` as a line break. A `<center>`-set form (770 ILCS 45/2)
+  glues the Source note to its last line; the parser splits it off.
+- **Absence on ilga.gov is HTTP 200 with an EMPTY text block** (ActID=999999
+  renders the page chrome and no tables) — the leginfo shape; a named cite
+  absent from a present page, and a page with no sections, both hard-fail by
+  name.
+- **The Administrative Code per-section pages are windows-1252 Word HTML**;
+  the whole-Part `EntirePart` page is UTF-8 and is the capture surface. The
+  per-section file name is derived from the section's SUBPART letter (which
+  only the Part's table of contents states) and the section number × 10
+  (`056003000D07200R.html` is 56-300.720 in Subpart D).
 
 - **codes.ohio.gov answers an unknown section number with a 302 to
   `/number-not-found/` and HTTP 200** once the redirect is followed — same
