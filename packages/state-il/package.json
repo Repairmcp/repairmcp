@@ -1,0 +1,25 @@
+{
+  "name": "@repairmcp/state-il",
+  "version": "0.0.0",
+  "description": "Illinois state law vertical for RepairMCP: 215 ILCS 5/154.6 (a paint-and-materials cap is an improper claims practice; insurers must verify repairer licensing), 50 Ill. Adm. Code 919.80 (the insurer names a shop that will repair for its estimate or promises reimbursement in writing, no unreasonable travel to a recommended shop, notice before storage payments stop, the $500 betterment cap, like-kind-and-quality crash parts, the total loss methods and the 30-day right of recourse), Section 155 attorney fees, 155.29 aftermarket crash parts, the Automotive Collision Repair Act, repairer licensing under the Vehicle Code, the Labor and Storage Lien Acts with the lienholder-notice rule, wage payment and deduction law, meal periods, paid leave, non-competes, workers' compensation, and the Chicago-area and Metro East refinishing rules, captured verbatim from ilga.gov.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./data/*": "./data/*"
+  },
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "echo \"(no lint yet)\" && exit 0"
+  },
+  "dependencies": {
+    "@repairmcp/core": "workspace:*",
+    "@repairmcp/state-law": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": { "bun-types": "^1.3.13" }
+}
