@@ -97,4 +97,13 @@ describe('captureOhio', () => {
     const io = buildOhIo({ pages: { [sectionUrl('ORC', '1343.03')]: numberNotFoundPage('1343.03') } });
     await expect(captureOhio(io, OH_SOURCES)).rejects.toThrow(/ORC 1343\.03: codes\.ohio\.gov answers "Number Not Found"/);
   });
+  test('a PDF-filed named cite fails by name with the PDF reason; an unrequested PDF-filed cite on the same chapter page is skipped and warned about, not fatal', async () => {
+    const pdfNamed = buildOhIo({ pages: { [chapterUrl('ORC', '4113')]: chapterPage({ code: 'ORC', chapter: '4113', title: 'T', entries: [{ cite: '4113.15', catchline: 'x.', effective: 'March 20, 2019', paragraphs: [], pdfFiled: true }, { cite: '4113.19', catchline: 'z.', effective: 'October 1, 1953', paragraphs: ['w'] }] }) } });
+    await expect(captureOhio(pdfNamed, OH_SOURCES)).rejects.toThrow(/ORC 4113\.15 .*PDF format/);
+
+    const pdfUnrequested = buildOhIo({ pages: { [chapterUrl('ORC', '4113')]: chapterPage({ code: 'ORC', chapter: '4113', title: 'T', entries: [{ cite: '4113.15', catchline: 'x.', effective: 'March 20, 2019', paragraphs: ['y'] }, { cite: '4113.19', catchline: 'z.', effective: 'October 1, 1953', paragraphs: ['w'] }, { cite: '4113.99', effective: 'October 6, 2026', paragraphs: [], pdfFiled: true }] }) } });
+    const r = await captureOhio(pdfUnrequested, OH_SOURCES);
+    expect(r.sections.length).toBe(51);
+    expect(r.report.warnings).toEqual([expect.stringContaining('ORC 4113.99')]);
+  });
 });

@@ -3,10 +3,13 @@
  * codes.ohio.gov at the 10 s floor, parsed once, selected per manifest
  * cite. Hard-fails, all by name: a named cite absent from its chapter page,
  * a "[Repealed …]" status note on a named cite, a named cite with no body
- * text, a PDF-filed rule (the parser refuses it), and Number Not Found on a
- * section page. Any other status note ("Governor's veto not reflected …")
- * is recorded on the section and listed in the report so the capture log
- * prints it.
+ * text, a named cite the parser skipped as PDF-filed, and Number Not Found
+ * on a section page. A chapter page's PDF-filed rules the manifest never
+ * asked for (chapter 4123:1-5 carries one — "Ladders and scaffolds", live
+ * 2026-09-14) are silently absent from the parsed set; a warning names each
+ * one so the capture log states what was on the page but not captured. Any
+ * other status note ("Governor's veto not reflected …") is recorded on the
+ * section and listed in the report so the capture log prints it.
  */
 import type { CaptureIo } from '@repairmcp/state-law';
 import { parseOhChapterPage, parseOhSectionPage, type ParsedOhBlock } from './parse-codes.js';
@@ -61,9 +64,16 @@ export async function captureOhio(io: CaptureIo, sources: readonly OhSource[]): 
       });
       const parsed = parseOhChapterPage(html, { code: src.code, chapter: src.chapter });
       const byCite = new Map(parsed.sections.map((s) => [s.cite, s]));
+      const skippedByCite = new Map(parsed.skipped.map((s) => [s.cite, s.reason]));
+      const wanted = new Set(src.sections.map((e) => e.cite));
+      for (const skip of parsed.skipped) {
+        if (!wanted.has(skip.cite)) warnings.push(`chapter ${src.chapter}: ${skip.reason}`);
+      }
       for (const entry of src.sections) {
         const block = byCite.get(entry.cite);
         if (!block) {
+          const skippedReason = skippedByCite.get(entry.cite);
+          if (skippedReason) throw new Error(skippedReason);
           throw new Error(`${src.code} ${entry.cite} was requested by name but is absent from the chapter ${src.chapter} page — renumbered or repealed upstream; correct the manifest after reading the page.`);
         }
         const section = toSection(block, { code: src.code, chapter: src.chapter, chapterTitle: parsed.chapterTitle, domain: entry.domain, captureSource: 'chapter' });

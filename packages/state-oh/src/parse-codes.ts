@@ -21,7 +21,12 @@
  * the section's block. A leading bracketed note on a catchline ("[Governor's
  * veto not reflected; see H.B. 434 status report]", "[Repealed effective …]",
  * "[Former Section 3 of S.B. 166 …]") is split off into statusNote; the
- * capture decides what a Repealed note means for a named cite.
+ * capture decides what a Repealed note means for a named cite. On a chapter
+ * page, a section too new to have been given a catchline yet prints only
+ * "Section N" with no separator (ORC 3901.93, effective 10/6/2026, on the
+ * live chapter-3901 page) — the head parses with an empty heading rather
+ * than failing the whole page; it is not a manifest cite and is simply
+ * dropped by the capture like any other unrequested section on the page.
  *
  * Absence is HTTP 200 with <h1>Number Not Found</h1> (after a 302 to
  * /number-not-found/) and no body. A rule "filed with the Legislative Service
@@ -159,7 +164,12 @@ function parseBlock(fragment: string, code: OhCode, label: string): Omit<ParsedO
       const prior = fields.get('Prior Effective Dates:');
       if (prior) {
         out.priorEffectiveDates = prior.split(',').map((d) => {
-          const iso = parseSlashDate(d);
+          // A prior effective date can carry a trailing annotation like
+          // "(Emer.)" marking an emergency-adopted rule (OAC 3745-31-30:
+          // "6/7/2010 (Emer.)", live 2026-09-14) — the corpus keeps only
+          // the ISO date the site prints, dropping the marker.
+          const cleaned = d.replace(/\s*\([^)]*\)\s*$/, '').trim();
+          const iso = parseSlashDate(cleaned);
           if (!iso) throw new OhParseError(`${label}: Prior Effective Date "${d.trim()}" is not M/D/YYYY.`);
           return iso;
         });
@@ -172,7 +182,15 @@ function parseBlock(fragment: string, code: OhCode, label: string): Omit<ParsedO
 const SECTION_H1 = /<h1>\s*(Section|Rule|Article\s+([IVXLC]+),\s*Section)\s+(\S+)\s+<span class='codes-separator'>\|<\/span>\s*([\s\S]*?)<\/h1>/;
 const CHAPTER_H1 = /<h1>\s*Chapter\s+(\S+)\s+<span class='codes-separator'>\|<\/span>\s*([\s\S]*?)<\/h1>/;
 const CRUMB = /<div class="breadcrumbs-node">\s*<a href="[^"]*">([^<]*)<\/a>/g;
-const CHAPTER_HEAD = /<span class="content-head-text">\s*<a href="[^"]*">\s*(Section|Rule)\s+(\S+)\s+<span class='codes-separator'>\|<\/span>\s*([\s\S]*?)<\/a>/;
+/**
+ * The catchline group is optional: a brand-new section not yet given a
+ * heading by the LSC prints only "Section N" with no separator and no
+ * catchline text (ORC 3901.93 on the live chapter-3901 page, effective
+ * 10/6/2026 — verified 2026-09-14). It is not a cite this corpus captures by
+ * name, so the parser must not fail the whole page over it; heading comes
+ * back empty rather than the parse throwing.
+ */
+const CHAPTER_HEAD = /<span class="content-head-text">\s*<a href="[^"]*">\s*(Section|Rule)\s+(\S+)(?:\s+<span class='codes-separator'>\|<\/span>\s*([\s\S]*?))?<\/a>/;
 
 function headedCite(word: string, article: string | undefined, num: string): string {
   return word.startsWith('Article') ? `art. ${article}, § ${num}` : num;
@@ -208,7 +226,19 @@ export function parseOhSectionPage(html: string, expect: { code: OhCode; cite: s
   return { cite, heading, ...(statusNote ? { statusNote } : {}), ...block, chapter, chapterTitle };
 }
 
-export function parseOhChapterPage(html: string, expect: { code: 'ORC' | 'OAC'; chapter: string }): { chapterTitle: string; sections: ParsedOhBlock[] } {
+/**
+ * A chapter page carries many sections this corpus never asked for
+ * (chapter 4123:1-5 — Workshops and Factories — runs dozens of rules; the
+ * manifest wants six). A PDF-filed rule among them (4123:1-5-03, "Ladders
+ * and scaffolds", live 2026-09-14) must not fail the whole page: it is
+ * SKIPPED here, by cite, with its reason recorded, rather than thrown. The
+ * caller (captureOhio) decides what a skip means — silent when the cite was
+ * never wanted, a named hard failure with this exact reason when it was.
+ * Every other per-entry failure (missing Effective date, no laws-body,
+ * template drift on the head itself) still throws immediately: those are
+ * signals worth seeing even on content nobody asked for.
+ */
+export function parseOhChapterPage(html: string, expect: { code: 'ORC' | 'OAC'; chapter: string }): { chapterTitle: string; sections: ParsedOhBlock[]; skipped: Array<{ cite: string; reason: string }> } {
   const label = `${expect.code} chapter ${expect.chapter}`;
   const h1 = CHAPTER_H1.exec(html);
   if (!h1) throw new OhParseError(`${label}: no "Chapter N | Title" h1 on the page — absent chapter, template drift, or wrong page.`);
@@ -216,6 +246,7 @@ export function parseOhChapterPage(html: string, expect: { code: 'ORC' | 'OAC'; 
   const chapterTitle = stripTags(h1[2]!);
   const chunks = html.split(/(?=<span id="content-head-\d+" class="content-head">)/);
   const sections: ParsedOhBlock[] = [];
+  const skipped: Array<{ cite: string; reason: string }> = [];
   const seen = new Set<string>();
   for (const chunk of chunks.slice(1)) {
     const head = CHAPTER_HEAD.exec(chunk);
@@ -223,10 +254,15 @@ export function parseOhChapterPage(html: string, expect: { code: 'ORC' | 'OAC'; 
     const cite = head[2]!;
     if (seen.has(cite)) throw new OhParseError(`${label}: ${cite} appears twice on the page.`);
     seen.add(cite);
-    const { heading, statusNote } = splitCatchline(head[3]!);
-    const block = parseBlock(chunk.slice(head.index + head[0].length), expect.code, `${expect.code} ${cite}`);
-    sections.push({ cite, heading, ...(statusNote ? { statusNote } : {}), ...block });
+    const { heading, statusNote } = splitCatchline(head[3] ?? '');
+    try {
+      const block = parseBlock(chunk.slice(head.index + head[0].length), expect.code, `${expect.code} ${cite}`);
+      sections.push({ cite, heading, ...(statusNote ? { statusNote } : {}), ...block });
+    } catch (err) {
+      if (!(err instanceof OhParseError) || !err.message.includes('in PDF format')) throw err;
+      skipped.push({ cite, reason: err.message });
+    }
   }
-  if (sections.length === 0) throw new OhParseError(`${label}: no section heads on the page.`);
-  return { chapterTitle, sections };
+  if (sections.length === 0 && skipped.length === 0) throw new OhParseError(`${label}: no section heads on the page.`);
+  return { chapterTitle, sections, skipped };
 }

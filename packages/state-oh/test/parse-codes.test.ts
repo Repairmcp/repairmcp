@@ -17,6 +17,9 @@ function body(paragraphs: string[], opts: { tag?: 'section' | 'div'; notice?: st
   const notice = opts.notice ? `<div class="laws-notice"><p>${opts.notice}</p></div>` : '';
   return `<${tag} class="laws-body"><span>${paragraphs.map((p) => `<p>${p}</p>`).join('')}</span>${notice}</${tag}>`;
 }
+function headLine(word: string, cite: string, catchline: string | undefined): string {
+  return catchline === undefined ? `${word} ${cite}` : `${word} ${cite} <span class='codes-separator'>|</span> ${catchline}`;
+}
 function supplemental(fields: Array<[string, string]>, fiveYear?: string, prior?: string): string {
   return `<section class="laws-history"><h2>Supplemental Information</h2><div class="laws-additional-information">${fields.map(([l, v]) => `<strong>${l}</strong>\n<span>${v}</span>\n<br>`).join('')}<!--\t\t\t<strong>Current Five Year Review Date:</strong>-->\n<!--\t\t\t<span th:utext="*{mostRecentFiveYearReviewDate.slashesDateFormat}"></span>-->\n<!--\t\t\t<br>-->\n${fiveYear ? `<strong>Five Year Review Date:</strong>\n<span>${fiveYear}</span>\n<br>` : ''}${prior ? `<strong>Prior Effective Dates:</strong>\n<span>${prior}</span>\n<br>` : ''}</div></section>`;
 }
@@ -37,7 +40,7 @@ export function constSectionPage(opts: { paragraphs: string[]; effective?: strin
   return `${CHROME_TOP}<div class="laws-header"><section><h1>Article II, Section 34a <span class='codes-separator'>|</span> Minimum Wage</h1>${crumbs([['/ohio-constitution', 'Ohio Constitution'], ['/ohio-constitution/article-2', 'Article II Legislative']])}${nav}</section></div><div class="clear">&nbsp;</div>${info([['Effective:', opts.effective ?? 'December 8, 2006']])}${body(opts.paragraphs, { tag: 'div' })}${nav}${CHROME_BOTTOM}`;
 }
 /** A chapter page: h1 "Chapter N | Title", then one content-head/content-body pair per section, each carrying the same block a section page carries. */
-export function chapterPage(opts: { code: 'ORC' | 'OAC'; chapter: string; title: string; entries: Array<{ cite: string; catchline: string; effective: string; legislation?: string; paragraphs: string[]; fiveYear?: string; prior?: string; notice?: string; pdfFiled?: boolean }> }): string {
+export function chapterPage(opts: { code: 'ORC' | 'OAC'; chapter: string; title: string; entries: Array<{ cite: string; catchline?: string; effective: string; legislation?: string; paragraphs: string[]; fiveYear?: string; prior?: string; notice?: string; pdfFiled?: boolean }> }): string {
   const word = opts.code === 'ORC' ? 'Section' : 'Rule';
   const href = (cite: string) => (opts.code === 'ORC' ? `section-${cite}` : `/ohio-administrative-code/rule-${cite}`);
   const rows = opts.entries.map((e, i) => {
@@ -46,7 +49,7 @@ export function chapterPage(opts: { code: 'ORC' | 'OAC'; chapter: string; title:
       : opts.code === 'ORC'
         ? `${info([['Effective:', e.effective], ['Latest Legislation: ', e.legislation ?? 'House Bill 1 - 100th General Assembly']])}${body(e.paragraphs, { notice: e.notice })}`
         : `<div><div>${info([['Effective:', e.effective], ['Promulgated Under:', `<a class='section-link' href='/ohio-revised-code/section-119.03'>119.03</a>`]])}${body(e.paragraphs, { notice: e.notice ?? `Last updated ${e.effective} at 9:00 AM` })}${supplemental([['Authorized By:', '4121.13'], ['Amplifies:', '4121.47']], e.fiveYear, e.prior)}</div></div>`;
-    return `<tr><td class="name-cell"><div class="list-content"><span id="content-head-${i + 1}" class="content-head"><span class="content-head-text"><a href="${href(e.cite)}">${word} ${e.cite} <span class='codes-separator'>|</span> ${e.catchline}</a></span></span><div class="clear">&nbsp;</div><div id="content-body-${i + 1}" class="content-body">${block}</div></div></td></tr>`;
+    return `<tr><td class="name-cell"><div class="list-content"><span id="content-head-${i + 1}" class="content-head"><span class="content-head-text"><a href="${href(e.cite)}">${headLine(word, e.cite, e.catchline)}</a></span></span><div class="clear">&nbsp;</div><div id="content-body-${i + 1}" class="content-body">${block}</div></div></td></tr>`;
   }).join('');
   return `${CHROME_TOP}<div class="laws-header"><h1>Chapter ${opts.chapter} <span class='codes-separator'>|</span> ${opts.title}</h1>${crumbs([['/x', 'Ohio Revised Code']])}</div><div class="global-content-controls"><a id="expand-all-button">Expand All</a></div><table class="data-grid laws-table"><tr><th>${word}</th></tr>${rows}</table>${CHROME_BOTTOM}`;
 }
@@ -115,6 +118,10 @@ describe('parseOhSectionPage', () => {
     expect(r.priorEffectiveDates).toEqual(['1993-09-01', '2004-11-12', '2007-04-05', '2016-11-03']);
     expect(r.text).toBe('(A) Purpose\nThe purpose of this rule is to set forth minimum standards.');
   });
+  test('a Prior Effective Date carrying a trailing "(Emer.)" annotation parses to its plain ISO date (OAC 3745-31-30, live 2026-09-14)', () => {
+    const r = parseOhSectionPage(oacRulePage({ cite: '3745-31-30', catchline: 'Auto body and frame refinishing.', effective: 'May 1, 2016', chapter: '3745-31', chapterTitle: 'Permit-by-rule', paragraphs: ['(A) Applicability.'], prior: '6/30/2008, 6/7/2010 (Emer.), 8/26/2010' }), { code: 'OAC', cite: '3745-31-30' });
+    expect(r.priorEffectiveDates).toEqual(['2008-06-30', '2010-06-07', '2010-08-26']);
+  });
   test('an OAC rule with no Five Year Review Date or Prior Effective Dates leaves them undefined', () => {
     const r = parseOhSectionPage(oacRulePage({ cite: '3745-21-18', catchline: 'Commercial motor vehicle and mobile equipment refinishing operations.', effective: 'March 27, 2022', chapter: '3745-21', chapterTitle: 'Carbon Monoxide, Photochemically Reactive Materials', paragraphs: ['(A) Applicability.'] }), { code: 'OAC', cite: '3745-21-18' });
     expect(r.fiveYearReviewDate).toBeUndefined();
@@ -170,14 +177,30 @@ describe('parseOhChapterPage', () => {
     expect(r.sections[1]!.text).toContain('All spray paint operations');
     expect(r.sections[1]!.latestLegislation).toBeUndefined();
   });
-  test('a PDF-filed rule on a chapter page fails by name; a wrong chapter fails; a duplicate cite fails', () => {
+  test('a PDF-filed rule on a chapter page is skipped with its reason recorded, not fatal to the page; a wrong chapter fails; a duplicate cite fails', () => {
     const pdf = chapterPage({ code: 'OAC', chapter: '1301:7-7', title: 'Ohio Fire Code', entries: [{ cite: '1301:7-7-24', catchline: 'Flammable finishes.', effective: 'November 20, 2025', paragraphs: [], pdfFiled: true }, { cite: '1301:7-7-57', catchline: 'Liquids.', effective: 'November 20, 2025', paragraphs: ['x'] }] });
-    expect(() => parseOhChapterPage(pdf, { code: 'OAC', chapter: '1301:7-7' })).toThrow(/OAC 1301:7-7-24 .*PDF format/);
+    const r = parseOhChapterPage(pdf, { code: 'OAC', chapter: '1301:7-7' });
+    expect(r.sections.map((s) => s.cite)).toEqual(['1301:7-7-57']);
+    expect(r.skipped.length).toBe(1);
+    expect(r.skipped[0]!.cite).toBe('1301:7-7-24');
+    expect(r.skipped[0]!.reason).toMatch(/OAC 1301:7-7-24 .*PDF format/);
     expect(() => parseOhChapterPage(page, { code: 'ORC', chapter: '4111' })).toThrow(/expected chapter 4111 but the page is headed Chapter 4113/);
     const dup = chapterPage({ code: 'ORC', chapter: '4113', title: 'T', entries: [{ cite: '4113.15', catchline: 'a.', effective: 'March 20, 2019', paragraphs: ['x'] }, { cite: '4113.15', catchline: 'b.', effective: 'March 20, 2019', paragraphs: ['y'] }] });
     expect(() => parseOhChapterPage(dup, { code: 'ORC', chapter: '4113' })).toThrow(/4113\.15 appears twice/);
   });
   test('a page with no section heads is refused', () => {
     expect(() => parseOhChapterPage(numberNotFoundPage('9999'), { code: 'ORC', chapter: '9999' })).toThrow(OhParseError);
+  });
+  test('a section too new to have a catchline yet ("Section N" with no separator) parses with an empty heading instead of failing the page (ORC 3901.93, live 2026-09-14)', () => {
+    const withNewSection = chapterPage({ code: 'ORC', chapter: '3901', title: 'Superintendent Of Insurance', entries: [
+      { cite: '3901.19', catchline: 'Unfair and deceptive practices definitions.', effective: 'March 20, 2019', paragraphs: ['(A) x.'] },
+      { cite: '3901.93', effective: 'October 6, 2026', legislation: 'Senate Bill 315 - 136th General Assembly', paragraphs: ['(A) As used in this section:'] },
+    ] });
+    const r = parseOhChapterPage(withNewSection, { code: 'ORC', chapter: '3901' });
+    expect(r.sections.map((s) => s.cite)).toEqual(['3901.19', '3901.93']);
+    const s = r.sections.find((x) => x.cite === '3901.93')!;
+    expect(s.heading).toBe('');
+    expect(s.statusNote).toBeUndefined();
+    expect(s.effectiveDate).toBe('2026-10-06');
   });
 });
