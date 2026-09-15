@@ -1,0 +1,1101 @@
+{
+  "215 ILCS 5/154.6": {
+    "topics": [
+      "fair_settlement",
+      "paint_materials_cap",
+      "short_pay",
+      "estimate_dispute",
+      "repairer_licensing",
+      "prompt_investigation",
+      "claim_denial",
+      "misrepresentation",
+      "third_party_claims",
+      "bad_faith",
+      "total_loss"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "consumers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer says they only pay so much an hour for paint and materials",
+      "P&M cap on the estimate",
+      "paint and materials cap",
+      "insurer capped paint and materials at a flat rate",
+      "materials allowance is capped below the invoice",
+      "insurer's estimate says repairers must be licensed",
+      "insurer designated a shop that is not licensed",
+      "insurer will not acknowledge the claim",
+      "insurer refuses to pay without a reasonable investigation",
+      "insurer will not affirm or deny coverage",
+      "lowball offer to force a lawsuit",
+      "denied the claim with no explanation of the policy basis",
+      "adjuster steering the customer to a network shop",
+      "the adjuster told my customer to take it to their DRP shop",
+      "insurer misrepresented the policy to my customer",
+      "sales tax on the total loss"
+    ],
+    "quoteSafeExcerpts": [
+      "Attempting to settle a claim for less than the amount to which a reasonable person would believe the claimant was entitled, by reference to written or printed advertising material accompanying or made part of an application or establishing unreasonable caps or limits on paint or materials when estimating vehicle repairs;",
+      "Failing to adopt and implement reasonable standards to verify that a repairer designated by the insurance company to provide an estimate, perform repairs, or engage in any other service in connection with an insured loss on a vehicle is duly licensed under Section 5-301 of the Illinois Vehicle Code;",
+      "Failing to provide as a persistent tendency a notification on any written estimate prepared by an insurance company in connection with an insured loss that Illinois law requires that vehicle repairers must be licensed in accordance with Section 5-301 of the Illinois Vehicle Code;",
+      "Not attempting in good faith to effectuate prompt, fair and equitable settlement of claims submitted in which liability has become reasonably clear;",
+      "Refusing to pay claims without conducting a reasonable investigation based on all available information;",
+      "Failing in the case of the denial of a claim or the offer of a compromise settlement to promptly provide a reasonable and accurate explanation of the basis in the insurance policy or applicable law for such denial or compromise settlement;"
+    ]
+  },
+  "215 ILCS 5/154.5": {
+    "topics": [
+      "fair_settlement",
+      "bad_faith"
+    ],
+    "appliesTo": [
+      "insurers"
+    ],
+    "claimUseCases": [
+      "is this an improper claims practice",
+      "insurer does this on every claim"
+    ],
+    "quoteSafeExcerpts": [
+      "It has been committed with such frequency to indicate a persistent tendency to engage in that type of conduct."
+    ]
+  },
+  "215 ILCS 5/154.8": {
+    "topics": [
+      "fair_settlement",
+      "bad_faith"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "what happens to an insurer that commits improper claims practices",
+      "report the insurer to the Department of Insurance"
+    ],
+    "quoteSafeExcerpts": [
+      "may suspend the company's certificate of authority for a period not to exceed 6 months or impose a civil penalty of up to $250,000, or both."
+    ]
+  },
+  "215 ILCS 5/154.9": {
+    "topics": [
+      "total_loss",
+      "valuation_dispute",
+      "third_party_claims"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "does the insurer owe the sales tax on the total loss",
+      "sales tax and title fees on the total loss settlement",
+      "customer bought a replacement car and wants the tax reimbursed",
+      "third party claimant total loss sales tax"
+    ],
+    "quoteSafeExcerpts": [
+      "the insurer shall pay any use or occupation tax imposed by the State or a unit of local government and title and transfer fees as provided for in this Section.",
+      "if the replacement vehicle is purchased or leased within 30 days after the receipt of the cash settlement by the insured or third-party claimant"
+    ]
+  },
+  "215 ILCS 5/154.10": {
+    "topics": [
+      "total_loss",
+      "valuation_dispute"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "customer wants to know how they came up with the total loss number",
+      "how did the insurer figure the total loss value",
+      "insurer will not show the total loss valuation",
+      "total loss determination explanation",
+      "how did they come up with the total loss number",
+      "show me the total loss calculation",
+      "how was the total loss value figured",
+      "insurer owes the customer an explanation of the total loss valuation"
+    ],
+    "quoteSafeExcerpts": [
+      "the insurance company shall provide the insured with a brief description of how that determination was made, including any available repair estimate, estimated vehicle salvage value, assessed market value, and other costs and calculations used."
+    ]
+  },
+  "215 ILCS 5/155": {
+    "topics": [
+      "bad_faith",
+      "claim_denial",
+      "prompt_investigation"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "can I sue the insurer for bad faith",
+      "customer wants to sue the insurer for bad faith",
+      "vexatious and unreasonable delay",
+      "insurer is stalling the claim for months",
+      "attorney fees against the insurer"
+    ],
+    "quoteSafeExcerpts": [
+      "or for an unreasonable delay in settling a claim, and it appears to the court that such action or delay is vexatious and unreasonable, the court may allow as part of the taxable costs in the action reasonable attorney fees, other costs, plus an amount not to exceed any one of the following amounts:"
+    ]
+  },
+  "215 ILCS 5/155.29": {
+    "topics": [
+      "aftermarket_parts",
+      "estimate_dispute",
+      "consumer_protection",
+      "replaced_parts"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "aftermarket parts on the estimate and the customer never knew",
+      "insurer specified aftermarket crash parts",
+      "non-OEM parts on the estimate",
+      "do I have to tell the customer about aftermarket parts",
+      "aftermarket part has no manufacturer name on it",
+      "aftermarket crash parts disclosure"
+    ],
+    "quoteSafeExcerpts": [
+      "No insurer shall specify the use of non-OEM aftermarket crash parts in the repair of an insured's motor vehicle, nor shall any repair facility or installer use non-OEM aftermarket crash parts to repair a vehicle unless the customer is advised of that fact in writing.",
+      "a written estimate that clearly identifies each non-OEM aftermarket crash part; and",
+      "shall have affixed thereto or inscribed thereon the logo or name of its manufacturer."
+    ]
+  },
+  "50 Ill. Adm. Code 919.40": {
+    "topics": [
+      "prompt_investigation",
+      "fair_settlement",
+      "claim_denial"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer hasn't done anything on the claim in three weeks",
+      "insurer has not contacted the customer",
+      "how long does the insurer have to start the investigation"
+    ],
+    "quoteSafeExcerpts": [
+      "shall be evidenced by a bonafide effort to communicate with all insureds and claimants when liability is reasonably clear within 21 working days after a notification of loss."
+    ]
+  },
+  "50 Ill. Adm. Code 919.50": {
+    "topics": [
+      "prompt_investigation",
+      "claim_denial",
+      "short_pay",
+      "fair_settlement",
+      "third_party_claims"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "denied with no reason given",
+      "insurer denied the claim and will not say why",
+      "how long does the insurer have to pay once it accepts the claim",
+      "insurer accepted liability but has not paid",
+      "insurer offered less than the claim with no explanation",
+      "insurer denied the claim with no written explanation",
+      "denial with no explanation of the policy basis",
+      "insurer denied the claim and gave no reason"
+    ],
+    "quoteSafeExcerpts": [
+      "The company shall affirm or deny liability on claims within a reasonable time and shall offer payment within 30 days after affirmation of liability, if the amount of the claim is determined and not in dispute.",
+      "the company shall provide to the insured a reasonable written explanation of the basis of the lower offer or denial within 30 days after the investigation and determination of liability is completed."
+    ]
+  },
+  "50 Ill. Adm. Code 919.80": {
+    "topics": [
+      "fair_settlement",
+      "estimate_dispute",
+      "short_pay",
+      "supplement_handling",
+      "steering",
+      "repair_facility_choice",
+      "prompt_investigation",
+      "claim_denial",
+      "betterment",
+      "aftermarket_parts",
+      "total_loss",
+      "valuation_dispute",
+      "storage_charges",
+      "storage_towing",
+      "loss_of_use",
+      "third_party_claims",
+      "salvage_title"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "consumers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer wrote it for 20 hours and I can't repair it for that",
+      "the insurer's estimate is too low to fix the car",
+      "necessary repairs will exceed the insurer's written estimate",
+      "adjuster says find a shop that will do it for their number",
+      "the adjuster told my customer to take it to their DRP shop",
+      "adjuster steering the customer to a network shop",
+      "insurer wants the car repaired at a specific shop across town",
+      "insurer cut off storage on the total loss with no notice",
+      "storage payments stopped without warning",
+      "insurer will not pay the tow bill",
+      "insurer deducted towing and storage from the settlement",
+      "rental car while the car is in the shop",
+      "loss of use on a third party claim",
+      "they lowballed the total loss value",
+      "customer can't find a comparable car for that money",
+      "comparable vehicle offer on a total loss",
+      "betterment on tires and a battery",
+      "depreciation deduction on the estimate",
+      "insurer wants the customer to supply the parts",
+      "aftermarket parts on the insurer's estimate",
+      "replacement crash parts not like kind and quality",
+      "40 days and no decision on the collision claim",
+      "insurer wants a copy of the estimate before it will settle",
+      "dealer prep deduction on the total loss"
+    ],
+    "quoteSafeExcerpts": [
+      "The estimate prepared by or for the company shall be reasonable, in accordance with applicable policy provisions, and of an amount which will allow for repairs to be made in a workmanlike manner.",
+      "the company shall review and respond promptly to the insured and provide the insured with the name of a repair shop that will make the repairs in a workmanlike manner.",
+      "Failure of the company to so inform the insured of the name of such a repair shop shall require the company to provide written notice to the insured that any and all reasonable costs incurred for repair or replacement related to the partial loss in excess of the company's estimate will be reimbursed by the company.",
+      "The company shall not require the insured or claimant to travel unreasonably either to obtain a repair estimate or to have the vehicle repaired at a specific repair shop that is recommended by the company.",
+      "The company shall provide reasonable notice to an insured prior to termination of payment for automobile storage charges and document such notice in the claim file.",
+      "the company shall pay any and all reasonable towing charges irrespective of the towing company used by the insured.",
+      "A company shall make no advance charge deductions for storage and towing charges unless excessive charges have resulted from the insured's own actions.",
+      "Are for prior wear and tear, missing parts and rust damage that is reflective of the general overall condition of the vehicle considering its age, any such deductions for this type of damage may not exceed $500; and",
+      "The company does not require the insured or claimant to supply parts for replacement.",
+      "No insurer shall require the use of replacement crash parts in the repair of an automobile unless the replacement crash part is at least equal in like kind and quality to the original part in terms of fit, quality and performance.",
+      "If a first party physical damage automobile claim remains unresolved for more than 40 calendar days from the date it is reported, the company shall provide a reasonable written explanation for the delay to the insured.",
+      "Right of Recourse - If within 30 days after the receipt of the claim draft, the insured cannot purchase a comparable vehicle in excess of such market value, the company will reopen its claim file and the following procedure(s) shall apply:",
+      "Deductions of the kind commonly referred to as \"get ready to go\" and \"dealer prep\", or dealer preparation, charges are prohibited."
+    ]
+  },
+  "50 Ill. Adm. Code 919.90": {
+    "topics": [
+      "storage_towing",
+      "storage_charges",
+      "salvage_title",
+      "third_party_claims",
+      "claim_denial"
+    ],
+    "appliesTo": [
+      "insurers",
+      "repairers",
+      "claimants"
+    ],
+    "claimUseCases": [
+      "insurer wants to leave the salvage here for the storage bill",
+      "insurer abandoned the total loss at my shop",
+      "insurer says keep the car for the storage charges",
+      "insurer told the third party claimant to file on their own policy"
+    ],
+    "quoteSafeExcerpts": [
+      "No company issuing a motor vehicle insurance policy covering damages to a motor vehicle shall abandon the salvage of a motor vehicle to a towing service and/or storage yard service in lieu of the towing and storage charges, without the agreed permission of the towing service or storage yard service.",
+      "No company shall advise liability claimants to make claims under their own policies in cases where liability is reasonably clear."
+    ]
+  },
+  "50 Ill. Adm. Code 919.EXHIBIT A": {
+    "topics": [
+      "total_loss",
+      "valuation_dispute",
+      "betterment",
+      "salvage_title"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "the total loss notice the insurer has to give the customer",
+      "customer's rights on a total loss",
+      "can the customer keep the totaled car"
+    ],
+    "quoteSafeExcerpts": [
+      "The insurance company can also make deductions for wear and tear, missing parts and rust, but the maximum deduction may not exceed $500.00.",
+      "The insurance company must take possession of the vehicle, if the vehicle is eight model years or newer."
+    ]
+  },
+  "815 ILCS 308/15": {
+    "topics": [
+      "estimate_authorization",
+      "estimate_dispute",
+      "aftermarket_parts",
+      "storage_charges",
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "do I need written authorization before I start the repair",
+      "job ran ten percent over the estimate",
+      "can I charge for teardown if they don't approve the repair",
+      "teardown charge if the customer declines the repair",
+      "do I have to put storage fees on the estimate",
+      "how do I mark aftermarket parts on the estimate",
+      "estimate over $100 without a signature"
+    ],
+    "quoteSafeExcerpts": [
+      "No work for compensation that exceeds $100 shall be commenced without specific authorization from the consumer after the disclosure set forth in this Section.",
+      "shall not charge for work done or parts supplied in an amount that exceeds the estimate by more than 10% without oral or written consent from the consumer;",
+      "Estimates shall include all charges to be paid by the consumer to complete the repair, including any charges for estimates, diagnostics, storage, and administrative fees.",
+      "the estimate shall show the cost of any disassembly if the consumer elects not to proceed with the repair of the motor vehicle."
+    ]
+  },
+  "815 ILCS 308/20": {
+    "topics": [
+      "estimate_authorization",
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "the estimate statement the customer signs",
+      "consumer rights notice on the estimate"
+    ],
+    "quoteSafeExcerpts": [
+      "You are entitled to a price estimate for the repairs you have authorized."
+    ]
+  },
+  "815 ILCS 308/25": {
+    "topics": [
+      "estimate_authorization",
+      "supplement_handling"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "job ran ten percent over the estimate",
+      "estimate was too low, do I need approval for the extra",
+      "customer approved the supplement by phone"
+    ],
+    "quoteSafeExcerpts": [
+      "the consumer's consent must be obtained before the work estimated is done or parts estimated are supplied."
+    ]
+  },
+  "815 ILCS 308/30": {
+    "topics": [
+      "estimate_authorization",
+      "replaced_parts"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "customer wants his old parts back",
+      "customer wants the removed parts",
+      "customer wants the car back disassembled"
+    ],
+    "quoteSafeExcerpts": [
+      "the consumer may also request the return of all parts that were removed during disassembly or repair with the exception of parts that were damaged in a crash or collision to the extent that retention by the collision repair facility was not feasible."
+    ]
+  },
+  "815 ILCS 308/40": {
+    "topics": [
+      "invoice_records",
+      "replaced_parts"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "what has to be on the final invoice",
+      "final invoice requirements",
+      "does the VIN have to be on the invoice"
+    ],
+    "quoteSafeExcerpts": [
+      "the description of the motor vehicle including the motor vehicle identification number (VIN)."
+    ]
+  },
+  "815 ILCS 308/50": {
+    "topics": [
+      "consumer_protection",
+      "estimate_authorization"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "what sign do I have to post in the shop",
+      "customer rights sign",
+      "posted notice in the shop"
+    ],
+    "quoteSafeExcerpts": [
+      "The first line of each sign shall be in letters not less than 1.5 inches in height, and the remaining lines shall be in letters not less than 0.5 inch in height."
+    ]
+  },
+  "815 ILCS 308/60": {
+    "topics": [
+      "storage_charges",
+      "garage_lien",
+      "estimate_authorization"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "what does the customer have to pay to take the car",
+      "can I charge storage before the customer picks up"
+    ],
+    "quoteSafeExcerpts": [
+      "Storage and administrative charges imposed in accordance with the schedule of charges if posted on a sign within the shop or otherwise disclosed to consumers prior to repairs."
+    ]
+  },
+  "815 ILCS 308/65": {
+    "topics": [
+      "garage_lien",
+      "estimate_authorization"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "can I keep the car for unauthorized work",
+      "lien for work the customer did not approve"
+    ],
+    "quoteSafeExcerpts": [
+      "is barred from asserting a possessory or chattel lien for the amount of the unauthorized parts or labor upon the motor vehicle or component."
+    ]
+  },
+  "815 ILCS 308/70": {
+    "topics": [
+      "consumer_protection",
+      "misrepresentation",
+      "warranty",
+      "estimate_dispute"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "what is an unlawful practice for a body shop",
+      "charging for work not done",
+      "pattern of underestimating"
+    ],
+    "quoteSafeExcerpts": [
+      "A pattern or practice of preparing written estimates underestimating the final costs of repairs."
+    ]
+  },
+  "815 ILCS 308/80": {
+    "topics": [
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "does the Automotive Repair Act apply to my body shop",
+      "which repair act covers a collision shop"
+    ],
+    "quoteSafeExcerpts": [
+      "This Act does not apply to facilities covered by the Automotive Repair Act."
+    ]
+  },
+  "815 ILCS 306/83": {
+    "topics": [
+      "consumer_protection"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "does the Automotive Repair Act apply to my body shop",
+      "which repair act covers a collision shop"
+    ],
+    "quoteSafeExcerpts": [
+      "This Act does not apply to automotive collision and body repair facilities as defined in the Automotive Collision Repair Act."
+    ]
+  },
+  "625 ILCS 5/5-301": {
+    "topics": [
+      "repairer_licensing"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "do I need a license to run a body shop in Illinois",
+      "repairer license from the Secretary of State",
+      "body shop license requirement"
+    ],
+    "quoteSafeExcerpts": [
+      "No person in this State shall, except as an incident to the servicing of vehicles, carry on or conduct the business of an automotive parts recycler, a scrap processor, a repairer, or a rebuilder, unless licensed to do so in writing by the Secretary of State under this Section."
+    ]
+  },
+  "625 ILCS 5/3-117.1": {
+    "topics": [
+      "salvage_title",
+      "total_loss"
+    ],
+    "appliesTo": [
+      "insurers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "total loss, does it need a salvage title, can the customer keep the car",
+      "can the customer keep the totaled car",
+      "salvage certificate after the total loss",
+      "hail damage total loss keep the car"
+    ],
+    "quoteSafeExcerpts": [
+      "When an insurance company makes a payment of damages on a total loss claim for a vehicle, the insurance company shall be deemed to be the owner of such vehicle and the vehicle shall be considered to be salvage except that ownership of (i) a vehicle that has incurred only hail damage that does not affect the operational safety of the vehicle or (ii) any vehicle 9 model years of age or older may, by agreement between the registered owner and the insurance company, be retained by the registered owner of such vehicle."
+    ]
+  },
+  "625 ILCS 5/4-201": {
+    "topics": [
+      "abandoned_vehicle",
+      "storage_towing"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "can I have the customer's car towed as abandoned",
+      "customer abandoned the car at my shop",
+      "report the car as abandoned"
+    ],
+    "quoteSafeExcerpts": [
+      "The abandonment of a vehicle or any part thereof on private or public property, other than a highway, in view of the general public, anywhere in this State is unlawful except on property of the owner or bailee of such abandoned vehicle."
+    ]
+  },
+  "625 ILCS 5/4-214": {
+    "topics": [
+      "abandoned_vehicle",
+      "storage_charges",
+      "storage_towing"
+    ],
+    "appliesTo": [
+      "consumers"
+    ],
+    "claimUseCases": [
+      "who pays the towing and storage on an abandoned car",
+      "owner liable for storage after the tow"
+    ],
+    "quoteSafeExcerpts": [
+      "The last registered owner's liability for storage fees may not exceed a maximum of 30 days' storage fees."
+    ]
+  },
+  "770 ILCS 45/1": {
+    "topics": [
+      "garage_lien",
+      "storage_charges"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "customer never picked the car up, it's been a month",
+      "do I have a lien on the car for the repair bill",
+      "mechanic's lien on the car"
+    ],
+    "quoteSafeExcerpts": [
+      "shall have a lien upon such chattel beginning on the date of the commencement of such expenditure of labor, skill and materials or of such storage"
+    ]
+  },
+  "770 ILCS 45/1.5": {
+    "topics": [
+      "lienholder_notice",
+      "storage_charges",
+      "garage_lien"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "customer never picked the car up, it's been a month",
+      "car has been sitting here for weeks, can I charge storage",
+      "do I have to notify the lienholder before charging storage",
+      "bank says it does not owe the storage",
+      "lienholder notice before storage fees"
+    ],
+    "quoteSafeExcerpts": [
+      "must provide written notice, by certified mail, return receipt requested, to the lienholder of record prior to the assessment and accrual of such fees, regardless of whether it enforces a lien under this Act.",
+      "storage fees shall not be assessed and collected and the lienholder shall be entitled to injunctive relief for possession of the vehicle without the payment of any storage fees."
+    ]
+  },
+  "770 ILCS 45/2": {
+    "topics": [
+      "garage_lien"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "customer took the car and never paid, can I still lien it",
+      "file the lien notice with the recorder"
+    ],
+    "quoteSafeExcerpts": [
+      "Such lien shall cease at the expiration of 60 days from the date of the delivery of such chattel to the owner thereof"
+    ]
+  },
+  "770 ILCS 50/1": {
+    "topics": [
+      "garage_lien",
+      "storage_charges"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "customer never picked the car up, it's been a month",
+      "small repair bill lien on the car"
+    ],
+    "quoteSafeExcerpts": [
+      "in the amount of $2,000 or less, shall have a lien upon such chattel"
+    ]
+  },
+  "770 ILCS 50/1.5": {
+    "topics": [
+      "lienholder_notice",
+      "storage_charges",
+      "garage_lien"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "do I have to notify the lienholder before charging storage",
+      "lienholder notice before storage fees on a small bill"
+    ],
+    "quoteSafeExcerpts": [
+      "must provide written notice, by certified mail, return receipt requested, to the lienholder of record prior to the assessment and accrual of such fees, regardless of whether it enforces a lien under this Act."
+    ]
+  },
+  "770 ILCS 50/2": {
+    "topics": [
+      "garage_lien",
+      "abandoned_vehicle"
+    ],
+    "appliesTo": [
+      "repairers",
+      "consumers"
+    ],
+    "claimUseCases": [
+      "can I sell the car for the storage bill",
+      "sell the car to cover the repair bill",
+      "how long before I can sell an unclaimed car"
+    ],
+    "quoteSafeExcerpts": [
+      "Unless the chattel is redeemed within 90 days of the completion of the expenditure of such labor, services, skill, or material or furnishing of storage, or within 90 days of the date agreed upon for redemption, the lien may be enforced by a commercially reasonable public or private sale"
+    ]
+  },
+  "770 ILCS 50/3": {
+    "topics": [
+      "garage_lien",
+      "abandoned_vehicle"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "notice before selling an unclaimed car",
+      "how do I give notice of the lien sale"
+    ],
+    "quoteSafeExcerpts": [
+      "Such sale shall be held only after giving 30 days' notice of the time and place of such sale, by publication once in some newspaper of general circulation"
+    ]
+  },
+  "820 ILCS 115/4": {
+    "topics": [
+      "wage_claims",
+      "wage_records"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "wages are late",
+      "how long after the pay period do I have to pay",
+      "payday deadline for techs"
+    ],
+    "quoteSafeExcerpts": [
+      "All wages earned by any employee during a semi-monthly or bi-weekly pay period shall be paid to such employee not later than 13 days after the end of the pay period in which such wages were earned."
+    ]
+  },
+  "820 ILCS 115/5": {
+    "topics": [
+      "final_paycheck",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "tech quit Friday, when do I have to pay him",
+      "final paycheck for a tech who quit",
+      "fired a painter, when is his last check due",
+      "do I have to pay out unused vacation"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer shall pay the final compensation of separated employees in full, at the time of separation, if possible, but in no case later than the next regularly scheduled payday for such employee.",
+      "the monetary equivalent of all earned vacation shall be paid to him or her as part of his or her final compensation at his or her final rate of pay and no employment contract or employment policy shall provide for forfeiture of earned vacation time upon separation."
+    ]
+  },
+  "820 ILCS 115/9": {
+    "topics": [
+      "deductions",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "deducting a comeback or a broken tool from a tech's pay",
+      "can I deduct a comeback from the tech's check",
+      "charge the tech for the part he broke",
+      "payroll deduction without a signed agreement"
+    ],
+    "quoteSafeExcerpts": [
+      "made with the express written consent of the employee, given freely at the time the deduction is made;"
+    ]
+  },
+  "820 ILCS 115/14": {
+    "topics": [
+      "wage_claims",
+      "liquidated_damages",
+      "final_paycheck"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "what happens if I pay a tech late",
+      "penalty for unpaid wages"
+    ],
+    "quoteSafeExcerpts": [
+      "damages of 5% of the amount of any such underpayments for each month following the date of payment during which such underpayments remain unpaid."
+    ]
+  },
+  "820 ILCS 105/4": {
+    "topics": [
+      "minimum_wage"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "what's minimum wage this year",
+      "Illinois minimum wage",
+      "minimum wage for a helper"
+    ],
+    "quoteSafeExcerpts": [
+      "on and after January 1, 2025, every employer shall pay to each of his or her employees who is 18 years of age or older in every occupation wages of not less than $15 per hour."
+    ]
+  },
+  "820 ILCS 105/4a": {
+    "topics": [
+      "overtime"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "overtime for a flat-rate tech",
+      "do I owe overtime over 40 hours",
+      "mechanic overtime exemption",
+      "flat rate technician overtime"
+    ],
+    "quoteSafeExcerpts": [
+      "no employer shall employ any of his employees for a workweek of more than 40 hours unless such employee receives compensation for his employment in excess of the hours above specified at a rate not less than 1 1/2 times the regular rate at which he is employed.",
+      "Any salesman or mechanic primarily engaged in selling or servicing automobiles, trucks or farm implements, if he is employed by a nonmanufacturing establishment primarily engaged in the business of selling such vehicles or implements to ultimate purchasers."
+    ]
+  },
+  "820 ILCS 105/12": {
+    "topics": [
+      "minimum_wage",
+      "overtime",
+      "liquidated_damages",
+      "wage_claims"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "penalty for unpaid overtime",
+      "treble damages for minimum wage"
+    ],
+    "quoteSafeExcerpts": [
+      "the employee may recover in a civil action treble the amount of any such underpayments together with costs and such reasonable attorney's fees as may be allowed by the Court"
+    ]
+  },
+  "820 ILCS 140/2": {
+    "topics": [
+      "rest_breaks"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "can I make a tech work seven days straight",
+      "day of rest requirement",
+      "seven days in a row"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer shall allow every employee except those specified in this Section at least twenty-four consecutive hours of rest in every consecutive seven-day period in addition to the regular period of rest allowed at the close of each working day."
+    ]
+  },
+  "820 ILCS 140/3": {
+    "topics": [
+      "rest_breaks"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "do I have to give the painter a lunch break",
+      "meal break for techs",
+      "lunch period requirement",
+      "second meal period on a long shift"
+    ],
+    "quoteSafeExcerpts": [
+      "Every employer shall permit its employees who are to work for 7 1/2 continuous hours, except those specified in this Section, at least 20 minutes for a meal period beginning no later than 5 hours after the start of the work period."
+    ]
+  },
+  "820 ILCS 192/15": {
+    "topics": [
+      "paid_leave"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "how much paid time off do I owe",
+      "paid leave for techs",
+      "PTO accrual in Illinois",
+      "paid leave for any reason"
+    ],
+    "quoteSafeExcerpts": [
+      "An employee who works in Illinois is entitled to earn and use up to a minimum of 40 hours of paid leave during a 12-month period"
+    ]
+  },
+  "820 ILCS 90/10": {
+    "topics": [
+      "noncompete"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "can I make a tech sign a non-compete",
+      "non-compete for a painter",
+      "non-solicit agreement for an estimator"
+    ],
+    "quoteSafeExcerpts": [
+      "No employer shall enter into a covenant not to compete with any employee unless the employee's actual or expected annualized rate of earnings exceeds $75,000 per year."
+    ]
+  },
+  "820 ILCS 305/4": {
+    "topics": [
+      "workers_comp",
+      "independent_contractor"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "1099 tech, no comp policy",
+      "do I need workers comp for a 1099 tech",
+      "penalty for no workers compensation insurance",
+      "stop-work order for no comp"
+    ],
+    "quoteSafeExcerpts": [
+      "Insure his entire liability to pay such compensation in some insurance carrier authorized, licensed, or permitted to do such insurance business in this State."
+    ]
+  },
+  "820 ILCS 219/15": {
+    "topics": [
+      "osha"
+    ],
+    "appliesTo": [
+      "employers"
+    ],
+    "claimUseCases": [
+      "do I have to follow Illinois OSHA",
+      "Illinois OSHA for a private shop",
+      "state OSHA plan",
+      "does the Illinois Occupational Safety and Health Act apply to a private employer",
+      "does Illinois OSHA cover a private body shop",
+      "is my shop under state OSHA or federal OSHA"
+    ],
+    "quoteSafeExcerpts": [
+      "This Act applies to every public employer in this State and its employees."
+    ]
+  },
+  "56 Ill. Adm. Code 300.720": {
+    "topics": [
+      "deductions"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "standing payroll deduction agreement",
+      "how long is a deduction agreement good for"
+    ],
+    "quoteSafeExcerpts": [
+      "No agreements for a defined duration of time shall last longer than six months."
+    ]
+  },
+  "56 Ill. Adm. Code 300.820": {
+    "topics": [
+      "deductions"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "deducting a comeback or a broken tool from a tech's pay",
+      "can I deduct a comeback from the tech's check",
+      "tech damaged a customer's car, can I charge him",
+      "charge the tech for the part he broke"
+    ],
+    "quoteSafeExcerpts": [
+      "A financial loss suffered by an employer due to damage to his/her property or to that of a customer or client shall not be deducted from an employee's pay unless the employee's expressed written consent is given freely at the time the deduction is made."
+    ]
+  },
+  "56 Ill. Adm. Code 300.850": {
+    "topics": [
+      "deductions",
+      "expense_reimbursement"
+    ],
+    "appliesTo": [
+      "employers",
+      "employees"
+    ],
+    "claimUseCases": [
+      "deducting a comeback or a broken tool from a tech's pay",
+      "can I deduct the tools I bought the tech",
+      "charge a tech for required equipment"
+    ],
+    "quoteSafeExcerpts": [
+      "An employer shall not deduct the cost of equipment required by the employer or by law from an employee's wages or final compensation unless the employee's express written consent is given freely at the time the deduction is made."
+    ]
+  },
+  "35 Ill. Adm. Code 218.780": {
+    "topics": [
+      "voc_coatings"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "VOC limits on refinish coatings in Chicago",
+      "VOM limits for basecoat clearcoat",
+      "refinish coating limits in Cook County",
+      "Chicago area paint VOC rule"
+    ],
+    "quoteSafeExcerpts": [
+      "no owner or operator of a motor vehicle refinishing operation shall coat motor vehicles, mobile equipment, or their parts and components, unless all coatings, except touch-up coatings, never exceed the VOM content limitations in this Section"
+    ]
+  },
+  "35 Ill. Adm. Code 218.784": {
+    "topics": [
+      "spray_equipment",
+      "voc_coatings"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "do I need HVLP guns in my booth",
+      "spray gun requirements in Chicago",
+      "gun cleaner requirements"
+    ],
+    "quoteSafeExcerpts": [
+      "High Volume Low Pressure (HVLP) spray equipment calibrated, operated and maintained in accordance with the manufacturer's specifications; or"
+    ]
+  },
+  "35 Ill. Adm. Code 218.103": {
+    "topics": [
+      "voc_coatings"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "which counties does the Chicago refinish rule cover",
+      "does the refinish rule apply to my shop"
+    ],
+    "quoteSafeExcerpts": [
+      "The provisions of this Part shall apply to all sources located in the Chicago area, which is composed of Cook, DuPage, Kane, Lake, McHenry, and Will Counties, and Aux Sable Township and Goose Lake Township in Grundy County, and Oswego Township in Kendall County."
+    ]
+  },
+  "35 Ill. Adm. Code 219.780": {
+    "topics": [
+      "voc_coatings"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "I'm in Belleville, what are the refinish coating limits",
+      "Metro East paint VOC rule",
+      "refinish coating limits in Madison County",
+      "St. Clair County refinish rule"
+    ],
+    "quoteSafeExcerpts": [
+      "no owner or operator of a motor vehicle refinishing operation shall coat motor vehicles, mobile equipment, or their parts and components, unless all coatings, except touch-up coatings, never exceed the VOM content limitations in this Section"
+    ]
+  },
+  "35 Ill. Adm. Code 219.103": {
+    "topics": [
+      "voc_coatings"
+    ],
+    "appliesTo": [
+      "repairers"
+    ],
+    "claimUseCases": [
+      "which counties does the Metro East refinish rule cover",
+      "Metro East counties"
+    ],
+    "quoteSafeExcerpts": [
+      "The provisions of this Part shall apply to all sources located in Madison, Monroe, and St. Clair Counties."
+    ]
+  }
+}

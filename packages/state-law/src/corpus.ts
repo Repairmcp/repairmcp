@@ -178,7 +178,7 @@ export class StateLawCorpus<S extends StateSection = StateSection> {
   getSection(input: string): S | null {
     const resolved = this.profile.resolveCitationQuery(input);
     if (resolved?.kind !== 'section') return null;
-    return this.byKey.get(`${resolved.code} ${resolved.cite}`) ?? null;
+    return this.byKey.get(this.profile.displayCite(resolved)) ?? null;
   }
 
   freshness(): CorpusFreshness {
@@ -241,7 +241,10 @@ export class StateLawCorpus<S extends StateSection = StateSection> {
     const resolved = this.profile.resolveCitationQuery(query);
 
     if (resolved?.kind === 'section') {
-      const key = `${resolved.code} ${resolved.cite}`;
+      // The lookup key is the profile's display cite, not `${code} ${cite}`:
+      // every state before Illinois displayed exactly that, but an ILCS cite
+      // carries its code inside it ("815 ILCS 308/15"), so the profile decides.
+      const key = this.profile.displayCite(resolved);
       const section = this.byKey.get(key);
       if (section) {
         // Asked for by name: the exact cite answers, filters do not veto it.

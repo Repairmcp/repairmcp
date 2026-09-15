@@ -90,7 +90,7 @@ export class StateLawAdapter<
     // connector clients pass back whatever the model typed.
     const parsed = this.identity.parseId(id);
     const section = parsed
-      ? this.corpus.getSection(`${parsed.code} ${parsed.cite}`)
+      ? this.corpus.getSection(this.identity.displayCite(parsed))
       : this.corpus.getSection(id);
     return section ? this.sectionToItem(section) : null;
   }

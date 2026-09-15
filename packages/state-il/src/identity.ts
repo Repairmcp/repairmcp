@@ -72,8 +72,8 @@ const ACT_BY_NUMBER: ReadonlyMap<string, string | null> = (() => {
 const ACT_CHAPTERS: ReadonlySet<string> = new Set(IL_SOURCES.filter((s) => s.kind !== 'part').map((s) => s.chapter));
 const PART_CHAPTERS: ReadonlyMap<string, string> = new Map(IL_SOURCES.filter((s) => s.kind === 'part').map((s) => [s.part, `${s.title} Ill. Adm. Code ${s.part}`]));
 
-const CH = (chapter: string): CitationQuery => ({ kind: 'chapter', code: chapter.includes('Ill. Adm. Code') ? 'Ill. Adm. Code' : 'ILCS', chapter });
-const SEC = (cite: string): CitationQuery => ({ kind: 'section', code: cite.includes('Ill. Adm. Code') ? 'Ill. Adm. Code' : 'ILCS', cite });
+const CH = (chapter: string): NonNullable<CitationQuery> => ({ kind: 'chapter', code: chapter.includes('Ill. Adm. Code') ? 'Ill. Adm. Code' : 'ILCS', chapter });
+const SEC = (cite: string): NonNullable<CitationQuery> => ({ kind: 'section', code: cite.includes('Ill. Adm. Code') ? 'Ill. Adm. Code' : 'ILCS', cite });
 
 const NAMED: ReadonlyArray<{ re: RegExp; query: NonNullable<CitationQuery> }> = [
   { re: /^(?:(?:ILLINOIS )?AUTOMOTIVE COLLISION REPAIR ACT|COLLISION REPAIR ACT|ACRA)$/, query: CH('815 ILCS 308') },
