@@ -211,6 +211,9 @@ export function buildGetAuthorityTool<S extends StateSection>(
             text: section.text,
             ...(section.effectiveDate ? { effectiveDate: section.effectiveDate } : {}),
             ...(section.historyNote ? { historyNote: section.historyNote } : {}),
+            ...((section as StateSection & { statusNote?: string }).statusNote
+              ? { statusNote: (section as StateSection & { statusNote?: string }).statusNote }
+              : {}),
             topics: corpus.topicsFor(section),
             ...(annotation?.quoteSafeExcerpts
               ? { quoteSafeExcerpts: annotation.quoteSafeExcerpts }
